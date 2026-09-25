@@ -1,0 +1,29 @@
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "prompter-monster",
+  "main": ".open-next/worker.js",
+  "compatibility_date": "2026-09-01",
+  "compatibility_flags": ["nodejs_compat"],
+  "assets": {
+    "directory": ".open-next/assets",
+    "binding": "ASSETS"
+  },
+  "observability": {
+    "enabled": true
+  },
+  // Custom domains — wrangler creates/updates the DNS records in the same account.
+  "routes": [
+    { "pattern": "prompter.monster", "custom_domain": true },
+    { "pattern": "www.prompter.monster", "custom_domain": true }
+  ],
+  // Non-secret configuration. Secrets (ANTHROPIC_API_KEY) are set with `wrangler secret put`.
+  "vars": {
+    "ANTHROPIC_MODEL": "claude-sonnet-4-5",
+    "FREE_AI_CALLS_PER_DAY": "3",
+    "NEXT_PUBLIC_SITE_URL": "https://prompter.monster"
+  },
+  // Daily AI quota counters (Faz 1). Faz 2 moves quota to the user's account.
+  "kv_namespaces": [
+    { "binding": "RATE_LIMIT", "id": "4892675a9db34cf79ef4d6cd34d3cdc8" }
+  ]
+}

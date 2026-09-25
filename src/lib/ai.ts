@@ -25,7 +25,7 @@ export class AiRouteError extends Error {
 }
 
 /** Common guard for every AI route: key present + rate limit. */
-export function guard(req: Request): { remaining: number; limit: number } {
+export async function guard(req: Request): Promise<{ remaining: number; limit: number }> {
   if (!hasApiKey()) {
     throw new AiRouteError(
       503,
@@ -33,7 +33,7 @@ export function guard(req: Request): { remaining: number; limit: number } {
       "AI özellikleri kapalı: sunucuda ANTHROPIC_API_KEY tanımlı değil. .env.local dosyasına ekleyin.",
     );
   }
-  const r = consume(clientKey(req));
+  const r = await consume(clientKey(req));
   if (!r.ok) {
     throw new AiRouteError(
       429,

@@ -14,7 +14,7 @@ const SYSTEM = `You are a world-class prompt engineer. You receive a structured 
 
 export async function POST(req: Request) {
   try {
-    guard(req);
+    await guard(req);
     const b = Body.parse(await req.json());
     const stream = streamText(
       SYSTEM,

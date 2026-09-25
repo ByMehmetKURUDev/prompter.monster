@@ -35,11 +35,25 @@ npm run dev                    # http://localhost:3000
 `ANTHROPIC_API_KEY` boş bırakılırsa uygulama yine çalışır; yalnızca AI butonları "AI özellikleri kapalı" uyarısı verir.
 Anahtar: <https://console.anthropic.com> → API Keys.
 
-## Yayınlama (Vercel)
+## Yayınlama (Cloudflare Workers — canlı ortam)
 
-1. Bu depoyu GitHub'a yükle.
-2. <https://vercel.com/new> → depoyu seç → **Environment Variables** bölümüne `.env.example`'daki değişkenleri gir.
-3. Deploy. Özel alan adı (`prompter.monster`) için Vercel → Settings → Domains.
+Site, [OpenNext Cloudflare adaptörü](https://opennext.js.org/cloudflare) ile Cloudflare Workers'ta çalışır; yapılandırma `wrangler.jsonc` içinde
+(özel alan adları `prompter.monster` + `www`, `RATE_LIMIT` KV binding'i, `ANTHROPIC_MODEL` / `FREE_AI_CALLS_PER_DAY` değişkenleri).
+
+```bash
+npx wrangler login                          # bir kez: tarayıcıda Cloudflare hesabını onayla
+npx wrangler secret put ANTHROPIC_API_KEY   # bir kez: anahtarı gizli değişken olarak kaydet
+npm run deploy                              # build + deploy (alan adı ve DNS kaydı otomatik bağlanır)
+npm run preview                             # yayınlamadan önce Workers ortamında yerel önizleme
+```
+
+Her `main` push'unda otomatik yayın için Cloudflare panelinde **Workers & Pages → prompter-monster → Settings → Builds** altından
+GitHub deposu bağlanabilir (build komutu: `npx opennextjs-cloudflare build`, deploy komutu: `npx opennextjs-cloudflare deploy`).
+
+### Alternatif: Vercel
+
+1. <https://vercel.com/new> → depoyu seç → **Environment Variables** bölümüne `.env.example`'daki değişkenleri gir.
+2. Deploy. Alan adını Cloudflare DNS'te Vercel'in verdiği CNAME/A kaydıyla bağla.
 
 ## Proje yapısı
 
@@ -57,9 +71,11 @@ src/
     data.ts               # proje tipleri, stack, özellikler, ödeme, 12 uzman, varsayılan proje
     prompt.ts             # prompt üretici (uzman promptu, mega chain, export'lar)
     ai.ts                 # Anthropic SDK sarmalayıcı + guard (sunucu)
-    ratelimit.ts          # günlük IP bazlı kota (Faz 1: bellek içi)
+    ratelimit.ts          # günlük IP bazlı kota (Cloudflare KV; yerelde bellek içi)
     client.ts             # tarayıcı tarafı API çağrıları, indirme, kopyalama
 supabase/migrations/      # Faz 2 şeması (henüz bağlı değil)
+wrangler.jsonc            # Cloudflare Workers yapılandırması (alan adı, KV, değişkenler)
+open-next.config.ts       # OpenNext adaptör ayarları
 ```
 
 ## Yol haritası
@@ -67,7 +83,7 @@ supabase/migrations/      # Faz 2 şeması (henüz bağlı değil)
 | Faz | Kapsam | Durum |
 | --- | --- | --- |
 | 0 | Next.js iskeleti, README, env, SEO | ✅ |
-| 1 | Studio taşıma + gerçek Claude API + export'lar | ✅ |
+| 1 | Studio taşıma + gerçek Claude API + export'lar + Cloudflare Workers yayını | ✅ |
 | 2 | Supabase Auth, proje kütüphanesi, versiyon geçmişi, hesaba bağlı kredi | 🔜 |
 | 3 | Stripe/Paddle + Iyzico ödeme, paylaşılabilir prompt sayfası, programmatic SEO, lansman | 🔜 |
 
@@ -85,6 +101,6 @@ Twelve expert personas each add their own task block; output includes architectu
 **Run locally:** `npm install && cp .env.example .env.local && npm run dev` — add `ANTHROPIC_API_KEY` to enable the AI features (Enhance, stack suggestion, prompt refinement).
 Without a key the app still works in template mode.
 
-**Deploy:** import the repo on Vercel and set the env vars from `.env.example`.
+**Deploy:** `npx wrangler login`, `npx wrangler secret put ANTHROPIC_API_KEY`, then `npm run deploy` (Cloudflare Workers via OpenNext; custom domain wired from `wrangler.jsonc`). Vercel also works: import the repo and set the env vars from `.env.example`.
 
 Roadmap: Phase 2 adds accounts + project library (Supabase); Phase 3 adds payments (Stripe/Paddle + Iyzico) and shareable prompt pages.
