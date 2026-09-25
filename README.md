@@ -20,6 +20,7 @@ Mimari, özellik matrisi, ödeme akışı (Stripe, Iyzico, PayTR…), kısıtlar
 - **Gerçek AI (Claude):** açıklamayı güçlendir (*Enhance*), stack öner, üretilen promptu iyileştir (*streaming*)
 - **Export:** `.md`, `.json`, `.cursorrules`, `CLAUDE.md`, `.txt` indir; "Export to Builders" ile araç formatında kopyala
 - **Hesap ve kütüphane (Faz 2):** e-posta/şifre veya sihirli bağlantı ile giriş (Supabase Auth), "Kaydet" ile proje kütüphanesi, her üretim bir versiyon olarak saklanır, versiyonlar arasında geçiş, hesaba bağlı günlük AI hakkı (free 3, pro 200)
+- **Paylaşılabilir prompt sayfası (Faz 3.1):** her versiyon "Paylaş" ile herkese açık `/p/<slug>` sayfası olur (kopyala / indir / "Studio'da çatalla"), Open Graph etiketleri ve sitemap ile arama motorlarına açık
 - Kayıt gerektirmez; ziyaretçi projesi tarayıcıda saklanır, günlük ücretsiz AI hakkı IP bazlı (varsayılan 3)
 - SEO: landing sayfası, `sitemap.xml`, `robots.txt`, Open Graph
 
@@ -35,7 +36,9 @@ npm run dev                    # http://localhost:3000
 
 `ANTHROPIC_API_KEY` boş bırakılırsa uygulama yine çalışır; yalnızca AI butonları "AI özellikleri henüz açık değil" uyarısı verir.
 `NEXT_PUBLIC_SUPABASE_URL` ve `NEXT_PUBLIC_SUPABASE_ANON_KEY` herkese açık değerlerdir ve `.env.production` içinde gelir; yerelde kendi Supabase projenizi kullanmak için `.env.local`'e yazın.
-Şema için `supabase/migrations/0001_init.sql` dosyasını Supabase SQL Editor'da çalıştırın; Authentication → URL Configuration'da site URL ve `.../auth/callback` yönlendirmesini ekleyin.
+Şema için `supabase/migrations/` altındaki dosyaları sırayla (0001, 0002…) Supabase SQL Editor'da çalıştırın; Authentication → URL Configuration'da site URL ve `.../auth/callback` yönlendirmesini ekleyin.
+E-posta doğrulama ve sihirli bağlantı için Authentication → Emails → SMTP Settings'te özel SMTP tanımlayın (canlıda Resend: `smtp.resend.com:465`, kullanıcı `resend`, şifre = Resend API anahtarı) ve
+"Confirm sign up" / "Magic link" şablonlarındaki bağlantıyı `{{ .SiteURL }}/auth/callback?token_hash={{ .TokenHash }}&type=signup|magiclink&next=/studio` yapın (sunucu tarafı doğrulama, PKCE uyumlu).
 Anahtar: <https://console.anthropic.com> → API Keys.
 
 ## Yayınlama (Cloudflare Workers — canlı ortam)
@@ -74,6 +77,8 @@ src/
     api/me/route.ts       # oturum + günlük AI hakkı
     api/projects/         # proje kaydet/listele/aç/sil (RLS ile kullanıcıya özel)
     login/, library/      # giriş sayfası, Projelerim
+    p/[slug]/page.tsx     # herkese açık paylaşılan prompt sayfası
+    api/share/            # paylaşım bağlantısı oluştur/sil, herkese açık okuma (çatallama)
     auth/callback, auth/signout
     sitemap.ts, robots.ts, layout.tsx, globals.css
   components/studio/      # Nav, Sidebar, StepBar, Step1..4, OutputPanel, Footer, useStudio
@@ -96,8 +101,9 @@ open-next.config.ts       # OpenNext adaptör ayarları
 | --- | --- | --- |
 | 0 | Next.js iskeleti, README, env, SEO | ✅ |
 | 1 | Studio taşıma + gerçek Claude API + export'lar + Cloudflare Workers yayını | ✅ |
-| 2 | Supabase Auth, proje kütüphanesi, versiyon geçmişi, hesaba bağlı kredi | ✅ |
-| 3 | Stripe/Paddle + Iyzico ödeme, paylaşılabilir prompt sayfası, programmatic SEO, lansman | 🔜 |
+| 2 | Supabase Auth, proje kütüphanesi, versiyon geçmişi, hesaba bağlı kredi, özel SMTP (Resend) | ✅ |
+| 3.1 | Paylaşılabilir prompt sayfası `/p/[slug]` + çatallama + sitemap | ✅ |
+| 3.2 | Ödeme (Paddle/Lemon Squeezy global + Iyzico TR), Pro planı, programmatic SEO, lansman | 🔜 |
 
 ## Katkı ve lisans
 
@@ -115,4 +121,4 @@ Without a key the app still works in template mode.
 
 **Deploy:** `npx wrangler login`, `npx wrangler secret put ANTHROPIC_API_KEY`, then `npm run deploy` (Cloudflare Workers via OpenNext; custom domain wired from `wrangler.jsonc`). Vercel also works: import the repo and set the env vars from `.env.example`.
 
-Roadmap: Phase 2 adds accounts + project library (Supabase); Phase 3 adds payments (Stripe/Paddle + Iyzico) and shareable prompt pages.
+Roadmap: Phase 2 (accounts, project library, versions, custom SMTP) and Phase 3.1 (public shareable prompt pages at `/p/[slug]` with one-click fork) are live; Phase 3.2 adds payments (Paddle/Lemon Squeezy + Iyzico) and a Pro plan.
