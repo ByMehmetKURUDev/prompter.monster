@@ -25,7 +25,9 @@ export async function GET(req: Request) {
     ok = !error;
   }
 
-  const to = new URL(ok ? next : "/login?error=link", url.origin);
+  // Error params (e.g. otp_expired) arrive as query or hash; the login page explains them.
+  const errDesc = url.searchParams.get("error_description");
+  const to = new URL(ok ? next : `/login?error=link${errDesc ? `&msg=${encodeURIComponent(errDesc)}` : ""}&next=${encodeURIComponent(next)}`, url.origin);
   return NextResponse.redirect(to);
 }
 

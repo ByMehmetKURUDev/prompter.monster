@@ -4,7 +4,7 @@ import { LoginForm } from "@/components/auth/LoginForm";
 
 export const metadata: Metadata = { title: "Giriş", robots: { index: false } };
 
-export default async function LoginPage({ searchParams }: { searchParams: Promise<{ next?: string; error?: string }> }) {
+export default async function LoginPage({ searchParams }: { searchParams: Promise<{ next?: string; error?: string; msg?: string }> }) {
   const sp = await searchParams;
   const next = sp.next && sp.next.startsWith("/") && !sp.next.startsWith("//") ? sp.next : "/studio";
   return (
@@ -16,7 +16,7 @@ export default async function LoginPage({ searchParams }: { searchParams: Promis
         </Link>
       </header>
       <main className="flex-1 grid place-items-center px-4 py-12">
-        <LoginForm next={next} initialError={sp.error} />
+        <LoginForm next={next} initialError={sp.error} initialMessage={sp.msg} />
       </main>
     </div>
   );

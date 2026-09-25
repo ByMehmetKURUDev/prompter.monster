@@ -2,20 +2,47 @@
 
 import { Mail, Sparkles } from "lucide-react";
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { createClient, supabaseConfigured } from "@/lib/supabase/client";
 import { Spinner, cx } from "@/components/studio/ui";
 
 type Mode = "signin" | "signup" | "magic";
 
-export function LoginForm({ next, initialError }: { next: string; initialError?: string }) {
+export function LoginForm({ next, initialError, initialMessage }: { next: string; initialError?: string; initialMessage?: string }) {
   const [mode, setMode] = useState<Mode>("signin");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState<{ kind: "ok" | "err"; text: string } | null>(
-    initialError === "link" ? { kind: "err", text: "Bağlantı geçersiz veya süresi dolmuş. Yeniden deneyin." } : null,
+    initialError === "link" ? { kind: "err", text: initialMessage ? translate(initialMessage) : "Bağlantı geçersiz veya süresi dolmuş. Yeniden deneyin." } : null,
   );
+
+  // Implicit-flow links (e.g. magic links sent from the Supabase dashboard) land here with
+  // `#access_token=...&refresh_token=...`; turn them into a cookie session and continue.
+  useEffect(() => {
+    if (!supabaseConfigured()) return;
+    const hash = window.location.hash.startsWith("#") ? window.location.hash.slice(1) : "";
+    if (!hash) return;
+    const p = new URLSearchParams(hash);
+    const err = p.get("error_description");
+    if (err) {
+      setMsg({ kind: "err", text: translate(err) });
+      window.history.replaceState(null, "", window.location.pathname + window.location.search);
+      return;
+    }
+    const access_token = p.get("access_token");
+    const refresh_token = p.get("refresh_token");
+    if (!access_token || !refresh_token) return;
+    setBusy(true);
+    createClient()
+      .auth.setSession({ access_token, refresh_token })
+      .then(({ error }) => {
+        if (error) {
+          setMsg({ kind: "err", text: translate(error.message) });
+          setBusy(false);
+        } else window.location.assign(next);
+      });
+  }, [next]);
 
   if (!supabaseConfigured()) {
     return <p className="text-[13px] text-zinc-400">Hesap sistemi bu ortamda yapılandırılmamış (NEXT_PUBLIC_SUPABASE_URL eksik).</p>;
@@ -157,5 +184,6 @@ function translate(m: string): string {
   if (s.includes("user already registered")) return "Bu e-posta zaten kayıtlı. Giriş sekmesini kullanın.";
   if (s.includes("rate limit") || s.includes("too many")) return "Çok fazla deneme. Birkaç dakika sonra tekrar deneyin.";
   if (s.includes("password should be")) return "Şifre en az 8 karakter olmalı.";
+  if (s.includes("invalid or has expired") || s.includes("otp_expired")) return "Bağlantı geçersiz ya da süresi dolmuş. Yeni bir bağlantı isteyin.";
   return m;
 }
