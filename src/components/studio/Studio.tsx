@@ -1,6 +1,6 @@
 "use client";
 
-import { ChevronRight, History } from "lucide-react";
+import { ChevronRight, History, Share2 } from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { EXPERTS } from "@/lib/data";
 import type { MeResponse } from "@/lib/db";
@@ -110,13 +110,43 @@ export function Studio({ dailyLimit }: { dailyLimit: number }) {
     [load, say],
   );
 
-  // ?project=<id>&version=<n>  |  ?new=1
+  /** Public share → a fresh, unsaved copy of that project in my Studio. */
+  const forkShared = useCallback(
+    async (slug: string) => {
+      try {
+        const r = await fetch(`/api/share/${encodeURIComponent(slug)}`, { cache: "no-store" });
+        if (!r.ok) {
+          say("Paylaşım bulunamadı ya da kaldırılmış.", 3500);
+          return;
+        }
+        const data = (await r.json()) as { name: string; state: StudioState };
+        load({ ...data.state, step: 1 });
+        setProjectId(null);
+        setVersions([]);
+        setActiveVersion(null);
+        setReleased(false);
+        setRefined({});
+        lastSaved.current = "";
+        const url = new URL(window.location.href);
+        url.searchParams.delete("fork");
+        window.history.replaceState(null, "", url.toString());
+        say(`"${data.name || "Adsız"}" çatallandı — artık senin kopyan, istediğin gibi değiştir.`, 4000);
+      } catch {
+        say("Paylaşım yüklenemedi.", 3000);
+      }
+    },
+    [load, say],
+  );
+
+  // ?project=<id>&version=<n>  |  ?new=1  |  ?fork=<slug>
   useEffect(() => {
     if (!hydrated) return;
     const sp = new URLSearchParams(window.location.search);
     const id = sp.get("project");
     const v = Number(sp.get("version"));
+    const fork = sp.get("fork");
     if (id) loadProject(id, Number.isFinite(v) && v > 0 ? v : null);
+    else if (fork) forkShared(fork);
     else if (sp.get("new") === "1") {
       reset(true);
       setProjectId(null);
@@ -124,6 +154,32 @@ export function Studio({ dailyLimit }: { dailyLimit: number }) {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [hydrated]);
+
+  /** Create/copy the public link for the active version. */
+  const [sharing, setSharing] = useState(false);
+  const share = useCallback(async () => {
+    if (sharing || !projectId || !activeVersion) return;
+    setSharing(true);
+    try {
+      const r = await fetch("/api/share", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ project_id: projectId, version: activeVersion }),
+      });
+      const j = (await r.json().catch(() => ({}))) as { url?: string; error?: string; created?: boolean };
+      if (!r.ok || !j.url) {
+        say(j.error ?? "Paylaşım bağlantısı oluşturulamadı.", 3500);
+        return;
+      }
+      const ok = await navigator.clipboard.writeText(j.url).then(() => true, () => false);
+      say(ok ? `Herkese açık bağlantı kopyalandı: ${j.url}` : `Herkese açık bağlantı: ${j.url}`, 6000);
+      window.open(j.url, "_blank", "noopener");
+    } catch {
+      say("Paylaşım bağlantısı oluşturulamadı.", 3000);
+    } finally {
+      setSharing(false);
+    }
+  }, [sharing, projectId, activeVersion, say]);
 
   const save = useCallback(
     async (snapshot: boolean) => {
@@ -353,6 +409,17 @@ export function Studio({ dailyLimit }: { dailyLimit: number }) {
                   v{v.version}
                 </button>
               ))}
+              {activeVersion && (
+                <button
+                  type="button"
+                  onClick={share}
+                  disabled={sharing}
+                  title="Bu versiyonu herkese açık bir sayfa olarak paylaş"
+                  className="ml-auto h-7 px-3 rounded-full border border-ink-600 bg-ink-800 text-zinc-300 hover:text-white flex items-center gap-1.5 disabled:opacity-60"
+                >
+                  <Share2 className="w-3 h-3" aria-hidden /> Paylaş v{activeVersion}
+                </button>
+              )}
             </div>
           )}
 
