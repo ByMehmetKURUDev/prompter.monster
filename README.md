@@ -43,9 +43,12 @@ Site, [OpenNext Cloudflare adaptörü](https://opennext.js.org/cloudflare) ile C
 ```bash
 npx wrangler login                          # bir kez: tarayıcıda Cloudflare hesabını onayla
 npx wrangler secret put ANTHROPIC_API_KEY   # bir kez: anahtarı gizli değişken olarak kaydet
-npm run deploy                              # build + deploy (alan adı ve DNS kaydı otomatik bağlanır)
-npm run preview                             # yayınlamadan önce Workers ortamında yerel önizleme
+npm run deploy                              # build + deploy (prompter.monster ve www rotaları otomatik bağlanır)
+npm run preview                             # yayınlamadan önce Workers ortamında yerel önizleme (macOS 13.5+ / Linux)
 ```
+
+Not: `npm run deploy`, `wrangler deploy`'u doğrudan çağırır (`OPEN_NEXT_DEPLOY=true`); böylece yerel Workers çalışma zamanı (workerd) gerekmez ve
+macOS 12 gibi eski sistemlerde de çalışır. Incremental cache (R2/KV) eklendiğinde `npm run deploy:full` kullanılmalıdır.
 
 Her `main` push'unda otomatik yayın için Cloudflare panelinde **Workers & Pages → prompter-monster → Settings → Builds** altından
 GitHub deposu bağlanabilir (build komutu: `npx opennextjs-cloudflare build`, deploy komutu: `npx opennextjs-cloudflare deploy`).

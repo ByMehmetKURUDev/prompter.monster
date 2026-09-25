@@ -1,8 +1,13 @@
 import type { NextConfig } from "next";
 import { initOpenNextCloudflareForDev } from "@opennextjs/cloudflare";
 
-// Makes Cloudflare bindings (KV etc.) available during `next dev` as well.
-initOpenNextCloudflareForDev();
+// Opt-in: expose Cloudflare bindings (KV etc.) during `next dev` by running
+//   OPENNEXT_DEV_BINDINGS=1 npm run dev
+// It starts the local Workers runtime (workerd), which needs macOS 13.5+ or Linux.
+// Without the flag the app runs with in-memory fallbacks — fine for UI work.
+if (process.env.OPENNEXT_DEV_BINDINGS === "1") {
+  initOpenNextCloudflareForDev();
+}
 
 const nextConfig: NextConfig = {
   reactStrictMode: true,

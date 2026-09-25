@@ -1,6 +1,8 @@
 {
   "$schema": "./node_modules/wrangler/config-schema.json",
   "name": "prompter-monster",
+  // Cloudflare account that owns the prompter.monster zone (Mehmetkuru.dev@gmail.com's Account)
+  "account_id": "3c1b09b79b318ca2d364f5bb3469503c",
   "main": ".open-next/worker.js",
   "compatibility_date": "2026-09-01",
   "compatibility_flags": ["nodejs_compat"],
@@ -11,10 +13,11 @@
   "observability": {
     "enabled": true
   },
-  // Custom domains — wrangler creates/updates the DNS records in the same account.
+  // Zone routes: the existing proxied DNS records for prompter.monster stay as they are;
+  // every request to these patterns is served by this Worker.
   "routes": [
-    { "pattern": "prompter.monster", "custom_domain": true },
-    { "pattern": "www.prompter.monster", "custom_domain": true }
+    { "pattern": "prompter.monster/*", "zone_name": "prompter.monster" },
+    { "pattern": "www.prompter.monster/*", "zone_name": "prompter.monster" }
   ],
   // Non-secret configuration. Secrets (ANTHROPIC_API_KEY) are set with `wrangler secret put`.
   "vars": {

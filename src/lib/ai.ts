@@ -30,7 +30,7 @@ export async function guard(req: Request): Promise<{ remaining: number; limit: n
     throw new AiRouteError(
       503,
       "no_api_key",
-      "AI özellikleri kapalı: sunucuda ANTHROPIC_API_KEY tanımlı değil. .env.local dosyasına ekleyin.",
+      "AI özellikleri henüz açık değil: sunucuda ANTHROPIC_API_KEY tanımlı değil (Cloudflare'da `wrangler secret put ANTHROPIC_API_KEY`, yerelde .env.local).",
     );
   }
   const r = await consume(clientKey(req));
