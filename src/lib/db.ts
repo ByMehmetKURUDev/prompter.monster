@@ -40,4 +40,6 @@ export interface MeResponse {
   user: { id: string; email: string | null } | null;
   plan: "free" | "pro" | null;
   usage: { used: number; limit: number } | null;
+  /** Payment provider wired on the server, or null while Pro is "coming soon". */
+  billing?: "lemonsqueezy" | null;
 }

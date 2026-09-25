@@ -1,12 +1,14 @@
 import { NextResponse } from "next/server";
 import type { MeResponse } from "@/lib/db";
+import { billingConfigured } from "@/lib/billing/lemonsqueezy";
 import { createClient, supabaseConfigured } from "@/lib/supabase/server";
 
 export const runtime = "nodejs";
 
 /** Who am I + today's AI quota (for the sidebar). */
 export async function GET() {
-  const empty: MeResponse = { user: null, plan: null, usage: null };
+  const billing = billingConfigured() ? "lemonsqueezy" : null;
+  const empty: MeResponse = { user: null, plan: null, usage: null, billing };
   if (!supabaseConfigured()) return NextResponse.json(empty);
   try {
     const supabase = await createClient();
@@ -20,6 +22,7 @@ export async function GET() {
       user: { id: user.id, email: user.email ?? null },
       plan: data?.plan ?? "free",
       usage: data ? { used: data.used, limit: data.limit } : { used: 0, limit: 3 },
+      billing,
     };
     return NextResponse.json(res, { headers: { "Cache-Control": "no-store" } });
   } catch {

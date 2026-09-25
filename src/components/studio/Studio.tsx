@@ -152,6 +152,29 @@ export function Studio({ dailyLimit }: { dailyLimit: number }) {
       setProjectId(null);
       setVersions([]);
     }
+    // Back from checkout: the webhook flips the plan within seconds — poll until it lands.
+    if (sp.get("upgraded") === "1") {
+      const url = new URL(window.location.href);
+      url.searchParams.delete("upgraded");
+      window.history.replaceState(null, "", url.toString());
+      say("Ödeme alındı 🎉 Pro birkaç saniye içinde aktif olur…", 6000);
+      let tries = 0;
+      const timer = window.setInterval(async () => {
+        tries += 1;
+        try {
+          const r = await fetch("/api/me", { cache: "no-store" });
+          const j = (await r.json()) as MeResponse;
+          setMe(j);
+          if (j.plan === "pro") {
+            window.clearInterval(timer);
+            say("Monster Pro aktif — 12 uzman ve günde 200 AI çağrısı senin 👹", 6000);
+          }
+        } catch {
+          /* retry */
+        }
+        if (tries >= 15) window.clearInterval(timer);
+      }, 3000);
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [hydrated]);
 

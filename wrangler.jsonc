@@ -19,11 +19,17 @@
     { "pattern": "prompter.monster/*", "zone_name": "prompter.monster" },
     { "pattern": "www.prompter.monster/*", "zone_name": "prompter.monster" }
   ],
-  // Non-secret configuration. Secrets (ANTHROPIC_API_KEY) are set with `wrangler secret put`.
+  // Non-secret configuration. Secrets are set in the Cloudflare dashboard or with `wrangler secret put`:
+  //   ANTHROPIC_API_KEY, SUPABASE_SERVICE_ROLE_KEY (webhook writes), LEMONSQUEEZY_API_KEY, LEMONSQUEEZY_WEBHOOK_SECRET
   "vars": {
     "ANTHROPIC_MODEL": "claude-sonnet-4-5",
     "FREE_AI_CALLS_PER_DAY": "3",
-    "NEXT_PUBLIC_SITE_URL": "https://prompter.monster"
+    "NEXT_PUBLIC_SITE_URL": "https://prompter.monster",
+    // Faz 3.2c — Lemon Squeezy store #467786; set BILLING_PROVIDER to "lemonsqueezy" once the secrets exist.
+    "BILLING_PROVIDER": "none",
+    "LEMONSQUEEZY_STORE_ID": "467786",
+    "LEMONSQUEEZY_VARIANT_PRO_MONTHLY": "",
+    "LEMONSQUEEZY_VARIANT_PRO_YEARLY": ""
   },
   // Daily AI quota counters (Faz 1). Faz 2 moves quota to the user's account.
   "kv_namespaces": [

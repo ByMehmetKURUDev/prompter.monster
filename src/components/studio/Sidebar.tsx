@@ -1,6 +1,7 @@
 "use client";
 
 import { ArrowRight } from "lucide-react";
+import Link from "next/link";
 import { PROJECT_CATEGORIES, TEMPLATES } from "@/lib/data";
 import { cx } from "./ui";
 
@@ -117,12 +118,9 @@ export function Sidebar({
           <div className="absolute -right-6 -top-6 w-20 h-20 bg-lime/20 blur-2xl rounded-full" />
           <div className="text-[12px] font-semibold">Upgrade to Monster Pro</div>
           <div className="text-[11px] text-zinc-500 mt-1">Sınırsız canavar, 12 uzman, mega-chain, versiyon geçmişi.</div>
-          <a
-            href="/#pricing"
-            className="mt-2.5 w-full h-8 rounded-lg bg-white text-black text-[12px] font-bold flex items-center justify-center"
-          >
-            Yükselt — $29/mo
-          </a>
+          <Link href="/pricing" className="mt-2.5 w-full h-8 rounded-lg bg-white text-black text-[12px] font-bold flex items-center justify-center">
+            Yükselt — $29/ay
+          </Link>
         </div>
         )}
       </div>

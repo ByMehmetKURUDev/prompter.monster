@@ -6,7 +6,7 @@ import { useEffect, useState } from "react";
 import { createClient, supabaseConfigured } from "@/lib/supabase/client";
 import { Spinner, cx } from "@/components/studio/ui";
 
-type Mode = "signin" | "signup" | "magic";
+type Mode = "signin" | "signup" | "magic" | "reset";
 
 export function LoginForm({ next, initialError, initialMessage }: { next: string; initialError?: string; initialMessage?: string }) {
   const [mode, setMode] = useState<Mode>("signin");
@@ -73,6 +73,14 @@ export function LoginForm({ next, initialError, initialMessage }: { next: string
         setMsg({ kind: "ok", text: "Kayıt alındı. E-postanızdaki doğrulama bağlantısına tıklayın; sonra otomatik giriş yapılır." });
         return;
       }
+      if (mode === "reset") {
+        const { error } = await supabase.auth.resetPasswordForEmail(email, {
+          redirectTo: `${window.location.origin}/auth/callback?next=${encodeURIComponent("/account/password")}`,
+        });
+        if (error) throw error;
+        setMsg({ kind: "ok", text: "Şifre sıfırlama bağlantısı gönderildi. E-postandaki bağlantıya tıklayıp yeni şifreni belirle." });
+        return;
+      }
       const { error } = await supabase.auth.signInWithOtp({ email, options: { emailRedirectTo: redirectTo() } });
       if (error) throw error;
       setMsg({ kind: "ok", text: "Sihirli bağlantı gönderildi. E-postanızı kontrol edin (spam klasörü dahil)." });
@@ -88,8 +96,10 @@ export function LoginForm({ next, initialError, initialMessage }: { next: string
       <div className="flex items-center gap-3 mb-6">
         <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-lime to-violet grid place-items-center text-black text-xl">👹</div>
         <div>
-          <h1 className="text-[18px] font-bold">{mode === "signup" ? "Hesap oluştur" : "Giriş yap"}</h1>
-          <p className="text-[12px] text-zinc-500">Projelerini kaydet, versiyonları sakla, canavarı her yerden aç.</p>
+          <h1 className="text-[18px] font-bold">{mode === "signup" ? "Hesap oluştur" : mode === "reset" ? "Şifreni sıfırla" : "Giriş yap"}</h1>
+          <p className="text-[12px] text-zinc-500">
+            {mode === "reset" ? "E-postana yeni şifre belirleme bağlantısı gönderelim." : "Projelerini kaydet, versiyonları sakla, canavarı her yerden aç."}
+          </p>
         </div>
       </div>
 
@@ -128,9 +138,23 @@ export function LoginForm({ next, initialError, initialMessage }: { next: string
             placeholder="sen@ornek.com"
           />
         </label>
-        {mode !== "magic" && (
+        {mode !== "magic" && mode !== "reset" && (
           <label className="block space-y-1.5">
-            <span className="text-[11px] font-semibold tracking-widest text-zinc-400">ŞİFRE</span>
+            <span className="text-[11px] font-semibold tracking-widest text-zinc-400 flex items-center justify-between">
+              ŞİFRE
+              {mode === "signin" && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setMode("reset");
+                    setMsg(null);
+                  }}
+                  className="font-medium tracking-normal normal-case text-zinc-500 hover:text-white"
+                >
+                  Şifremi unuttum
+                </button>
+              )}
+            </span>
             <input
               type="password"
               required
@@ -161,9 +185,21 @@ export function LoginForm({ next, initialError, initialMessage }: { next: string
           disabled={busy}
           className="w-full h-11 rounded-xl bg-gradient-to-r from-lime to-violet text-black font-bold text-[13px] tracking-wide flex items-center justify-center gap-2 disabled:opacity-60"
         >
-          {busy ? <Spinner className="w-4 h-4" /> : mode === "magic" ? <Mail className="w-4 h-4" aria-hidden /> : <Sparkles className="w-4 h-4" aria-hidden />}
-          {mode === "signin" ? "Giriş yap" : mode === "signup" ? "Hesap oluştur" : "Bağlantı gönder"}
+          {busy ? <Spinner className="w-4 h-4" /> : mode === "magic" || mode === "reset" ? <Mail className="w-4 h-4" aria-hidden /> : <Sparkles className="w-4 h-4" aria-hidden />}
+          {mode === "signin" ? "Giriş yap" : mode === "signup" ? "Hesap oluştur" : mode === "reset" ? "Sıfırlama bağlantısı gönder" : "Bağlantı gönder"}
         </button>
+        {mode === "reset" && (
+          <button
+            type="button"
+            onClick={() => {
+              setMode("signin");
+              setMsg(null);
+            }}
+            className="w-full text-[12px] text-zinc-500 hover:text-white"
+          >
+            ← Girişe dön
+          </button>
+        )}
       </form>
 
       <p className="mt-6 text-[11px] text-zinc-600 leading-relaxed">

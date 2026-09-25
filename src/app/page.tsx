@@ -17,9 +17,9 @@ export default function Landing() {
           <a href="#how" className="hidden sm:block px-3 py-1.5 text-zinc-400 hover:text-white">
             Nasıl çalışır
           </a>
-          <a href="#pricing" className="hidden sm:block px-3 py-1.5 text-zinc-400 hover:text-white">
+          <Link href="/pricing" className="hidden sm:block px-3 py-1.5 text-zinc-400 hover:text-white">
             Fiyat
-          </a>
+          </Link>
           <a href="https://github.com/ByMehmetKURUDev/prompter.monster" className="hidden sm:block px-3 py-1.5 text-zinc-400 hover:text-white" target="_blank" rel="noopener noreferrer">
             GitHub
           </a>
@@ -175,9 +175,9 @@ export default function Landing() {
                 </li>
               ))}
             </ul>
-            <button type="button" disabled className="mt-8 w-full h-10 rounded-lg bg-white text-black text-[13px] font-bold disabled:opacity-70" title="Ödeme Faz 3'te açılıyor">
-              Çok yakında — bekleme listesi
-            </button>
+            <Link href="/pricing" className="mt-8 w-full h-10 rounded-lg bg-white text-black text-[13px] font-bold flex items-center justify-center">
+              Pro açılınca haber al →
+            </Link>
           </div>
         </div>
       </section>

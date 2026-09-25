@@ -1,6 +1,6 @@
 "use client";
 
-import { Bell, Crown, FolderOpen, LogIn, LogOut, Save, Search } from "lucide-react";
+import { Bell, Crown, FolderOpen, KeyRound, LogIn, LogOut, Save, Search } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 import type { MeResponse } from "@/lib/db";
@@ -97,6 +97,12 @@ export function Nav({
                 <div className="px-3 py-2 text-[11px] text-zinc-500 truncate">{user.email}</div>
                 <Link href="/library" role="menuitem" className="flex items-center gap-2 px-3 py-2 rounded-lg text-[13px] hover:bg-ink-600">
                   <FolderOpen className="w-4 h-4" aria-hidden /> Projelerim
+                </Link>
+                <Link href="/pricing" role="menuitem" className="flex items-center gap-2 px-3 py-2 rounded-lg text-[13px] hover:bg-ink-600">
+                  <Crown className="w-4 h-4" aria-hidden /> {me?.plan === "pro" ? "Planım: Pro" : "Pro'ya geç"}
+                </Link>
+                <Link href="/account/password" role="menuitem" className="flex items-center gap-2 px-3 py-2 rounded-lg text-[13px] hover:bg-ink-600">
+                  <KeyRound className="w-4 h-4" aria-hidden /> Şifre değiştir
                 </Link>
                 <form action="/auth/signout" method="post">
                   <button type="submit" role="menuitem" className="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-[13px] text-zinc-300 hover:bg-ink-600">
