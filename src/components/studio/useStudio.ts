@@ -32,7 +32,7 @@ function reducer(s: StudioState, a: Action): StudioState {
   }
 }
 
-function load(): StudioState | null {
+function loadSaved(): StudioState | null {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (!raw) return null;
@@ -50,7 +50,7 @@ export function useStudio() {
 
   // Restore the visitor's last project (per-browser convenience until accounts arrive in Faz 2).
   useEffect(() => {
-    const saved = load();
+    const saved = loadSaved();
     if (saved) dispatch({ type: "replace", state: saved });
     setHydrated(true);
   }, []);
@@ -72,8 +72,10 @@ export function useStudio() {
   const toggle = useCallback((key: ArrayKey, value: string) => dispatch({ type: "toggle", key, value }), []);
   const setArray = useCallback((key: ArrayKey, value: string[]) => dispatch({ type: "setArray", key, value }), []);
   const reset = useCallback((blank = false) => dispatch({ type: "replace", state: blank ? EMPTY_STATE : DEFAULT_STATE }), []);
+  /** Replace the whole state (e.g. a project loaded from the library). */
+  const load = useCallback((next: StudioState) => dispatch({ type: "replace", state: { ...DEFAULT_STATE, ...next } }), []);
 
-  return { state, patch, toggle, setArray, reset, hydrated };
+  return { state, patch, toggle, setArray, reset, load, hydrated };
 }
 
 export type StudioApi = ReturnType<typeof useStudio>;

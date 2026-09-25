@@ -10,8 +10,6 @@ create table if not exists public.profiles (
   email         text,
   display_name  text,
   plan          text not null default 'free' check (plan in ('free','pro')),
-  ai_credits    integer not null default 3,        -- aylık kalan AI hakkı (free)
-  credits_reset_at timestamptz not null default date_trunc('month', now()) + interval '1 month',
   created_at    timestamptz not null default now()
 );
 
@@ -115,3 +113,38 @@ begin new.updated_at = now(); return new; end $$;
 drop trigger if exists projects_touch on public.projects;
 create trigger projects_touch before update on public.projects
   for each row execute procedure public.touch_updated_at();
+
+-- Günlük AI hakkı: free 3/gün, pro 200/gün (adil kullanım). Sunucu, kullanıcının JWT'siyle çağırır.
+create or replace function public.consume_ai_call(p_endpoint text)
+returns table (ok boolean, remaining integer, plan text)
+language plpgsql security definer set search_path = public as $$
+declare v_plan text; v_limit int; v_used int;
+begin
+  select p.plan into v_plan from public.profiles p where p.id = auth.uid();
+  if v_plan is null then
+    return query select false, 0, 'none'::text; return;
+  end if;
+  v_limit := case when v_plan = 'pro' then 200 else 3 end;
+  select count(*) into v_used from public.ai_usage u
+    where u.owner_id = auth.uid() and u.created_at >= date_trunc('day', now());
+  if v_used >= v_limit then
+    return query select false, 0, v_plan; return;
+  end if;
+  insert into public.ai_usage (owner_id, endpoint) values (auth.uid(), p_endpoint);
+  return query select true, v_limit - v_used - 1, v_plan;
+end $$;
+revoke all on function public.consume_ai_call(text) from public;
+grant execute on function public.consume_ai_call(text) to authenticated;
+
+-- Bugün kullanılan AI hakkı (UI göstergesi için)
+create or replace function public.ai_usage_today()
+returns table (used integer, "limit" integer, plan text)
+language sql security definer set search_path = public as $$
+  select
+    (select count(*)::int from public.ai_usage u where u.owner_id = auth.uid() and u.created_at >= date_trunc('day', now())) as used,
+    (case when p.plan = 'pro' then 200 else 3 end) as "limit",
+    p.plan
+  from public.profiles p where p.id = auth.uid();
+$$;
+revoke all on function public.ai_usage_today() from public;
+grant execute on function public.ai_usage_today() to authenticated;

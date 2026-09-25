@@ -19,7 +19,8 @@ Mimari, özellik matrisi, ödeme akışı (Stripe, Iyzico, PayTR…), kısıtlar
 - **Mega Chain:** 8 adımlı zincir + tek parça master prompt
 - **Gerçek AI (Claude):** açıklamayı güçlendir (*Enhance*), stack öner, üretilen promptu iyileştir (*streaming*)
 - **Export:** `.md`, `.json`, `.cursorrules`, `CLAUDE.md`, `.txt` indir; "Export to Builders" ile araç formatında kopyala
-- Kayıt gerektirmez; proje tarayıcıda saklanır. Ziyaretçi başına günlük ücretsiz AI hakkı (varsayılan 3)
+- **Hesap ve kütüphane (Faz 2):** e-posta/şifre veya sihirli bağlantı ile giriş (Supabase Auth), "Kaydet" ile proje kütüphanesi, her üretim bir versiyon olarak saklanır, versiyonlar arasında geçiş, hesaba bağlı günlük AI hakkı (free 3, pro 200)
+- Kayıt gerektirmez; ziyaretçi projesi tarayıcıda saklanır, günlük ücretsiz AI hakkı IP bazlı (varsayılan 3)
 - SEO: landing sayfası, `sitemap.xml`, `robots.txt`, Open Graph
 
 ## Kurulum (yerelde çalıştırma)
@@ -32,7 +33,9 @@ cp .env.example .env.local     # ANTHROPIC_API_KEY değerini doldur (AI özellik
 npm run dev                    # http://localhost:3000
 ```
 
-`ANTHROPIC_API_KEY` boş bırakılırsa uygulama yine çalışır; yalnızca AI butonları "AI özellikleri kapalı" uyarısı verir.
+`ANTHROPIC_API_KEY` boş bırakılırsa uygulama yine çalışır; yalnızca AI butonları "AI özellikleri henüz açık değil" uyarısı verir.
+`NEXT_PUBLIC_SUPABASE_URL` ve `NEXT_PUBLIC_SUPABASE_ANON_KEY` herkese açık değerlerdir ve `.env.production` içinde gelir; yerelde kendi Supabase projenizi kullanmak için `.env.local`'e yazın.
+Şema için `supabase/migrations/0001_init.sql` dosyasını Supabase SQL Editor'da çalıştırın; Authentication → URL Configuration'da site URL ve `.../auth/callback` yönlendirmesini ekleyin.
 Anahtar: <https://console.anthropic.com> → API Keys.
 
 ## Yayınlama (Cloudflare Workers — canlı ortam)
@@ -68,15 +71,21 @@ src/
     api/enhance/route.ts  # Claude: açıklamayı güçlendir
     api/suggest/route.ts  # Claude: stack öner (JSON)
     api/refine/route.ts   # Claude: promptu iyileştir (stream)
+    api/me/route.ts       # oturum + günlük AI hakkı
+    api/projects/         # proje kaydet/listele/aç/sil (RLS ile kullanıcıya özel)
+    login/, library/      # giriş sayfası, Projelerim
+    auth/callback, auth/signout
     sitemap.ts, robots.ts, layout.tsx, globals.css
   components/studio/      # Nav, Sidebar, StepBar, Step1..4, OutputPanel, Footer, useStudio
+  middleware.ts           # Supabase oturum yenileme + /library koruması
   lib/
+    supabase/             # browser/server/middleware istemcileri
     data.ts               # proje tipleri, stack, özellikler, ödeme, 12 uzman, varsayılan proje
     prompt.ts             # prompt üretici (uzman promptu, mega chain, export'lar)
     ai.ts                 # Anthropic SDK sarmalayıcı + guard (sunucu)
     ratelimit.ts          # günlük IP bazlı kota (Cloudflare KV; yerelde bellek içi)
     client.ts             # tarayıcı tarafı API çağrıları, indirme, kopyalama
-supabase/migrations/      # Faz 2 şeması (henüz bağlı değil)
+supabase/migrations/      # veritabanı şeması (profiles, projects, generations, RLS, kota fonksiyonları)
 wrangler.jsonc            # Cloudflare Workers yapılandırması (alan adı, KV, değişkenler)
 open-next.config.ts       # OpenNext adaptör ayarları
 ```
@@ -87,7 +96,7 @@ open-next.config.ts       # OpenNext adaptör ayarları
 | --- | --- | --- |
 | 0 | Next.js iskeleti, README, env, SEO | ✅ |
 | 1 | Studio taşıma + gerçek Claude API + export'lar + Cloudflare Workers yayını | ✅ |
-| 2 | Supabase Auth, proje kütüphanesi, versiyon geçmişi, hesaba bağlı kredi | 🔜 |
+| 2 | Supabase Auth, proje kütüphanesi, versiyon geçmişi, hesaba bağlı kredi | ✅ |
 | 3 | Stripe/Paddle + Iyzico ödeme, paylaşılabilir prompt sayfası, programmatic SEO, lansman | 🔜 |
 
 ## Katkı ve lisans

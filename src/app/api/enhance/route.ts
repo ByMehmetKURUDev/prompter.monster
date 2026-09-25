@@ -16,7 +16,7 @@ const SYSTEM = `You are a senior product strategist. You rewrite rough product d
 
 export async function POST(req: Request) {
   try {
-    const { remaining } = await guard(req);
+    const { remaining } = await guard(req, "enhance");
     const b = Body.parse(await req.json());
     const text = await complete(
       SYSTEM,

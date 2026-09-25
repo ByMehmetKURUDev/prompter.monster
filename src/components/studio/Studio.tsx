@@ -1,8 +1,9 @@
 "use client";
 
-import { ChevronRight } from "lucide-react";
+import { ChevronRight, History } from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { EXPERTS } from "@/lib/data";
+import type { MeResponse } from "@/lib/db";
 import { ApiError, enhanceDescription, refinePrompt, suggestStack } from "@/lib/client";
 import { buildExpertPrompt, estimateTokens, qualityScore } from "@/lib/prompt";
 import type { StudioState } from "@/lib/types";
@@ -15,11 +16,13 @@ import { Step2Stack } from "./Step2Stack";
 import { Step3Features } from "./Step3Features";
 import { Step4Experts } from "./Step4Experts";
 import { StepBar } from "./StepBar";
-import { Toast } from "./ui";
+import { Toast, cx } from "./ui";
 import { useStudio } from "./useStudio";
 
+type VersionRow = { id: string; version: number; format: string; lang: string; experts: string[]; created_at: string };
+
 export function Studio({ dailyLimit }: { dailyLimit: number }) {
-  const { state: s, patch, toggle, reset, setArray } = useStudio();
+  const { state: s, patch, toggle, reset, setArray, load, hydrated } = useStudio();
   const [navTab, setNavTab] = useState("Studio");
   const [toast, setToast] = useState<string | null>(null);
   const [released, setReleased] = useState(false);
@@ -34,6 +37,15 @@ export function Studio({ dailyLimit }: { dailyLimit: number }) {
   const [usedToday, setUsedToday] = useState(0);
   const abortRef = useRef<AbortController | null>(null);
 
+  // Account & library
+  const [me, setMe] = useState<MeResponse | null>(null);
+  const [projectId, setProjectId] = useState<string | null>(null);
+  const [versions, setVersions] = useState<VersionRow[]>([]);
+  const [activeVersion, setActiveVersion] = useState<number | null>(null);
+  const [saving, setSaving] = useState(false);
+  const [dirty, setDirty] = useState(false);
+  const lastSaved = useRef<string>("");
+
   const quality = useMemo(() => qualityScore(s), [s]);
   const tokens = useMemo(() => estimateTokens(s), [s]);
 
@@ -42,17 +54,141 @@ export function Studio({ dailyLimit }: { dailyLimit: number }) {
     window.setTimeout(() => setToast(null), ms);
   }, []);
 
+  const refreshMe = useCallback(async () => {
+    try {
+      const r = await fetch("/api/me", { cache: "no-store" });
+      if (r.ok) setMe((await r.json()) as MeResponse);
+    } catch {
+      /* offline */
+    }
+  }, []);
+
+  useEffect(() => {
+    refreshMe();
+  }, [refreshMe]);
+
+  // Track unsaved changes once a project is loaded/saved.
+  useEffect(() => {
+    if (!hydrated) return;
+    const now = JSON.stringify(s);
+    setDirty(now !== lastSaved.current);
+  }, [s, hydrated]);
+
+  const loadProject = useCallback(
+    async (id: string, version?: number | null) => {
+      try {
+        const r = await fetch(`/api/projects/${id}${version ? `?version=${version}` : ""}`, { cache: "no-store" });
+        if (!r.ok) {
+          say(r.status === 401 ? "Bu projeyi açmak için giriş yapın." : "Proje yüklenemedi.", 3500);
+          return;
+        }
+        const data = (await r.json()) as {
+          project: { id: string; state: StudioState };
+          versions: VersionRow[];
+          generation: { refined: Record<string, string> | null; version: number } | null;
+        };
+        load(data.project.state);
+        lastSaved.current = JSON.stringify({ ...data.project.state });
+        setProjectId(data.project.id);
+        setVersions(data.versions);
+        setDirty(false);
+        if (data.generation) {
+          setRefined(data.generation.refined ?? {});
+          setActiveVersion(data.generation.version);
+          setReleased(true);
+          setOutTab(data.project.state.experts[0] ?? "mega");
+        } else {
+          setActiveVersion(null);
+          setReleased(false);
+          setRefined({});
+        }
+        say(`Proje yüklendi: ${data.project.state.name || "Adsız"}${data.generation ? ` • v${data.generation.version}` : ""}`);
+      } catch {
+        say("Proje yüklenemedi.", 3000);
+      }
+    },
+    [load, say],
+  );
+
+  // ?project=<id>&version=<n>  |  ?new=1
+  useEffect(() => {
+    if (!hydrated) return;
+    const sp = new URLSearchParams(window.location.search);
+    const id = sp.get("project");
+    const v = Number(sp.get("version"));
+    if (id) loadProject(id, Number.isFinite(v) && v > 0 ? v : null);
+    else if (sp.get("new") === "1") {
+      reset(true);
+      setProjectId(null);
+      setVersions([]);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [hydrated]);
+
+  const save = useCallback(
+    async (snapshot: boolean) => {
+      if (saving) return null;
+      if (!me?.user) {
+        say("Kaydetmek için giriş yapın — sağ üstteki Giriş düğmesi.", 3500);
+        return null;
+      }
+      setSaving(true);
+      try {
+        const r = await fetch("/api/projects", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ id: projectId ?? undefined, state: s, snapshot, refined: snapshot ? refined : undefined }),
+        });
+        if (!r.ok) {
+          const j = (await r.json().catch(() => ({}))) as { error?: string };
+          say(j.error ?? "Kaydedilemedi.", 3500);
+          return null;
+        }
+        const data = (await r.json()) as { id: string; version: number | null };
+        setProjectId(data.id);
+        lastSaved.current = JSON.stringify(s);
+        setDirty(false);
+        if (data.version) {
+          setActiveVersion(data.version);
+          setVersions((prev) => [
+            { id: `local-${data.version}`, version: data.version!, format: s.format, lang: s.lang, experts: s.experts, created_at: new Date().toISOString() },
+            ...prev,
+          ]);
+        }
+        const url = new URL(window.location.href);
+        url.searchParams.set("project", data.id);
+        url.searchParams.delete("new");
+        window.history.replaceState(null, "", url.toString());
+        say(data.version ? `Kaydedildi • v${data.version}` : "Proje kaydedildi");
+        return data;
+      } catch {
+        say("Kaydedilemedi.", 3000);
+        return null;
+      } finally {
+        setSaving(false);
+      }
+    },
+    [me, projectId, refined, s, saving, say],
+  );
+
   const onApiError = useCallback(
     (e: unknown) => {
       if (e instanceof ApiError) {
         if (e.code === "rate_limited") setUsedToday(dailyLimit);
         say(e.message, 4000);
       } else say("Beklenmeyen bir hata oldu.", 3000);
+      refreshMe();
     },
-    [dailyLimit, say],
+    [dailyLimit, say, refreshMe],
   );
 
-  const trackRemaining = useCallback((remaining: number) => setUsedToday(Math.max(0, dailyLimit - remaining)), [dailyLimit]);
+  const trackRemaining = useCallback(
+    (remaining: number) => {
+      setUsedToday(Math.max(0, dailyLimit - remaining));
+      refreshMe();
+    },
+    [dailyLimit, refreshMe],
+  );
 
   /* ---- AI actions ---- */
   const enhance = async () => {
@@ -106,6 +242,7 @@ export function Studio({ dailyLimit }: { dailyLimit: number }) {
         ac.signal,
       );
       setUsedToday((n) => Math.min(dailyLimit, n + 1));
+      refreshMe();
       say("Prompt iyileştirildi ✨");
     } catch (err) {
       setRefined((prev) => {
@@ -122,10 +259,11 @@ export function Studio({ dailyLimit }: { dailyLimit: number }) {
   /* ---- wizard actions ---- */
   const generate = () => {
     setGenerating(true);
-    window.setTimeout(() => {
+    window.setTimeout(async () => {
       setGenerating(false);
       setReleased(true);
       setOutTab(s.experts[0] ?? "cto");
+      if (me?.user) await save(true); // her üretim bir versiyon olarak saklanır
     }, 1400);
   };
 
@@ -135,6 +273,14 @@ export function Studio({ dailyLimit }: { dailyLimit: number }) {
     setRefined({});
     setAiPicks(null);
     setAiWhy("");
+    setProjectId(null);
+    setVersions([]);
+    setActiveVersion(null);
+    lastSaved.current = "";
+    const url = new URL(window.location.href);
+    url.searchParams.delete("project");
+    url.searchParams.delete("version");
+    window.history.replaceState(null, "", url.toString());
     say("Yeni canavar — boş proje açıldı");
   };
 
@@ -158,7 +304,6 @@ export function Studio({ dailyLimit }: { dailyLimit: number }) {
     });
   }, []);
 
-  // If the active output tab's expert gets deselected, fall back to the first selected expert.
   useEffect(() => {
     if (outTab !== "mega" && outTab !== "export" && !s.experts.includes(outTab)) {
       setOutTab(s.experts[0] ?? "mega");
@@ -167,9 +312,11 @@ export function Studio({ dailyLimit }: { dailyLimit: number }) {
 
   const toggleStack = (key: "frontend" | "backend" | "database" | "auth" | "ai" | "realtime" | "search", v: string) => toggle(key, v);
 
+  const usage = me?.usage ?? { used: usedToday, limit: dailyLimit };
+
   return (
     <div className="min-h-screen bg-ink-950 text-zinc-100">
-      <Nav active={navTab} onTab={onNavTab} />
+      <Nav active={navTab} onTab={onNavTab} me={me} onSave={() => save(false)} saving={saving} dirty={dirty} />
       <Toast message={toast} />
 
       <div className="flex">
@@ -178,12 +325,36 @@ export function Studio({ dailyLimit }: { dailyLimit: number }) {
           onProjectType={(id) => patch({ projectType: id })}
           onNew={onNew}
           onTemplate={onTemplate}
-          usedToday={usedToday}
-          dailyLimit={dailyLimit}
+          usedToday={usage.used}
+          dailyLimit={usage.limit}
+          signedIn={Boolean(me?.user)}
+          plan={me?.plan ?? null}
         />
 
         <main className="flex-1 min-w-0 bg-ink-950">
           <StepBar step={s.step} onStep={setStep} quality={quality} />
+
+          {projectId && versions.length > 0 && (
+            <div className="px-4 lg:px-8 pt-4 flex items-center gap-2 flex-wrap text-[11px]">
+              <span className="text-zinc-500 flex items-center gap-1">
+                <History className="w-3 h-3" aria-hidden /> Versiyonlar:
+              </span>
+              {versions.map((v) => (
+                <button
+                  key={v.id}
+                  type="button"
+                  onClick={() => loadProject(projectId, v.version)}
+                  title={`${v.format} • ${v.lang} • ${new Date(v.created_at).toLocaleString("tr-TR")}`}
+                  className={cx(
+                    "h-6 px-2 rounded-full border font-mono",
+                    activeVersion === v.version ? "bg-lime text-black border-lime" : "bg-ink-800 border-ink-600 text-zinc-400 hover:text-white",
+                  )}
+                >
+                  v{v.version}
+                </button>
+              ))}
+            </div>
+          )}
 
           <div className="px-4 lg:px-8 py-6 max-w-[900px]">
             {s.step === 1 && <Step1Idea s={s} patch={patch} toggle={toggle} onEnhance={enhance} enhancing={enhancing} />}

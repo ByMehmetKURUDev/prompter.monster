@@ -1,6 +1,7 @@
 import Anthropic from "@anthropic-ai/sdk";
 import { NextResponse } from "next/server";
 import { clientKey, consume } from "./ratelimit";
+import { createClient, supabaseConfigured } from "./supabase/server";
 
 /** Server-only. Never import from a client component. */
 
@@ -24,8 +25,12 @@ export class AiRouteError extends Error {
   }
 }
 
-/** Common guard for every AI route: key present + rate limit. */
-export async function guard(req: Request): Promise<{ remaining: number; limit: number }> {
+/**
+ * Common guard for every AI route: key present + quota.
+ * Signed-in users: per-account daily quota in Supabase (free 3, pro 200).
+ * Visitors: per-IP daily quota in KV (in-memory locally).
+ */
+export async function guard(req: Request, endpoint = "ai"): Promise<{ remaining: number; limit: number }> {
   if (!hasApiKey()) {
     throw new AiRouteError(
       503,
@@ -33,12 +38,41 @@ export async function guard(req: Request): Promise<{ remaining: number; limit: n
       "AI özellikleri henüz açık değil: sunucuda ANTHROPIC_API_KEY tanımlı değil (Cloudflare'da `wrangler secret put ANTHROPIC_API_KEY`, yerelde .env.local).",
     );
   }
+
+  if (supabaseConfigured()) {
+    try {
+      const supabase = await createClient();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      if (user) {
+        const { data, error } = await supabase.rpc("consume_ai_call", { p_endpoint: endpoint }).single<{ ok: boolean; remaining: number; plan: string }>();
+        if (!error && data) {
+          const limit = data.plan === "pro" ? 200 : 3;
+          if (!data.ok) {
+            throw new AiRouteError(
+              429,
+              "rate_limited",
+              data.plan === "pro"
+                ? `Günlük adil kullanım sınırına (${limit}) ulaştınız. Yarın devam edebilirsiniz.`
+                : `Günlük ücretsiz AI hakkınız (${limit}) doldu. Yarın tekrar deneyin — Pro planda günde ${200}.`,
+            );
+          }
+          return { remaining: data.remaining, limit };
+        }
+      }
+    } catch (e) {
+      if (e instanceof AiRouteError) throw e;
+      // Supabase unreachable → fall through to the IP quota rather than blocking everyone.
+    }
+  }
+
   const r = await consume(clientKey(req));
   if (!r.ok) {
     throw new AiRouteError(
       429,
       "rate_limited",
-      `Günlük ücretsiz AI hakkınız (${r.limit}) doldu. Yarın tekrar deneyin — Pro planda sınırsız.`,
+      `Günlük ücretsiz AI hakkınız (${r.limit}) doldu. Yarın tekrar deneyin ya da giriş yapıp Pro'ya geçin.`,
     );
   }
   return r;

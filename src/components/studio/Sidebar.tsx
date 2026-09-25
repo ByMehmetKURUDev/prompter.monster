@@ -11,6 +11,8 @@ export function Sidebar({
   onTemplate,
   usedToday,
   dailyLimit,
+  signedIn,
+  plan,
 }: {
   projectType: string;
   onProjectType: (id: string) => void;
@@ -18,6 +20,8 @@ export function Sidebar({
   onTemplate: (name: string) => void;
   usedToday: number;
   dailyLimit: number;
+  signedIn: boolean;
+  plan: "free" | "pro" | null;
 }) {
   const pct = Math.min(100, Math.round((usedToday / dailyLimit) * 100));
   return (
@@ -93,7 +97,7 @@ export function Sidebar({
       <div className="p-3 border-t border-ink-600 space-y-3">
         <div className="rounded-xl bg-ink-800 border border-ink-600 p-3">
           <div className="flex justify-between text-[11px] text-zinc-500 mb-1.5">
-            <span>Günlük AI hakkı</span>
+            <span>{signedIn ? (plan === "pro" ? "Günlük AI hakkı (Pro)" : "Günlük AI hakkı (hesap)") : "Günlük AI hakkı (ziyaretçi)"}</span>
             <span>
               {usedToday}/{dailyLimit}
             </span>
@@ -102,6 +106,13 @@ export function Sidebar({
             <div className="h-full bg-gradient-to-r from-lime to-violet" style={{ width: `${pct}%` }} />
           </div>
         </div>
+        {!signedIn && (
+          <a href="/login?next=/studio" className="block rounded-xl bg-ink-800 border border-ink-600 p-3 hover:border-ink-400 transition">
+            <div className="text-[12px] font-semibold">Giriş yap, kaydet</div>
+            <div className="text-[11px] text-zinc-500 mt-1">Projelerini ve versiyonlarını kütüphanende sakla.</div>
+          </a>
+        )}
+        {plan !== "pro" && (
         <div className="rounded-xl bg-gradient-to-br from-ink-800 to-ink-700 border border-ink-400 p-3 relative overflow-hidden">
           <div className="absolute -right-6 -top-6 w-20 h-20 bg-lime/20 blur-2xl rounded-full" />
           <div className="text-[12px] font-semibold">Upgrade to Monster Pro</div>
@@ -113,6 +124,7 @@ export function Sidebar({
             Yükselt — $29/mo
           </a>
         </div>
+        )}
       </div>
     </aside>
   );

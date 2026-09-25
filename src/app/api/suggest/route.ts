@@ -17,7 +17,7 @@ const SYSTEM = `You are a pragmatic staff engineer choosing a tech stack for a s
 
 export async function POST(req: Request) {
   try {
-    const { remaining } = await guard(req);
+    const { remaining } = await guard(req, "suggest");
     const b = Body.parse(await req.json());
 
     const allowed = Object.entries(STACK)
