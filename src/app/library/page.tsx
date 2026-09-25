@@ -38,7 +38,7 @@ export default async function LibraryPage() {
           <span className="font-bold tracking-tight text-[15px]">Prompt.Monster</span>
         </Link>
         <nav className="ml-auto flex items-center gap-2 text-[13px]">
-          <span className="hidden sm:block text-zinc-500">{user.email}</span>
+          <span className="hidden sm:block text-zinc-500 truncate max-w-[240px]">{user.email}</span>
           <Link href="/studio" className="h-9 px-4 rounded-lg bg-lime text-black font-bold flex items-center">
             Studio
           </Link>
