@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { Studio } from "@/components/studio/Studio";
-import { dailyLimit } from "@/lib/ratelimit";
+import { DEFAULT_PUBLIC } from "@/lib/settings";
 
 export const metadata: Metadata = {
   title: "Studio",
@@ -8,5 +8,5 @@ export const metadata: Metadata = {
 };
 
 export default function StudioPage() {
-  return <Studio dailyLimit={dailyLimit()} />;
+  return <Studio dailyLimit={DEFAULT_PUBLIC().anon_credits_per_day} />;
 }

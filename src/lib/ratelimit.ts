@@ -1,10 +1,10 @@
 /**
- * Per-IP daily rate limiter for the AI endpoints.
+ * Per-IP daily credit counter for visitors who are not signed in.
  *
- * Production (Cloudflare Workers): counters live in the RATE_LIMIT KV namespace
- * (see wrangler.jsonc), so every isolate shares the same count.
+ * Production (Cloudflare Workers): counters live in the RATE_LIMIT KV namespace (see wrangler.jsonc),
+ * keyed by day + IP, and expire after 48 hours (the privacy policy promises no longer).
  * Local `next dev` / `next start` without bindings: in-memory fallback.
- * Faz 2 ties the quota to the signed-in user's plan instead of the IP.
+ * Signed-in users are metered in Postgres instead (consume_ai_call).
  */
 
 import { getCloudflareContext } from "@opennextjs/cloudflare";
@@ -17,14 +17,10 @@ interface KVLike {
 
 type Bucket = { day: string; count: number };
 const memory = new Map<string, Bucket>();
+const TTL = 60 * 60 * 48;
 
 function today(): string {
   return new Date().toISOString().slice(0, 10);
-}
-
-export function dailyLimit(): number {
-  const n = Number(process.env.FREE_AI_CALLS_PER_DAY ?? 3);
-  return Number.isFinite(n) && n > 0 ? n : 3;
 }
 
 function kv(): KVLike | null {
@@ -37,39 +33,67 @@ function kv(): KVLike | null {
   }
 }
 
-export type ConsumeResult = { ok: boolean; remaining: number; limit: number };
+export type ConsumeResult = { ok: boolean; remaining: number; limit: number; used: number };
 
-/** Consumes one call for `key` when under the daily limit. */
-export async function consume(key: string): Promise<ConsumeResult> {
-  const limit = dailyLimit();
+/** Credits already used today by `key`. */
+export async function peek(key: string): Promise<number> {
+  const store = kv();
+  if (store) return Number((await store.get(`rl:${today()}:${key}`)) ?? 0);
+  const b = memory.get(key);
+  return b && b.day === today() ? b.count : 0;
+}
+
+/** Spends `cost` credits for `key` when that stays within `limit` (KV is eventually consistent — a soft quota). */
+export async function consume(key: string, cost = 1, limit = 3): Promise<ConsumeResult> {
   const d = today();
   const store = kv();
-
   if (store) {
     const k = `rl:${d}:${key}`;
-    const count = Number((await store.get(k)) ?? 0);
-    if (count >= limit) return { ok: false, remaining: 0, limit };
-    // KV is eventually consistent — good enough for a soft daily quota.
-    await store.put(k, String(count + 1), { expirationTtl: 60 * 60 * 48 });
-    return { ok: true, remaining: limit - count - 1, limit };
+    const used = Number((await store.get(k)) ?? 0);
+    if (used + cost > limit) return { ok: false, remaining: Math.max(0, limit - used), limit, used };
+    await store.put(k, String(used + cost), { expirationTtl: TTL });
+    return { ok: true, remaining: limit - used - cost, limit, used: used + cost };
   }
-
   const b = memory.get(key);
-  if (!b || b.day !== d) {
-    memory.set(key, { day: d, count: 1 });
-    return { ok: true, remaining: limit - 1, limit };
+  const used = b && b.day === d ? b.count : 0;
+  if (used + cost > limit) return { ok: false, remaining: Math.max(0, limit - used), limit, used };
+  memory.set(key, { day: d, count: used + cost });
+  return { ok: true, remaining: limit - used - cost, limit, used: used + cost };
+}
+
+/** Gives credits back after a failed AI call. */
+export async function refund(key: string, cost: number): Promise<void> {
+  const d = today();
+  const store = kv();
+  if (store) {
+    const k = `rl:${d}:${key}`;
+    const used = Number((await store.get(k)) ?? 0);
+    await store.put(k, String(Math.max(0, used - cost)), { expirationTtl: TTL });
+    return;
   }
-  if (b.count >= limit) return { ok: false, remaining: 0, limit };
-  b.count += 1;
-  return { ok: true, remaining: limit - b.count, limit };
+  const b = memory.get(key);
+  if (b && b.day === d) b.count = Math.max(0, b.count - cost);
+}
+
+export function clientIp(req: Request): string {
+  const h = req.headers;
+  return h.get("cf-connecting-ip") || h.get("x-forwarded-for")?.split(",")[0]?.trim() || h.get("x-real-ip") || "local";
 }
 
 export function clientKey(req: Request): string {
-  const h = req.headers;
-  const ip =
-    h.get("cf-connecting-ip") ||
-    h.get("x-forwarded-for")?.split(",")[0]?.trim() ||
-    h.get("x-real-ip") ||
-    "local";
-  return `ip:${ip}`;
+  return `ip:${clientIp(req)}`;
+}
+
+/**
+ * Irreversible, day-scoped IP digest for usage statistics (the raw IP is never stored in the database).
+ * The daily salt means the same visitor cannot be linked across days.
+ */
+export async function ipHash(req: Request): Promise<string> {
+  const salt = process.env.IP_HASH_SALT || process.env.NEXT_PUBLIC_SUPABASE_URL || "prompt-monster";
+  const data = new TextEncoder().encode(`${today()}|${clientIp(req)}|${salt}`);
+  const digest = await crypto.subtle.digest("SHA-256", data);
+  return Array.from(new Uint8Array(digest))
+    .slice(0, 16)
+    .map((b) => b.toString(16).padStart(2, "0"))
+    .join("");
 }

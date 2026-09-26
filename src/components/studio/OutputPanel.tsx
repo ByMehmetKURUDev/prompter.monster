@@ -60,6 +60,7 @@ export function OutputPanel({
   onReset,
   onRefine,
   refining,
+  refineCost = 3,
   refined,
   onClearRefined,
   toast,
@@ -75,6 +76,8 @@ export function OutputPanel({
   onReset: () => void;
   onRefine: (expertId: string) => void;
   refining: boolean;
+  /** Credit cost of one refine call. */
+  refineCost?: number;
   refined: Record<string, string>;
   onClearRefined: (expertId: string) => void;
   toast: (m: string) => void;
@@ -415,7 +418,7 @@ export function OutputPanel({
                   className="w-full h-10 rounded-xl bg-ink-600 border border-ink-400 text-[12px] font-medium flex items-center justify-center gap-2 hover:bg-ink-500 disabled:opacity-60"
                 >
                   {refining ? <Spinner className="w-4 h-4" /> : <Sparkles className="w-4 h-4 text-violet" aria-hidden />}
-                  {refining ? "Claude iyileştiriyor..." : "Bu promptu iyileştir ✨"}
+                  {refining ? "Claude iyileştiriyor..." : `Bu promptu iyileştir ✨ · ${refineCost} kredi`}
                 </button>
               </div>
             ) : null}

@@ -41,7 +41,8 @@ export default async function AdminSystem() {
     { label: "KV RATE_LIMIT", ok: true, hint: "Ziyaretçi (anonim) günlük kota" },
     { label: "Analitik (GA4 / Ads / Meta)", ok: Boolean(process.env.NEXT_PUBLIC_GA_ID || process.env.NEXT_PUBLIC_META_PIXEL_ID), hint: `GA ${process.env.NEXT_PUBLIC_GA_ID ? "✓" : "—"} • Ads ${process.env.NEXT_PUBLIC_GADS_ID ? "✓" : "—"} • Meta ${process.env.NEXT_PUBLIC_META_PIXEL_ID ? "✓" : "—"}` },
   ];
-  const model = String(settings.values.ai_model || process.env.ANTHROPIC_MODEL || "claude-sonnet-5");
+  const fallback = process.env.ANTHROPIC_MODEL || "claude-sonnet-5";
+  const models = { free: String(settings.values.ai_model_free || fallback), pro: String(settings.values.ai_model_pro || fallback) };
 
   return (
     <>
@@ -85,7 +86,7 @@ export default async function AdminSystem() {
 
       <div className="mt-4">
         <Panel title="AI bağlantı testi">
-          <AiTest model={model} />
+          <AiTest models={models} />
         </Panel>
       </div>
 

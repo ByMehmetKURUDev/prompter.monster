@@ -12,6 +12,7 @@ export function Step2Stack({
   suggesting,
   aiPicks,
   aiWhy,
+  cost = 1,
 }: {
   s: StudioState;
   toggle: (key: StackKey, v: string) => void;
@@ -19,6 +20,8 @@ export function Step2Stack({
   suggesting: boolean;
   aiPicks: string[] | null;
   aiWhy: string;
+  /** Credit cost of one stack suggestion. */
+  cost?: number;
 }) {
   const suggested = aiPicks ?? STACK_SUGGESTIONS[s.projectType] ?? STACK_SUGGESTIONS["saas-dash"];
   return (
@@ -33,6 +36,7 @@ export function Step2Stack({
         >
           {suggesting ? <Spinner className="w-3.5 h-3.5" /> : <Sparkles className="w-3.5 h-3.5 text-lime" aria-hidden />}
           AI ile stack öner
+          <span className="text-zinc-500 font-normal">· {cost} kredi</span>
         </button>
       </div>
       {aiWhy && <p className="text-[12px] text-zinc-400 -mt-2">{aiWhy}</p>}

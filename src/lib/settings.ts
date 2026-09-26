@@ -14,7 +14,7 @@ export interface SettingDef {
   description: string;
   type: SettingType;
   default: boolean | number | string;
-  group: "Genel" | "AI" | "Planlar" | "Ödeme" | "Duyuru" | "Yasal";
+  group: "Genel" | "AI" | "Krediler" | "Planlar" | "Ödeme" | "Duyuru" | "Yasal";
   /** Exposed to anonymous clients via public_settings() (never put secrets here). */
   isPublic?: boolean;
   /** ISO date the setting was introduced — drives the "YENİ" badge. */
@@ -34,15 +34,23 @@ export const SETTINGS_REGISTRY: SettingDef[] = [
   { key: "announcement_url", label: "Duyuru bağlantısı", description: "Şeride tıklanınca gidilecek adres (boş bırakılabilir).", type: "string", default: "", group: "Duyuru", isPublic: true, since: "2026-09-26" },
 
   // AI
-  { key: "ai_enabled", label: "AI özellikleri", description: "Kill switch: kapalıyken Enhance / stack öner / iyileştir çağrıları 503 döner, kota harcanmaz.", type: "boolean", default: true, group: "AI", isPublic: true, since: "2026-09-26" },
-  { key: "ai_model", label: "Model", description: "Anthropic model kimliği (örn. claude-sonnet-5, claude-haiku-4-5). Boşsa ANTHROPIC_MODEL ortam değişkeni kullanılır. Sistem sayfasındaki 'AI testi' ile doğrula.", type: "string", default: "", group: "AI", isPublic: true, since: "2026-09-26" },
-  { key: "free_ai_per_day", label: "Free — günlük AI çağrısı", description: "Ücretsiz hesaplar için günlük çağrı hakkı.", type: "number", default: 3, group: "AI", isPublic: true, since: "2026-09-26", min: 0, max: 1000 },
-  { key: "pro_ai_per_day", label: "Pro — günlük AI çağrısı", description: "Pro hesaplar için günlük adil kullanım sınırı.", type: "number", default: 200, group: "AI", isPublic: true, since: "2026-09-26", min: 0, max: 10000 },
-  { key: "pro_ai_per_month", label: "Pro — aylık tavan", description: "Pro hesaplar için takvim ayı başına toplam çağrı tavanı (maliyet koruması).", type: "number", default: 1500, group: "AI", isPublic: true, since: "2026-09-26", min: 0, max: 100000 },
+  { key: "ai_enabled", label: "AI özellikleri", description: "Kill switch: kapalıyken Enhance / stack öner / iyileştir çağrıları 503 döner, kredi harcanmaz.", type: "boolean", default: true, group: "AI", isPublic: true, since: "2026-09-26" },
+  { key: "ai_model_free", label: "Model — Free ve ziyaretçi", description: "Ücretsiz plan ve giriş yapmamış ziyaretçiler için Anthropic model kimliği. Model kullanımdan kalkarsa sistem otomatik olarak claude-sonnet-5'e düşer. Sistem sayfasındaki 'AI testi' ile doğrula.", type: "string", default: "claude-haiku-4-5", group: "AI", since: "2026-09-26" },
+  { key: "ai_model_pro", label: "Model — Pro", description: "Pro plan için model kimliği (örn. claude-sonnet-5, claude-opus-5-5). Pahalı model seçersen kredi maliyetlerini de artır.", type: "string", default: "claude-sonnet-5", group: "AI", since: "2026-09-26" },
+  { key: "refine_max_tokens", label: "İyileştir — en fazla çıktı token'ı", description: "Tek bir 'iyileştir' yanıtının üst sınırı (maliyet tavanı). 4.000 token ≈ 3.000 kelime.", type: "number", default: 4000, group: "AI", since: "2026-09-26", min: 500, max: 16000 },
+
+  // Krediler (her AI işlemi kredi harcar; kotalar veritabanında uygulanır)
+  { key: "anon_credits_per_day", label: "Ziyaretçi — günlük kredi", description: "Giriş yapmamış ziyaretçiler için IP başına günlük kredi.", type: "number", default: 3, group: "Krediler", isPublic: true, since: "2026-09-26", min: 0, max: 1000 },
+  { key: "free_credits_per_day", label: "Free — günlük kredi", description: "Ücretsiz hesaplar için günlük kredi (her gün 00:00 UTC'de yenilenir).", type: "number", default: 5, group: "Krediler", isPublic: true, since: "2026-09-26", min: 0, max: 1000 },
+  { key: "pro_credits_per_month", label: "Pro — aylık kredi", description: "Pro hesapların takvim ayı başına toplam kredisi (fiyat sayfasında gösterilir).", type: "number", default: 1000, group: "Krediler", isPublic: true, since: "2026-09-26", min: 0, max: 100000 },
+  { key: "pro_credits_per_day", label: "Pro — günlük üst sınır", description: "Pro hesaplar için günlük adil kullanım sınırı (tek günde ayın tamamının harcanmasını önler).", type: "number", default: 150, group: "Krediler", isPublic: true, since: "2026-09-26", min: 0, max: 10000 },
+  { key: "credit_cost_enhance", label: "Kredi — açıklamayı güçlendir", description: "Enhance işleminin kredi maliyeti.", type: "number", default: 1, group: "Krediler", isPublic: true, since: "2026-09-26", min: 1, max: 50 },
+  { key: "credit_cost_suggest", label: "Kredi — stack öner", description: "Stack önerisinin kredi maliyeti.", type: "number", default: 1, group: "Krediler", isPublic: true, since: "2026-09-26", min: 1, max: 50 },
+  { key: "credit_cost_refine", label: "Kredi — promptu iyileştir", description: "İyileştir işleminin kredi maliyeti (en uzun yanıt; en pahalı işlem).", type: "number", default: 3, group: "Krediler", isPublic: true, since: "2026-09-26", min: 1, max: 50 },
 
   // Ödeme
   { key: "checkout_enabled", label: "Pro satın alma", description: "Kapalıyken /pricing'de 'Pro'ya geç' yerine 'yakında' görünür (mağaza bakımı, canlı moda geçiş anı).", type: "boolean", default: true, group: "Ödeme", isPublic: true, since: "2026-09-26" },
-  { key: "launch_coupon", label: "Lansman kuponu", description: "Fiyat sayfasında gösterilecek kupon kodu (Lemon Squeezy'de tanımlı olmalı). Boş = gösterme.", type: "string", default: "", group: "Ödeme", isPublic: true, since: "2026-09-26" },
+  { key: "launch_coupon", label: "Lansman kuponu", description: "Doluysa fiyat sayfasında gösterilir ve her Pro ödemesine otomatik uygulanır (kod Lemon Squeezy → Discounts'ta tanımlı olmalı; geçersizse ödeme kodsuz devam eder). ?code= bağlantısıyla gelen kod önceliklidir. Boş = kapalı.", type: "string", default: "", group: "Ödeme", isPublic: true, since: "2026-09-26" },
   { key: "launch_coupon_text", label: "Kupon açıklaması", description: "Örn. 'İlk 100 kullanıcıya yıllık planda %30'.", type: "string", default: "", group: "Ödeme", isPublic: true, since: "2026-09-26" },
 
   // Yasal (Kullanım Koşulları, Gizlilik/KVKK, Çerez ve İade sayfalarına otomatik yansır)
@@ -98,10 +106,13 @@ export interface PublicSettings {
   announcement: string;
   announcement_url: string;
   ai_enabled: boolean;
-  ai_model: string;
-  free_ai_per_day: number;
-  pro_ai_per_day: number;
-  pro_ai_per_month: number;
+  anon_credits_per_day: number;
+  free_credits_per_day: number;
+  pro_credits_per_month: number;
+  pro_credits_per_day: number;
+  credit_cost_enhance: number;
+  credit_cost_suggest: number;
+  credit_cost_refine: number;
   checkout_enabled: boolean;
   launch_coupon: string;
   launch_coupon_text: string;
@@ -109,6 +120,16 @@ export interface PublicSettings {
   legal_email: string;
   legal_address: string;
   legal_registry: string;
+}
+
+/** Default values of every public setting (used when the database is unreachable and for static pages). */
+export const DEFAULT_PUBLIC = (): PublicSettings => publicSubset(mergeSettings(null));
+
+export type AiEndpoint = "enhance" | "suggest" | "refine";
+
+/** Credit cost per AI action from a settings map. */
+export function creditCosts(s: Pick<PublicSettings, "credit_cost_enhance" | "credit_cost_suggest" | "credit_cost_refine">): Record<AiEndpoint, number> {
+  return { enhance: s.credit_cost_enhance, suggest: s.credit_cost_suggest, refine: s.credit_cost_refine };
 }
 
 export function publicSubset(all: SettingsMap): PublicSettings {

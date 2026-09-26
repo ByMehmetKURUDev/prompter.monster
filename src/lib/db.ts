@@ -36,10 +36,21 @@ export interface ProjectSummary {
   latest_version: number | null;
 }
 
+/** AI credits: `used`/`limit` are today's (for Pro the daily fair-use cap); month fields are Pro-only. */
+export interface CreditUsage {
+  used: number;
+  limit: number;
+  monthUsed?: number | null;
+  monthLimit?: number | null;
+}
+
 export interface MeResponse {
   user: { id: string; email: string | null } | null;
   plan: "free" | "pro" | null;
-  usage: { used: number; limit: number } | null;
+  /** Also filled for visitors (per-IP credits). */
+  usage: CreditUsage | null;
+  /** Credit cost of each AI action (admin-configurable). */
+  costs?: { enhance: number; suggest: number; refine: number };
   /** Payment provider wired on the server, or null while Pro is "coming soon". */
   billing?: "lemonsqueezy" | null;
 }

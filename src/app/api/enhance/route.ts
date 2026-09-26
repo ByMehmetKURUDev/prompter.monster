@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
-import { complete, errorResponse, guard } from "@/lib/ai";
+import { complete, creditHeaders, creditInfo, errorResponse, guard, requestLang } from "@/lib/ai";
 
 export const runtime = "nodejs";
 
@@ -16,9 +16,10 @@ const SYSTEM = `You are a senior product strategist. You rewrite rough product d
 
 export async function POST(req: Request) {
   try {
-    const { remaining } = await guard(req, "enhance");
     const b = Body.parse(await req.json());
+    const ctx = await guard(req, "enhance", req.headers.get("x-pm-source") || "web");
     const text = await complete(
+      ctx,
       SYSTEM,
       [
         `Language of the output: ${b.lang === "TR" ? "Turkish" : "English"}.`,
@@ -27,10 +28,9 @@ export async function POST(req: Request) {
         `Project type: ${b.projectType || "(none)"}`,
         `Current description:\n${b.description || "(empty — write one from the pitch)"}`,
       ].join("\n"),
-      600,
     );
-    return NextResponse.json({ text, remaining });
+    return NextResponse.json({ text, ...creditInfo(ctx) }, { headers: creditHeaders(ctx) });
   } catch (e) {
-    return errorResponse(e);
+    return errorResponse(e, requestLang(req));
   }
 }

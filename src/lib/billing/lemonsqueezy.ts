@@ -56,15 +56,29 @@ async function ls<T>(path: string, init?: RequestInit): Promise<T> {
   return (await res.json()) as T;
 }
 
-/** Hosted checkout URL for the Pro plan; the user id travels in custom data and comes back in webhooks. */
-export async function createCheckout(args: { plan: Plan; email: string; userId: string; redirectUrl: string }): Promise<string> {
+/**
+ * Hosted checkout URL for the Pro plan; the user id (and channel info) travel in custom data and come back in webhooks.
+ * `discountCode` pre-fills a Lemon Squeezy discount code (the code must exist in the store).
+ */
+export async function createCheckout(args: {
+  plan: Plan;
+  email: string;
+  userId: string;
+  redirectUrl: string;
+  discountCode?: string | null;
+  custom?: Record<string, string>;
+}): Promise<string> {
   const variant = await variantFor(args.plan);
   if (!variant) throw new Error("No published subscription variant found in the store");
   const body = {
     data: {
       type: "checkouts",
       attributes: {
-        checkout_data: { email: args.email, custom: { user_id: args.userId } },
+        checkout_data: {
+          email: args.email,
+          ...(args.discountCode ? { discount_code: args.discountCode } : {}),
+          custom: { ...(args.custom ?? {}), user_id: args.userId },
+        },
         product_options: { redirect_url: args.redirectUrl, receipt_button_text: "Studio'ya dön", receipt_link_url: args.redirectUrl },
         checkout_options: { embed: false, dark: true },
         expires_at: new Date(Date.now() + 60 * 60 * 1000).toISOString(),

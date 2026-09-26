@@ -5,12 +5,13 @@ import { resolveModel } from "@/lib/settings-server";
 
 export const runtime = "nodejs";
 
-/** POST /api/admin/ai-test — one tiny request to the configured model (does not touch user quotas). */
-export async function POST() {
+/** POST /api/admin/ai-test?plan=free|pro — one tiny request to that plan's model (does not touch user credits). */
+export async function POST(req: Request) {
   const admin = await requireAdminApi();
   if (isResponse(admin)) return admin;
   if (!hasApiKey()) return NextResponse.json({ ok: false, message: "ANTHROPIC_API_KEY tanımlı değil (Cloudflare → Variables and Secrets)." }, { status: 503 });
-  const model = await resolveModel();
+  const plan = new URL(req.url).searchParams.get("plan") === "free" ? "free" : "pro";
+  const model = await resolveModel(plan);
   const t0 = Date.now();
   try {
     const res = await anthropic().messages.create({

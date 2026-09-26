@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { isResponse, requireAdminApi } from "@/lib/admin";
 import { SETTINGS_BY_KEY, coerce } from "@/lib/settings";
-import { readAllSettings } from "@/lib/settings-server";
+import { invalidateServerSettings, readAllSettings } from "@/lib/settings-server";
 
 export const runtime = "nodejs";
 
@@ -37,5 +37,6 @@ export async function PUT(req: Request) {
     if (error) return NextResponse.json({ error: "db", message: error.message }, { status: 500 });
     saved.push(key);
   }
+  invalidateServerSettings();
   return NextResponse.json({ ok: true, saved, removed });
 }

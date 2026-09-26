@@ -4,8 +4,8 @@ import { EXPERTS, FORMATS, MEGA_CHAIN_STEPS } from "@/lib/data";
 import { pagesByCategory } from "@/lib/seo";
 import { LegalLinks } from "@/components/site/LegalLinks";
 
-const FREE = ["Günde 3 AI çağrısı", "3 uzman persona", "Markdown + Claude XML", "Tarayıcıda kayıt"];
-const PRO = ["Sınırsız AI iyileştirme", "12 uzman + Mega Chain", "5 çıktı formatı + .cursorrules / CLAUDE.md", "Proje kütüphanesi ve versiyon geçmişi", "Paylaşılabilir prompt sayfası", "Öncelikli destek"];
+const FREE = ["Günde 5 AI kredisi", "3 uzman persona", "Markdown + Claude XML", "Proje kütüphanesi"];
+const PRO = ["Ayda 1.000 AI kredisi (Claude Sonnet 5)", "12 uzman + Mega Chain", "5 çıktı formatı + .cursorrules / CLAUDE.md", "Proje kütüphanesi ve versiyon geçmişi", "Paylaşılabilir prompt sayfası", "Öncelikli destek"];
 
 export default function Landing() {
   return (
@@ -201,7 +201,7 @@ export default function Landing() {
               ))}
             </ul>
             <Link href="/pricing" className="mt-8 w-full h-10 rounded-lg bg-white text-black text-[13px] font-bold flex items-center justify-center">
-              Pro açılınca haber al →
+              Pro&apos;ya geç →
             </Link>
           </div>
         </div>

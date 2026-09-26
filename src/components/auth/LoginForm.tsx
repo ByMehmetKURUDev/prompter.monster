@@ -2,6 +2,7 @@
 
 import { Mail, Sparkles } from "lucide-react";
 import { track } from "@/lib/track";
+import { clientSignupSource } from "@/lib/attribution";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { createClient, supabaseConfigured } from "@/lib/supabase/client";
@@ -66,7 +67,12 @@ export function LoginForm({ next, initialError, initialMessage }: { next: string
         return;
       }
       if (mode === "signup") {
-        const { error, data } = await supabase.auth.signUp({ email, password, options: { emailRedirectTo: redirectTo() } });
+        const source = clientSignupSource();
+        const { error, data } = await supabase.auth.signUp({
+          email,
+          password,
+          options: { emailRedirectTo: redirectTo(), data: source ? { signup_source: source } : undefined },
+        });
         if (error) throw error;
         track("sign_up", { method: "password" });
         if (data.session) {
@@ -84,7 +90,8 @@ export function LoginForm({ next, initialError, initialMessage }: { next: string
         setMsg({ kind: "ok", text: "Şifre sıfırlama bağlantısı gönderildi. E-postandaki bağlantıya tıklayıp yeni şifreni belirle." });
         return;
       }
-      const { error } = await supabase.auth.signInWithOtp({ email, options: { emailRedirectTo: redirectTo() } });
+      const source = clientSignupSource();
+      const { error } = await supabase.auth.signInWithOtp({ email, options: { emailRedirectTo: redirectTo(), data: source ? { signup_source: source } : undefined } });
       if (error) throw error;
       setMsg({ kind: "ok", text: "Sihirli bağlantı gönderildi. E-postanızı kontrol edin (spam klasörü dahil)." });
     } catch (err) {

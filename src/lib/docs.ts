@@ -171,8 +171,8 @@ export function llmsTxt(): string {
   }
   lines.push("");
   lines.push("## Plans");
-  lines.push("- Free: 3 experts, 2 formats (ChatGPT Markdown, Claude XML), 3 AI calls/day, project library, share pages. No card.");
-  lines.push("- Monster Pro ($29/mo or $290/yr): 12 experts, Mega Chain, 5 formats, .cursorrules / CLAUDE.md, Export to Builders, 200 AI calls/day (fair use).");
+  lines.push("- Free: 3 experts, 2 formats (ChatGPT Markdown, Claude XML), 5 AI credits/day (visitors without an account: 3), project library, share pages. No card.");
+  lines.push("- Monster Pro ($29/mo or $290/yr): 12 experts, Mega Chain, 5 formats, .cursorrules / CLAUDE.md, Export to Builders, 1,000 AI credits/month (enhance 1, stack suggestion 1, refine 3; max 150/day).");
   lines.push("");
   lines.push("## Roadmap for integrations");
   lines.push("- MCP server (generate_prompt / list_types tools) for Claude Code, Cursor and other MCP clients — planned.");

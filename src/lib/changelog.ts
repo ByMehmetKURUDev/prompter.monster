@@ -13,6 +13,21 @@ export interface ChangelogEntry {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: "4.2",
+    date: "2026-09-26",
+    title: "Kredi sistemi, gerçek maliyet takibi, kanal/indirim bağlantıları, güvenlik düzeltmesi",
+    items: [
+      "GÜVENLİK: kullanıcılar kendi profilinde plan/rol alanını değiştiremez (0006_security.sql; RLS + tetikleyici).",
+      "Kredi sistemi: enhance 1, stack 1, iyileştir 3 kredi. Ziyaretçi günde 3, Free günde 5, Pro ayda 1.000 (günde ≤150) — hepsi Ayarlar → Krediler'den.",
+      "Plana göre model: Free/ziyaretçi Claude Haiku 4.5, Pro Claude Sonnet 5 (Ayarlar → AI). Model kalkarsa otomatik Sonnet 5'e düşer.",
+      "Her AI çağrısının gerçek token sayısı ve modeli kaydedilir; Kullanım sayfası gerçek maliyeti gösterir. Başarısız çağrıda kredi iade edilir.",
+      "?code=KOD bağlantıları: kod 30 gün saklanır ve Lemon Squeezy ödemesine otomatik uygulanır; lansman kuponu ayarı da otomatik uygulanır.",
+      "Kanal takibi: utm_source / ref / dış site ilk ziyarette kaydedilir, kayıtta profile yazılır. Yeni admin sayfası: Kanallar (+ kampanya bağlantısı oluşturucu).",
+      "Fiyat sayfası ayarlardan beslenir (krediler, model, kupon), İngilizce metinleri hazır.",
+    ],
+    settings: ["free_credits_per_day", "pro_credits_per_month", "credit_cost_refine", "ai_model_free", "ai_model_pro", "launch_coupon"],
+  },
+  {
     version: "4.1",
     date: "2026-09-26",
     title: "Yasal sayfalar, çerez izni, İngilizce altyapısı",

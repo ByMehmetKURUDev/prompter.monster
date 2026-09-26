@@ -1,4 +1,6 @@
 import { NextResponse } from "next/server";
+import { cookies } from "next/headers";
+import { ATTR_CODE_COOKIE, ATTR_SOURCE_COOKIE, channelOf, parseSourceCookie, sanitizeCode } from "@/lib/attribution";
 import { readPublicSettings } from "@/lib/settings-server";
 import { z } from "zod";
 import { billingConfigured, createCheckout } from "@/lib/billing/lemonsqueezy";
@@ -6,7 +8,7 @@ import { createClient, supabaseConfigured } from "@/lib/supabase/server";
 
 export const runtime = "nodejs";
 
-const Body = z.object({ plan: z.enum(["monthly", "yearly"]).default("monthly") });
+const Body = z.object({ plan: z.enum(["monthly", "yearly"]).default("monthly"), code: z.string().max(40).optional() });
 const SITE = process.env.NEXT_PUBLIC_SITE_URL || "https://prompter.monster";
 
 /** Start a Pro checkout for the signed-in user → { url } (hosted Lemon Squeezy page). */
@@ -28,9 +30,25 @@ export async function POST(req: Request) {
   const { data: profile } = await supabase.from("profiles").select("plan").eq("id", user.id).maybeSingle();
   if (profile?.plan === "pro") return NextResponse.json({ error: "Zaten Pro plandasın.", code: "already_pro" }, { status: 409 });
 
+  // Discount code: explicit request body > ?code= link cookie > admin launch coupon.
+  const jar = await cookies();
+  const code = sanitizeCode(parsed.data.code) || sanitizeCode(jar.get(ATTR_CODE_COOKIE)?.value) || sanitizeCode(flags.launch_coupon);
+  const src = parseSourceCookie(jar.get(ATTR_SOURCE_COOKIE)?.value);
+  const custom: Record<string, string> = { channel: channelOf(src) };
+  if (code) custom.code = code;
+  const base = { plan: parsed.data.plan, email: user.email, userId: user.id, redirectUrl: `${SITE}/studio?upgraded=1&plan=${parsed.data.plan}`, custom };
+
   try {
-    const url = await createCheckout({ plan: parsed.data.plan, email: user.email, userId: user.id, redirectUrl: `${SITE}/studio?upgraded=1&plan=${parsed.data.plan}` });
-    return NextResponse.json({ url });
+    let url: string;
+    try {
+      url = await createCheckout({ ...base, discountCode: code });
+    } catch (e) {
+      // An unknown/expired code must never block the purchase — retry without it.
+      if (!code) throw e;
+      console.warn("checkout: retrying without discount code", code, e instanceof Error ? e.message : e);
+      url = await createCheckout(base);
+    }
+    return NextResponse.json({ url, code: code ?? null });
   } catch (e) {
     console.error("checkout", e);
     return NextResponse.json({ error: "Ödeme sayfası oluşturulamadı, biraz sonra tekrar deneyin.", code: "checkout_failed" }, { status: 502 });

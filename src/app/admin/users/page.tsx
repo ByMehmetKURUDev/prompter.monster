@@ -1,6 +1,7 @@
 import { getAdmin } from "@/lib/admin";
 import { Badge, Panel, PageTitle, Table, fmtDate, fmtNum } from "@/components/admin/ui";
 import { UserActions } from "@/components/admin/UserActions";
+import { channelOf, type SignupSource } from "@/lib/attribution";
 
 export const dynamic = "force-dynamic";
 
@@ -16,8 +17,10 @@ export type AdminUserRow = {
   projects: number;
   generations: number;
   ai_30d: number;
+  credits_30d?: number;
   last_active: string | null;
   pro_interest_at: string | null;
+  signup_source?: SignupSource | null;
 };
 
 type Props = { searchParams: Promise<{ q?: string; page?: string }> };
@@ -47,7 +50,7 @@ export default async function AdminUsers({ searchParams }: Props) {
         {rows.length === 0 ? (
           <p className="text-[13px] text-zinc-500">Kayıt bulunamadı.</p>
         ) : (
-          <Table head={["Kullanıcı", "Plan", "Rol", "Proje", "Üretim", "AI 30g", "Son aktivite", "Kayıt", "İşlem"]}>
+          <Table head={["Kullanıcı", "Plan", "Rol", "Proje", "Üretim", "Kredi 30g", "Kaynak", "Son aktivite", "Kayıt", "İşlem"]}>
             {rows.map((u) => (
               <tr key={u.id} className={u.banned_at ? "opacity-60" : undefined}>
                 <td className="px-4 py-2 max-w-[260px]">
@@ -71,7 +74,17 @@ export default async function AdminUsers({ searchParams }: Props) {
                 <td className="px-4 py-2 whitespace-nowrap">{u.role === "admin" ? <Badge tone="violet">admin</Badge> : <span className="text-zinc-500">user</span>}</td>
                 <td className="px-4 py-2 tabular-nums">{fmtNum(u.projects)}</td>
                 <td className="px-4 py-2 tabular-nums">{fmtNum(u.generations)}</td>
-                <td className="px-4 py-2 tabular-nums">{fmtNum(u.ai_30d)}</td>
+                <td className="px-4 py-2 tabular-nums" title={`${u.ai_30d} çağrı`}>
+                  {fmtNum(u.credits_30d ?? u.ai_30d)}
+                </td>
+                <td className="px-4 py-2 whitespace-nowrap text-zinc-400" title={u.signup_source ? JSON.stringify(u.signup_source) : "doğrudan / bilinmiyor"}>
+                  {channelOf(u.signup_source)}
+                  {u.signup_source?.code && (
+                    <span className="ml-1">
+                      <Badge tone="lime">{u.signup_source.code}</Badge>
+                    </span>
+                  )}
+                </td>
                 <td className="px-4 py-2 whitespace-nowrap text-zinc-400">{fmtDate(u.last_active, true)}</td>
                 <td className="px-4 py-2 whitespace-nowrap text-zinc-400">{fmtDate(u.created_at)}</td>
                 <td className="px-4 py-2">

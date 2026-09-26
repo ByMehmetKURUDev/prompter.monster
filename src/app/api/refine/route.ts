@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { errorResponse, guard, streamText } from "@/lib/ai";
+import { creditHeaders, errorResponse, guard, requestLang, streamText } from "@/lib/ai";
 
 export const runtime = "nodejs";
 
@@ -14,17 +14,17 @@ const SYSTEM = `You are a world-class prompt engineer. You receive a structured 
 
 export async function POST(req: Request) {
   try {
-    await guard(req, "refine");
     const b = Body.parse(await req.json());
+    const ctx = await guard(req, "refine", req.headers.get("x-pm-source") || "web");
     const stream = streamText(
+      ctx,
       SYSTEM,
       `Format: ${b.format}. Output language: ${b.lang === "TR" ? "Turkish (keep English technical terms)" : "English"}. Expert persona: ${b.expertRole}.\n\n<prompt_to_improve>\n${b.prompt}\n</prompt_to_improve>`,
-      6000,
     );
     return new Response(stream, {
-      headers: { "Content-Type": "text/plain; charset=utf-8", "Cache-Control": "no-store" },
+      headers: { "Content-Type": "text/plain; charset=utf-8", "Cache-Control": "no-store", ...creditHeaders(ctx) },
     });
   } catch (e) {
-    return errorResponse(e);
+    return errorResponse(e, requestLang(req));
   }
 }

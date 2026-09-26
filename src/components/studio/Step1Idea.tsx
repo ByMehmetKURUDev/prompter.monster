@@ -11,12 +11,15 @@ export function Step1Idea({
   toggle,
   onEnhance,
   enhancing,
+  cost = 1,
 }: {
   s: StudioState;
   patch: (p: Partial<StudioState>) => void;
   toggle: (key: "monetization", v: string) => void;
   onEnhance: () => void;
   enhancing: boolean;
+  /** Credit cost of one Enhance call. */
+  cost?: number;
 }) {
   return (
     <div className="space-y-6 animate-fade-in">
@@ -51,6 +54,7 @@ export function Step1Idea({
                 className="absolute right-2 top-2 h-7 px-3 rounded-lg bg-ink-600 border border-ink-400 text-[11px] font-medium flex items-center gap-1 disabled:opacity-60"
               >
                 {enhancing ? <Spinner className="w-3 h-3" /> : <Sparkles className="w-3 h-3 text-lime" aria-hidden />} Enhance
+                <span className="text-zinc-500 font-normal" title={`${cost} AI kredisi`}>· {cost}</span>
               </button>
             </div>
           </label>

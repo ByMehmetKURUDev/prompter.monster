@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
-import { complete, errorResponse, guard } from "@/lib/ai";
+import { complete, creditHeaders, creditInfo, errorResponse, guard, requestLang } from "@/lib/ai";
 import { STACK } from "@/lib/data";
 
 export const runtime = "nodejs";
@@ -17,14 +17,15 @@ const SYSTEM = `You are a pragmatic staff engineer choosing a tech stack for a s
 
 export async function POST(req: Request) {
   try {
-    const { remaining } = await guard(req, "suggest");
     const b = Body.parse(await req.json());
+    const ctx = await guard(req, "suggest", req.headers.get("x-pm-source") || "web");
 
     const allowed = Object.entries(STACK)
       .map(([k, v]) => `${k}: ${v.join(" | ")}`)
       .join("\n");
 
     const raw = await complete(
+      ctx,
       SYSTEM,
       [
         `Project: ${b.name} — ${b.pitch}`,
@@ -37,11 +38,15 @@ export async function POST(req: Request) {
         ``,
         `Schema: {"frontend":[],"backend":[],"database":[],"auth":[],"ai":[],"realtime":[],"search":[],"why":"one sentence"}`,
       ].join("\n"),
-      700,
     );
 
     const json = raw.replace(/^```(?:json)?/m, "").replace(/```$/m, "").trim();
-    const parsed = JSON.parse(json) as Record<string, unknown>;
+    let parsed: Record<string, unknown> = {};
+    try {
+      parsed = JSON.parse(json.slice(json.indexOf("{"), json.lastIndexOf("}") + 1)) as Record<string, unknown>;
+    } catch {
+      parsed = {}; // model answered with prose — return empty picks rather than failing after spending credits
+    }
 
     // Keep only values that exist in the allowed lists.
     const picks: Record<string, string[]> = {};
@@ -49,8 +54,8 @@ export async function POST(req: Request) {
       const arr = Array.isArray(parsed[key]) ? (parsed[key] as unknown[]) : [];
       picks[key] = arr.filter((x): x is string => typeof x === "string" && (STACK[key] as readonly string[]).includes(x));
     }
-    return NextResponse.json({ picks, why: typeof parsed.why === "string" ? parsed.why : "", remaining });
+    return NextResponse.json({ picks, why: typeof parsed.why === "string" ? parsed.why : "", ...creditInfo(ctx) }, { headers: creditHeaders(ctx) });
   } catch (e) {
-    return errorResponse(e);
+    return errorResponse(e, requestLang(req));
   }
 }

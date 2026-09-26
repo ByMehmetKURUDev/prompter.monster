@@ -4,7 +4,7 @@ import { ChevronRight, History, Share2 } from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { EXPERTS } from "@/lib/data";
 import type { MeResponse } from "@/lib/db";
-import { ApiError, enhanceDescription, refinePrompt, suggestStack } from "@/lib/client";
+import { ApiError, type CreditInfo, enhanceDescription, refinePrompt, suggestStack } from "@/lib/client";
 import { type PlanId, UPGRADE_HINT, limitsFor } from "@/lib/plans";
 import { buildExpertPrompt, estimateTokens, projectTypeName, qualityScore } from "@/lib/prompt";
 import { track } from "@/lib/track";
@@ -234,7 +234,7 @@ export function Studio({ dailyLimit }: { dailyLimit: number }) {
           setMe(j);
           if (j.plan === "pro") {
             window.clearInterval(timer);
-            say("Monster Pro aktif — 12 uzman ve günde 200 AI çağrısı senin 👹", 6000);
+            say(`Monster Pro aktif — 12 uzman ve ayda ${j.usage?.monthLimit ?? 1000} AI kredisi senin 👹`, 6000);
           }
         } catch {
           /* retry */
@@ -321,16 +321,23 @@ export function Studio({ dailyLimit }: { dailyLimit: number }) {
     (e: unknown) => {
       if (e instanceof ApiError) {
         if (e.code === "rate_limited") setUsedToday(dailyLimit);
-        say(e.message, 4000);
+        say(e.message, e.code === "rate_limited" ? 6000 : 4000);
       } else say("Beklenmeyen bir hata oldu.", 3000);
       refreshMe();
     },
     [dailyLimit, say, refreshMe],
   );
 
-  const trackRemaining = useCallback(
-    (remaining: number) => {
-      setUsedToday(Math.max(0, dailyLimit - remaining));
+  /** Updates the credit meter right away from the AI response, then re-syncs with the server. */
+  const applyCredits = useCallback(
+    (c: CreditInfo | undefined, remaining?: number) => {
+      if (c) {
+        const used = Math.max(0, c.limit - c.remaining);
+        setUsedToday(used);
+        setMe((prev) => (prev ? { ...prev, usage: { used, limit: c.limit, monthUsed: c.monthUsed ?? null, monthLimit: c.monthLimit ?? null } } : prev));
+      } else if (typeof remaining === "number") {
+        setUsedToday(Math.max(0, dailyLimit - remaining));
+      }
       refreshMe();
     },
     [dailyLimit, refreshMe],
@@ -343,7 +350,7 @@ export function Studio({ dailyLimit }: { dailyLimit: number }) {
     try {
       const r = await enhanceDescription(s);
       patch({ description: r.text });
-      trackRemaining(r.remaining);
+      applyCredits(r.credits, r.remaining);
       say("Açıklama Claude ile güçlendirildi ✨");
     } catch (e) {
       onApiError(e);
@@ -364,7 +371,7 @@ export function Studio({ dailyLimit }: { dailyLimit: number }) {
         const key = k as "frontend" | "backend" | "database" | "auth" | "ai" | "realtime" | "search";
         if (r.picks[k].length) setArray(key, r.picks[k]);
       });
-      trackRemaining(r.remaining);
+      applyCredits(r.credits, r.remaining);
       say("Stack Claude tarafından önerildi — istediğini değiştirebilirsin.");
     } catch (e) {
       onApiError(e);
@@ -386,8 +393,8 @@ export function Studio({ dailyLimit }: { dailyLimit: number }) {
         { prompt: buildExpertPrompt(s, expertId), expertRole: e.role, lang: s.lang, format: s.format },
         (acc) => setRefined((prev) => ({ ...prev, [expertId]: acc })),
         ac.signal,
+        (c) => applyCredits(c),
       );
-      setUsedToday((n) => Math.min(dailyLimit, n + 1));
       refreshMe();
       say("Prompt iyileştirildi ✨");
     } catch (err) {
@@ -460,6 +467,7 @@ export function Studio({ dailyLimit }: { dailyLimit: number }) {
   const toggleStack = (key: "frontend" | "backend" | "database" | "auth" | "ai" | "realtime" | "search", v: string) => toggle(key, v);
 
   const usage = me?.usage ?? { used: usedToday, limit: dailyLimit };
+  const costs = me?.costs ?? { enhance: 1, suggest: 1, refine: 3 };
 
   return (
     <div className="min-h-screen bg-ink-950 text-zinc-100">
@@ -474,6 +482,8 @@ export function Studio({ dailyLimit }: { dailyLimit: number }) {
           onTemplate={onTemplate}
           usedToday={usage.used}
           dailyLimit={usage.limit}
+          monthUsed={usage.monthUsed ?? null}
+          monthLimit={usage.monthLimit ?? null}
           signedIn={Boolean(me?.user)}
           plan={me?.plan ?? null}
         />
@@ -515,8 +525,8 @@ export function Studio({ dailyLimit }: { dailyLimit: number }) {
           )}
 
           <div className="px-4 lg:px-8 py-6 max-w-[900px]">
-            {s.step === 1 && <Step1Idea s={s} patch={patch} toggle={toggle} onEnhance={enhance} enhancing={enhancing} />}
-            {s.step === 2 && <Step2Stack s={s} toggle={toggleStack} onSuggest={suggest} suggesting={suggesting} aiPicks={aiPicks} aiWhy={aiWhy} />}
+            {s.step === 1 && <Step1Idea s={s} patch={patch} toggle={toggle} onEnhance={enhance} enhancing={enhancing} cost={costs.enhance} />}
+            {s.step === 2 && <Step2Stack s={s} toggle={toggleStack} onSuggest={suggest} suggesting={suggesting} aiPicks={aiPicks} aiWhy={aiWhy} cost={costs.suggest} />}
             {s.step === 3 && <Step3Features s={s} toggle={toggle} />}
             {s.step === 4 && (
               <Step4Experts s={s} onToggleExpert={toggleExpert} onFormat={setFormat} patch={patch} onGenerate={generate} generating={generating} tokens={tokens} plan={plan} limits={limits} />
@@ -558,6 +568,7 @@ export function Studio({ dailyLimit }: { dailyLimit: number }) {
                 }}
                 onRefine={refine}
                 refining={refining}
+                refineCost={costs.refine}
                 refined={refined}
                 onClearRefined={clearRefined}
                 toast={say}
@@ -584,6 +595,7 @@ export function Studio({ dailyLimit }: { dailyLimit: number }) {
             }}
             onRefine={refine}
             refining={refining}
+            refineCost={costs.refine}
             refined={refined}
             onClearRefined={clearRefined}
             toast={say}
