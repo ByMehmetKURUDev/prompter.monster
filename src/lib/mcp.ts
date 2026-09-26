@@ -5,7 +5,7 @@
 import { z } from "zod";
 import { AiRouteError, complete, guard } from "./ai";
 import { REFINE_SYSTEM, refineUserMessage } from "./ai-prompts";
-import { ApiInputError, EXPERT_IDS, GenerateInput, SITE, exportFiles, generate, listTypes, typePreset, type GenerateInputT } from "./api-core";
+import { ApiInputError, GenerateInput, SITE, expertList, exportFiles, generate, listTypes, typePreset, type GenerateInputT } from "./api-core";
 import type { ApiIdentity } from "./api-keys";
 import { COMPLIANCE, EXPERTS, FORMATS, MONETIZATION, PAYMENTS, PROJECT_CATEGORIES } from "./data";
 import { getShared } from "./share";
@@ -62,7 +62,8 @@ interface ToolDef {
   name: string;
   title: string;
   description: string;
-  inputSchema: Record<string, unknown>;
+  /** Built per request: enums (experts, categories) follow the admin catalog. */
+  inputSchema: () => Record<string, unknown>;
   annotations: { title: string; readOnlyHint?: boolean; destructiveHint?: boolean; idempotentHint?: boolean; openWorldHint?: boolean };
   run: (args: Record<string, unknown>, ctx: ToolCtx) => Promise<ToolResult>;
 }
@@ -139,26 +140,26 @@ function parseGenerate(args: Record<string, unknown>, output: "mega" | "experts"
   return parsed.data;
 }
 
-const CATEGORY_NAMES = PROJECT_CATEGORIES.map((c) => c.cat.replace(/^[^\w]+/u, "").trim());
+const categoryNames = () => PROJECT_CATEGORIES.map((c) => c.cat.replace(/^[^\w]+/u, "").trim());
 
 const TOOLS: ToolDef[] = [
   {
     name: "list_project_types",
     title: "List project types",
     description: "Lists Prompt.Monster's project types (id, name, category, one-line description). Pick the closest id and pass it as projectType to generate_build_prompt.",
-    inputSchema: {
+    inputSchema: () => ({
       type: "object",
       properties: {
         lang: { type: "string", enum: ["EN", "TR"], default: "EN", description: "Language of names and descriptions." },
-        category: { type: "string", enum: CATEGORY_NAMES, description: "Optional category filter." },
+        category: { type: "string", enum: categoryNames(), description: "Optional category filter." },
       },
-    },
+    }),
     annotations: { title: "List project types", readOnlyHint: true, idempotentHint: true, openWorldHint: false },
     async run(args) {
       const lang = String(args.lang ?? "EN").toUpperCase() === "TR" ? "TR" : "EN";
       const q = typeof args.category === "string" ? args.category.toLowerCase() : "";
       const rows = listTypes(lang).filter((t) => !q || t.category.toLowerCase().includes(q));
-      if (!rows.length) return fail(`No project types match "${args.category}". Categories: ${CATEGORY_NAMES.join(", ")}`);
+      if (!rows.length) return fail(`No project types match "${args.category}". Categories: ${categoryNames().join(", ")}`);
       return ok(rows.map((t) => `- ${t.id}: ${t.name} (${t.category})${t.description ? ` — ${t.description}` : ""}`).join("\n"));
     },
   },
@@ -166,7 +167,7 @@ const TOOLS: ToolDef[] = [
     name: "get_type_preset",
     title: "Get a project type's preset",
     description: "Returns the preset the Studio applies for a project type: recommended experts, tech stack, v1 features, payments, monetization and compliance.",
-    inputSchema: { type: "object", properties: { id: { type: "string", description: "Project type id from list_project_types." } }, required: ["id"] },
+    inputSchema: () => ({ type: "object", properties: { id: { type: "string", description: "Project type id from list_project_types." } }, required: ["id"] }),
     annotations: { title: "Get a project type's preset", readOnlyHint: true, idempotentHint: true, openWorldHint: false },
     async run(args) {
       const id = String(args.id ?? "");
@@ -179,10 +180,10 @@ const TOOLS: ToolDef[] = [
     name: "list_experts",
     title: "List expert personas",
     description: "Lists the 18 expert personas (id, role, speciality) that write sections of the build prompt. Free plan: 3 experts per prompt, Pro: all 18.",
-    inputSchema: { type: "object", properties: {} },
+    inputSchema: () => ({ type: "object", properties: {} }),
     annotations: { title: "List expert personas", readOnlyHint: true, idempotentHint: true, openWorldHint: false },
     async run() {
-      return ok(EXPERT_IDS.map((e) => `- ${e.id}: ${e.role} — ${e.spec}`).join("\n"));
+      return ok(expertList().map((e) => `- ${e.id}: ${e.role} — ${e.spec}`).join("\n"));
     },
   },
   {
@@ -190,7 +191,7 @@ const TOOLS: ToolDef[] = [
     title: "Generate a master build prompt",
     description:
       "Builds a production-grade master build prompt from a product idea (PRD, architecture, data model, UX, security, payments, launch — written by expert personas). Deterministic and free: no AI credits. Paste the result into Claude Code, Cursor, v0, Lovable or ChatGPT, or start building from it.",
-    inputSchema: generateSchema(true),
+    inputSchema: () => generateSchema(true),
     annotations: { title: "Generate a master build prompt", readOnlyHint: true, idempotentHint: true, openWorldHint: false },
     async run(args, ctx) {
       const input = parseGenerate(args, args.output === "experts" ? "experts" : "mega");
@@ -210,7 +211,7 @@ const TOOLS: ToolDef[] = [
     title: "Export project files (Pro)",
     description:
       "Monster Pro: returns ready-to-save project files for coding agents — CLAUDE.md, AGENTS.md, .cursorrules, .github/copilot-instructions.md, .claude/agents/*.md (one subagent per expert), .taskmaster/docs/prd.txt and prompt-monster.json. Write each file to the repository root at the given path.",
-    inputSchema: generateSchema(false),
+    inputSchema: () => generateSchema(false),
     annotations: { title: "Export project files (Pro)", readOnlyHint: true, idempotentHint: true, openWorldHint: false },
     async run(args, ctx) {
       if (!ctx.identity) return fail(`export_files needs Monster Pro and an API key. Add "Authorization: Bearer pm_live_…" to the MCP config — keys: ${KEYS_URL}`);
@@ -228,7 +229,7 @@ const TOOLS: ToolDef[] = [
     name: "get_shared_prompt",
     title: "Get a shared prompt",
     description: `Fetches a prompt someone shared on Prompt.Monster (${SITE}/p/<slug>) — pass the slug or the full URL.`,
-    inputSchema: { type: "object", properties: { slug: { type: "string", description: "Share slug or URL, e.g. 'ai-invoice-app-x1y2'." } }, required: ["slug"] },
+    inputSchema: () => ({ type: "object", properties: { slug: { type: "string", description: "Share slug or URL, e.g. 'ai-invoice-app-x1y2'." } }, required: ["slug"] }),
     annotations: { title: "Get a shared prompt", readOnlyHint: true, idempotentHint: true, openWorldHint: false },
     async run(args) {
       const raw = String(args.slug ?? "").trim();
@@ -243,7 +244,7 @@ const TOOLS: ToolDef[] = [
     title: "Refine a prompt with Claude (credits)",
     description:
       "Claude rewrites a build prompt into a strictly better version (same structure; adds acceptance criteria, edge cases, non-functional requirements). Needs an API key; spends 3 AI credits from the key owner's plan (Free: 5/day, Pro: 1,000/month).",
-    inputSchema: {
+    inputSchema: () => ({
       type: "object",
       properties: {
         prompt: { type: "string", description: "The prompt to improve (50–60,000 chars).", minLength: 50, maxLength: 60000 },
@@ -252,7 +253,7 @@ const TOOLS: ToolDef[] = [
         format: { type: "string", description: "Format to preserve, e.g. 'Claude XML'.", default: "Claude XML" },
       },
       required: ["prompt"],
-    },
+    }),
     annotations: { title: "Refine a prompt with Claude (credits)", readOnlyHint: true, idempotentHint: false, openWorldHint: true },
     async run(args, ctx) {
       if (!ctx.identity) return fail(`refine_prompt spends AI credits, so it needs an API key: add "Authorization: Bearer pm_live_…" to the MCP config. Create a key at ${KEYS_URL}`);
@@ -283,7 +284,7 @@ export const MCP_TOOL_NAMES = TOOLS.map((t) => t.name);
 
 /** Public catalogue (tools/list, the developers page). */
 export function toolCatalogue() {
-  return TOOLS.map(({ name, title, description, inputSchema, annotations }) => ({ name, title, description, inputSchema, annotations }));
+  return TOOLS.map(({ name, title, description, inputSchema, annotations }) => ({ name, title, description, inputSchema: inputSchema(), annotations }));
 }
 
 /* ───────────── Prompts (slash commands in Claude Code: /mcp__prompt-monster__new_project) ───────────── */

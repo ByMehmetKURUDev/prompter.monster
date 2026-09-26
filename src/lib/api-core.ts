@@ -184,4 +184,7 @@ export function typePreset(id: string) {
   };
 }
 
-export const EXPERT_IDS = EXPERTS.map((e) => ({ id: e.id, role: e.role, spec: e.spec }));
+/** Current experts (built-ins + admin catalog) — a function, since the catalog can change at runtime. */
+export function expertList() {
+  return EXPERTS.map((e) => ({ id: e.id, role: e.role, spec: e.spec }));
+}

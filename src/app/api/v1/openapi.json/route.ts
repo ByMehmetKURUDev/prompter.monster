@@ -1,4 +1,5 @@
 import { SITE } from "@/lib/api-core";
+import { loadCatalog } from "@/lib/catalog-server";
 import { CORS_HEADERS } from "@/lib/api-http";
 import { generateSchema } from "@/lib/mcp";
 
@@ -18,7 +19,8 @@ const ERROR_TEXT: Record<number, string> = {
 };
 
 /** GET /api/v1/openapi.json — OpenAPI 3.1 description of the public API (ChatGPT Actions, Postman, codegen). */
-export function GET() {
+export async function GET() {
+  await loadCatalog();
   const spec = {
     openapi: "3.1.0",
     info: {
