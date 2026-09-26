@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { ArrowRight, Check, Minus } from "lucide-react";
 import Link from "next/link";
 import { ProCta } from "@/components/billing/ProCta";
+import { LegalLinks } from "@/components/site/LegalLinks";
 
 export const metadata: Metadata = {
   title: "Fiyatlandırma",
@@ -93,6 +94,12 @@ export default function PricingPage() {
             </ul>
             <div className="mt-8">
               <ProCta className="w-full" />
+              <p className="mt-3 text-center text-[11px] text-zinc-500 leading-relaxed">
+                Güvenli ödeme: Lemon Squeezy (Merchant of Record, KDV dahil fatura) •{" "}
+                <Link href="/legal/refund" className="underline hover:text-zinc-300">
+                  14 gün koşulsuz iade
+                </Link>
+              </p>
             </div>
           </div>
         </div>
@@ -142,6 +149,8 @@ export default function PricingPage() {
 
       <footer className="border-t border-ink-600 px-4 lg:px-8 py-6 text-[12px] text-zinc-600 flex flex-wrap items-center gap-3">
         <span>Prompt.Monster © {new Date().getFullYear()}</span>
+        <span>•</span>
+        <LegalLinks />
         <Link href="/studio" className="ml-auto text-zinc-400 hover:text-white">
           Studio →
         </Link>

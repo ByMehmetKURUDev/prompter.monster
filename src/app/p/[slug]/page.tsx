@@ -5,6 +5,7 @@ import { ArrowRight, Eye, Sparkles } from "lucide-react";
 import { ShareActions } from "@/components/share/ShareActions";
 import { EXPERTS, PROJECT_CATEGORIES } from "@/lib/data";
 import { bumpViews, getShared } from "@/lib/share";
+import { LegalLinks } from "@/components/site/LegalLinks";
 
 export const dynamic = "force-dynamic";
 
@@ -129,6 +130,7 @@ export default async function SharedPromptPage({ params }: Props) {
 
       <footer className="border-t border-ink-600 px-4 lg:px-8 py-4 text-[11px] text-zinc-600 flex flex-wrap gap-3">
         <span>Prompt.Monster © {new Date().getFullYear()}</span>
+        <LegalLinks />
         <span className="ml-auto">Paylaşılan içerik, paylaşan kullanıcıya aittir.</span>
       </footer>
     </div>

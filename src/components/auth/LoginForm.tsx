@@ -206,7 +206,15 @@ export function LoginForm({ next, initialError, initialMessage }: { next: string
       </form>
 
       <p className="mt-6 text-[11px] text-zinc-600 leading-relaxed">
-        Devam ederek kullanım koşullarını kabul etmiş olursun. Kayıt olmadan da{" "}
+        Devam ederek{" "}
+        <Link href="/legal/terms" className="text-zinc-400 underline">
+          Kullanım Koşulları
+        </Link>
+        &apos;nı kabul etmiş ve{" "}
+        <Link href="/legal/privacy" className="text-zinc-400 underline">
+          Gizlilik Politikası ve KVKK Aydınlatma Metni
+        </Link>
+        &apos;ni okumuş olursun. Kayıt olmadan da{" "}
         <Link href="/studio" className="text-zinc-400 underline">
           Studio&apos;yu kullanabilirsin
         </Link>

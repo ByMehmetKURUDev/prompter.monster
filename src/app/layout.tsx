@@ -1,6 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
-import { Analytics } from "@/components/site/Analytics";
+import { ConsentManager } from "@/components/site/ConsentManager";
 import { SiteNotice } from "@/components/site/SiteNotice";
 
 const SITE = process.env.NEXT_PUBLIC_SITE_URL || "https://prompter.monster";
@@ -38,7 +38,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body className="min-h-screen bg-ink-950 text-zinc-100 antialiased">
         <SiteNotice />
         {children}
-        <Analytics />
+        <ConsentManager />
       </body>
     </html>
   );

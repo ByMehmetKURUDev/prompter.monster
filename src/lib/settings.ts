@@ -14,7 +14,7 @@ export interface SettingDef {
   description: string;
   type: SettingType;
   default: boolean | number | string;
-  group: "Genel" | "AI" | "Planlar" | "Ödeme" | "Duyuru";
+  group: "Genel" | "AI" | "Planlar" | "Ödeme" | "Duyuru" | "Yasal";
   /** Exposed to anonymous clients via public_settings() (never put secrets here). */
   isPublic?: boolean;
   /** ISO date the setting was introduced — drives the "YENİ" badge. */
@@ -44,6 +44,12 @@ export const SETTINGS_REGISTRY: SettingDef[] = [
   { key: "checkout_enabled", label: "Pro satın alma", description: "Kapalıyken /pricing'de 'Pro'ya geç' yerine 'yakında' görünür (mağaza bakımı, canlı moda geçiş anı).", type: "boolean", default: true, group: "Ödeme", isPublic: true, since: "2026-09-26" },
   { key: "launch_coupon", label: "Lansman kuponu", description: "Fiyat sayfasında gösterilecek kupon kodu (Lemon Squeezy'de tanımlı olmalı). Boş = gösterme.", type: "string", default: "", group: "Ödeme", isPublic: true, since: "2026-09-26" },
   { key: "launch_coupon_text", label: "Kupon açıklaması", description: "Örn. 'İlk 100 kullanıcıya yıllık planda %30'.", type: "string", default: "", group: "Ödeme", isPublic: true, since: "2026-09-26" },
+
+  // Yasal (Kullanım Koşulları, Gizlilik/KVKK, Çerez ve İade sayfalarına otomatik yansır)
+  { key: "legal_name", label: "İşletmeci / veri sorumlusu", description: "Yasal sayfalarda görünen ad veya şirket unvanı (örn. şahıs şirketi kurarsan unvanını yaz).", type: "string", default: "Mehmet Kuru", group: "Yasal", isPublic: true, since: "2026-09-26" },
+  { key: "legal_email", label: "İletişim e-postası", description: "KVKK başvuruları, iade ve destek için gösterilen adres. Bu adrese gelen postayı alabildiğinden emin ol (Cloudflare Email Routing).", type: "string", default: "hello@prompter.monster", group: "Yasal", isPublic: true, since: "2026-09-26" },
+  { key: "legal_address", label: "Açık adres", description: "KVKK aydınlatma metninde veri sorumlusu adresi olarak gösterilir. Boşsa gösterilmez.", type: "string", default: "", group: "Yasal", isPublic: true, since: "2026-09-26" },
+  { key: "legal_registry", label: "Vergi / sicil bilgisi", description: "Örn. 'Vergi Dairesi: Kadıköy, VKN: 1234567890' veya MERSİS no. Boşsa gösterilmez.", type: "string", default: "", group: "Yasal", isPublic: true, since: "2026-09-26" },
 ];
 
 export const SETTINGS_BY_KEY = new Map(SETTINGS_REGISTRY.map((s) => [s.key, s]));
@@ -99,6 +105,10 @@ export interface PublicSettings {
   checkout_enabled: boolean;
   launch_coupon: string;
   launch_coupon_text: string;
+  legal_name: string;
+  legal_email: string;
+  legal_address: string;
+  legal_registry: string;
 }
 
 export function publicSubset(all: SettingsMap): PublicSettings {

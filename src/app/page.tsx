@@ -2,6 +2,7 @@ import { ArrowRight, Check, Layers, Sparkles, Users, Zap } from "lucide-react";
 import Link from "next/link";
 import { EXPERTS, FORMATS, MEGA_CHAIN_STEPS } from "@/lib/data";
 import { pagesByCategory } from "@/lib/seo";
+import { LegalLinks } from "@/components/site/LegalLinks";
 
 const FREE = ["Günde 3 AI çağrısı", "3 uzman persona", "Markdown + Claude XML", "Tarayıcıda kayıt"];
 const PRO = ["Sınırsız AI iyileştirme", "12 uzman + Mega Chain", "5 çıktı formatı + .cursorrules / CLAUDE.md", "Proje kütüphanesi ve versiyon geçmişi", "Paylaşılabilir prompt sayfası", "Öncelikli destek"];
@@ -220,6 +221,8 @@ export default function Landing() {
         <Link href="/pricing" className="hover:text-zinc-300">
           Fiyat
         </Link>
+        <span>•</span>
+        <LegalLinks />
         <Link href="/studio" className="ml-auto text-zinc-400 hover:text-white">
           Studio →
         </Link>

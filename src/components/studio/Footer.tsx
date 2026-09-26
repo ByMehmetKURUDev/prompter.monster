@@ -1,4 +1,6 @@
 import { Globe } from "lucide-react";
+import { LegalLinks } from "@/components/site/LegalLinks";
+import { CHANGELOG } from "@/lib/changelog";
 
 export function Footer() {
   return (
@@ -9,8 +11,9 @@ export function Footer() {
       <span className="hidden md:flex items-center gap-1.5">
         • <Globe className="w-3 h-3" aria-hidden /> Iyzico + PayTR TR desteği
       </span>
+      <LegalLinks className="hidden sm:inline-flex" />
       <span className="ml-auto flex items-center gap-2">
-        <span className="px-2 py-1 rounded-full bg-ink-800 border border-ink-600">v3.0 SaaS</span>
+        <span className="px-2 py-1 rounded-full bg-ink-800 border border-ink-600">v{CHANGELOG[0]?.version ?? "4.0"}</span>
         <span>Prompt.Monster © {new Date().getFullYear()}</span>
       </span>
     </div>

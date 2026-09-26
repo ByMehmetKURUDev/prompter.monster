@@ -13,6 +13,20 @@ export interface ChangelogEntry {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: "4.1",
+    date: "2026-09-26",
+    title: "Yasal sayfalar, çerez izni, İngilizce altyapısı",
+    items: [
+      "/legal/terms, /legal/privacy (KVKK aydınlatma), /legal/cookies, /legal/refund — Türkçe + İngilizce (/en/legal/…).",
+      "İşletmeci adı, e-posta, adres ve vergi bilgisi admin ayarlarından (Yasal grubu) değiştirilebilir; sayfalara otomatik yansır.",
+      "Çerez bandı: GA4 / Google Ads / Meta Pixel yalnızca izin verilirse yüklenir (Consent Mode v2). Etiket tanımlı değilse bant görünmez.",
+      "Dönüşüm olayları izin kategorisine göre gönderilir (analitik ↔ reklam).",
+      "Tüm alt bilgilere ve giriş formuna yasal bağlantılar eklendi; fiyat sayfasına güvenli ödeme + 14 gün iade notu.",
+      "i18n altyapısı: /en yolları, dil düğmesi (yalnızca İngilizcesi olan sayfalarda görünür), pm_lang çerezi.",
+    ],
+    settings: ["legal_name", "legal_email", "legal_address", "legal_registry"],
+  },
+  {
     version: "4.0",
     date: "2026-09-26",
     title: "Admin paneli, çalışma zamanı ayarları, dokümantasyon",
