@@ -34,3 +34,7 @@ yarn-error.log*
 /.wrangler/
 .dev.vars
 cloudflare-env.d.ts
+
+# local marketing assets (videos, ad images) — not part of the app
+/marketing/
+/video-tmp/
