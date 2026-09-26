@@ -91,7 +91,7 @@ export const FIELD_GUIDE_EN: FieldGuide[] = [
     field: "Experts",
     step: 4,
     what: "Each expert writes their own task block, constraints and success criteria.",
-    how: "3–5 experts is the sweet spot (3 on Free, all 12 on Pro). Core: CTO + PM + Design. Then add by product type: AI Engineer for an AI product, Security for fintech, Monetization for a marketplace, SEO/AEO for a content product.",
+    how: "3–5 experts is the sweet spot (3 on Free, all 18 on Pro). Core: CTO + PM + Design. Then add by product type: AI Engineer for an AI product, Security for fintech, Monetization for a marketplace, SEO/AEO for a content product.",
     good: "CTO, PM, Design, Security, Monetization (for fintech)",
     bad: "CTO only (PRD and design decisions end up missing)",
   },

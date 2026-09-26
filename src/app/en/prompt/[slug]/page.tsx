@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { TypePageView, typePageMeta } from "@/components/site/PromptPagesView";
+import { loadCatalog } from "@/lib/catalog-server";
 import { alternatesFor } from "@/lib/i18n";
 
 export const dynamic = "force-dynamic";
@@ -24,5 +25,6 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function TypePromptPageEn({ params }: Props) {
   const { slug } = await params;
+  await loadCatalog();
   return <TypePageView slug={slug} locale="en" />;
 }

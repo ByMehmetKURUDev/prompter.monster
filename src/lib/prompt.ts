@@ -5,6 +5,13 @@ import type { Expert, OutputFormat, StudioState } from "./types";
 /*  Section labels (TR / EN)                                           */
 /* ------------------------------------------------------------------ */
 
+/** "a" / "an" before an English role ("an AI Engineer", "an SEO/AEO Strategist", "a QA Automation"). */
+function article(role: string): "a" | "an" {
+  const w = role.trim().split(/[\s/&]+/)[0] ?? "";
+  if (w.length > 1 && w === w.toUpperCase()) return /^[AEFHILMNORSX]/.test(w) ? "an" : "a";
+  return /^[aeiou]/i.test(w) ? "an" : "a";
+}
+
 const L = {
   TR: {
     role: "ROL",
@@ -16,6 +23,7 @@ const L = {
     output: "ÇIKTI FORMATI",
     success: "BAŞARI KRİTERLERİ",
     never: "ASLA YAPMA (RED)",
+    check: "KENDİNİ DOĞRULA",
     project: "Proje",
     type: "Tip",
     vision: "Vizyon",
@@ -39,6 +47,23 @@ const L = {
     output_: ["Kod: TypeScript, tip güvenli ORM şeması, API route'ları, shadcn components", "Doküman: Markdown tablolar + Mermaid diyagram", "Örnek: 1 tam feature end-to-end (örn: billing)"],
     success_: "p95 < 100ms, Lighthouse 95+, 0 critical vuln, MRR ilk 30 gün $1k",
     never_: 'Lorem ipsum, placeholder, "TODO" bırakma. Her satır production-ready.',
+    check_: [
+      "Yanıtı bitirmeden önce kendi işini doğrula:",
+      "- GÖREV'deki her maddeyi karşıladın mı? Eksik kalanı tamamla.",
+      "- Çıktı ÇIKTI FORMATI'na birebir uyuyor mu?",
+      "- BAĞLAM'la tutarlı mı (stack, özellikler, ödeme, uyumluluk)?",
+      "- Yer tutucu, TODO ya da uydurma bilgi yok; varsayımlarını sonda listele.",
+      "- Kod yazdıysan çalıştır: testler, tip kontrolü ve lint temiz olmalı. Arayüz varsa Playwright ile ekran görüntüsü al, yanlış görüneni düzelt; Lighthouse ≥ 90.",
+    ],
+    finalCheck: [
+      "Her Mega Chain adımından sonra ve en sonda kendi çıktını test et ve düzelt:",
+      "1. Uygulamayı çalıştır; birim ve uçtan uca (Playwright) testleri koş, hepsi geçene kadar düzelt.",
+      "2. Kritik ekranların Playwright ekran görüntülerini al; tasarım sistemine ve boş / hata / yükleniyor durumlarına göre kontrol et.",
+      "3. Lighthouse (performans, erişilebilirlik, SEO) ≥ 90; altındaysa nedenini bul ve düzelt.",
+      "4. Güvenlik turu: gizli anahtar sızıntısı yok, yetki sunucuda kontrol ediliyor, her girdi doğrulanıyor.",
+      "5. Her özelliğin kabul kriterlerini tek tek işaretle; eksik varken 'bitti' deme.",
+      "6. Sonunda kısa bir rapor ver: ne yapıldı, test sonuçları, ekran görüntüleri, bilinen riskler, sonraki adımlar.",
+    ],
   },
   EN: {
     role: "ROLE",
@@ -50,6 +75,7 @@ const L = {
     output: "OUTPUT FORMAT",
     success: "SUCCESS CRITERIA",
     never: "NEVER DO (RED LINES)",
+    check: "SELF-CHECK",
     project: "Project",
     type: "Type",
     vision: "Vision",
@@ -65,7 +91,7 @@ const L = {
     compliance: "Compliance",
     lang: "Lang",
     intro: (e: Expert) =>
-      `You are a ${e.role} with ${e.years} years of experience. Specialty: ${e.spec}. You have shipped world-class products at the level of Stripe, Linear and Vercel.`,
+      `You are ${article(e.role)} ${e.role} with ${e.years} years of experience. Specialty: ${e.spec}. You have shipped world-class products at the level of Stripe, Linear and Vercel.`,
     general: "General: production quality, copy-paste ready level of detail.",
     payflow: "Payment flow",
     featureLine: (f: string) => `- [ ] ${f} -> Spec + API + UI + Tests`,
@@ -73,6 +99,23 @@ const L = {
     output_: ["Code: TypeScript, type-safe ORM schema, API routes, shadcn components", "Docs: Markdown tables + Mermaid diagrams", "Example: 1 full feature end-to-end (e.g. billing)"],
     success_: "p95 < 100ms, Lighthouse 95+, 0 critical vulns, $1k MRR in the first 30 days",
     never_: 'No lorem ipsum, placeholders or "TODO". Every line production-ready.',
+    check_: [
+      "Before you finish, verify your own work:",
+      "- Did you cover every item in TASK? Complete anything missing.",
+      "- Does the output match OUTPUT FORMAT exactly?",
+      "- Is it consistent with CONTEXT (stack, features, payments, compliance)?",
+      "- No placeholders, TODOs or invented facts; list your assumptions at the end.",
+      "- If you wrote code, run it: tests, type check and lint must pass. For UI, take Playwright screenshots and fix what looks wrong; Lighthouse ≥ 90.",
+    ],
+    finalCheck: [
+      "After every Mega Chain step, and once more at the end, test your own output and fix it:",
+      "1. Run the app; run the unit and end-to-end (Playwright) tests and fix until they all pass.",
+      "2. Take Playwright screenshots of the critical screens; check them against the design system and the empty / error / loading states.",
+      "3. Lighthouse (performance, accessibility, SEO) ≥ 90; if lower, find the cause and fix it.",
+      "4. Security pass: no leaked secrets, authorization checked on the server, every input validated.",
+      "5. Tick off each feature's acceptance criteria one by one; don't call it done while anything is missing.",
+      "6. Finish with a short report: what was built, test results, screenshots, known risks, next steps.",
+    ],
   },
 } as const;
 
@@ -109,10 +152,10 @@ export function estimateTokens(s: StudioState): number {
   return 2400 + s.features.length * 180 + s.experts.length * 650;
 }
 
-type Section = { key: keyof typeof L.TR; tag: string; body: string };
+type Section = { key: "role" | "context" | "task" | "arch" | "features" | "constraints" | "output" | "success" | "never" | "check"; tag: string; body: string };
 
 /** Keys of the prompt sections that carry a heading in L. */
-export type PromptSection = "role" | "context" | "task" | "arch" | "features" | "constraints" | "output" | "success" | "never";
+export type PromptSection = "role" | "context" | "task" | "arch" | "features" | "constraints" | "output" | "success" | "never" | "check";
 
 /** A section's Markdown heading in both output languages, TR first (the Studio splits generated prompts with these). */
 export function sectionHeadings(key: PromptSection): [string, string] {
@@ -131,7 +174,7 @@ function wrap(format: OutputFormat, sec: Section, lang: "TR" | "EN", attrs = "")
 /*  Single-expert prompt                                               */
 /* ------------------------------------------------------------------ */
 
-export function buildExpertPrompt(s: StudioState, expertId: string): string {
+export function buildExpertPrompt(s: StudioState, expertId: string, opts: { selfCheck?: boolean } = {}): string {
   const e = EXPERTS.find((x) => x.id === expertId);
   if (!e) return "";
   const t = L[s.lang];
@@ -192,6 +235,7 @@ export function buildExpertPrompt(s: StudioState, expertId: string): string {
   const output: Section = { key: "output", tag: "output_format", body: t.output_.join("\n") };
   const success: Section = { key: "success", tag: "success_criteria", body: `- ${t.success_}` };
   const never: Section = { key: "never", tag: "never_do", body: `- ${t.never_}` };
+  const check: Section = { key: "check", tag: "self_check", body: t.check_.join("\n") };
 
   const parts = [
     roleHeader + wrap(f, role, s.lang, roleAttrs),
@@ -203,6 +247,7 @@ export function buildExpertPrompt(s: StudioState, expertId: string): string {
     wrap(f, output, s.lang),
     wrap(f, success, s.lang),
     wrap(f, never, s.lang),
+    ...(opts.selfCheck === false ? [] : [wrap(f, check, s.lang)]),
   ];
 
   let body = parts.join("\n\n");
@@ -248,8 +293,16 @@ export function buildMegaHeader(s: StudioState): string {
 
 /** Full mega prompt = header + every selected expert prompt, separated. */
 export function buildMegaPrompt(s: StudioState): string {
-  const experts = s.experts.length ? s.experts : EXPERTS.map((e) => e.id);
-  return [buildMegaHeader(s), ...experts.map((id) => buildExpertPrompt(s, id))].join("\n\n---\n\n");
+  const known = s.experts.filter((id) => EXPERTS.some((e) => e.id === id));
+  const experts = known.length ? known : EXPERTS.slice(0, 3).map((e) => e.id);
+  return [buildMegaHeader(s), ...experts.map((id) => buildExpertPrompt(s, id, { selfCheck: false })), buildFinalCheck(s)].join("\n\n---\n\n");
+}
+
+/** The closing "test your own output and fix it" step of every master prompt. */
+export function buildFinalCheck(s: StudioState): string {
+  const t = L[s.lang];
+  const body = t.finalCheck.join("\n");
+  return s.format === "Claude XML" ? `<self_check scope="final">\n${body}\n</self_check>` : `## ${t.check}\n${body}`;
 }
 
 /** Short preview used in the Mega Chain panel. */

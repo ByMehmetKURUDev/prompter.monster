@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { PromptHubView, hubMeta } from "@/components/site/PromptPagesView";
+import { loadCatalog } from "@/lib/catalog-server";
 import { alternatesFor } from "@/lib/i18n";
 import { SITE } from "@/lib/seo";
 
@@ -14,6 +15,10 @@ export const metadata: Metadata = {
   robots: { index: true, follow: true },
 };
 
-export default function PromptHubPageEn() {
+// Dynamic so project types hidden in /admin/catalog disappear without a deploy.
+export const dynamic = "force-dynamic";
+
+export default async function PromptHubPageEn() {
+  await loadCatalog();
   return <PromptHubView locale="en" />;
 }

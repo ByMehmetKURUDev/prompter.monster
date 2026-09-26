@@ -18,7 +18,7 @@ export interface PlanLimits {
 
 export const PLAN_LIMITS: Record<PlanId, PlanLimits> = {
   free: { experts: 3, formats: ["ChatGPT Markdown", "Claude XML"], megaChain: false, builders: false, credits: { perDay: 5, perMonth: null } },
-  pro: { experts: 12, formats: ["ChatGPT Markdown", "Claude XML", "Cursor Rules", "v0", "Lovable/Bolt"], megaChain: true, builders: true, credits: { perDay: 150, perMonth: 1000 } },
+  pro: { experts: 18, formats: ["ChatGPT Markdown", "Claude XML", "Cursor Rules", "v0", "Lovable/Bolt"], megaChain: true, builders: true, credits: { perDay: 150, perMonth: 1000 } },
 };
 
 export function limitsFor(plan: PlanId | null | undefined): PlanLimits {
@@ -32,4 +32,4 @@ export function formatAllowed(plan: PlanId | null | undefined, format: OutputFor
 /** Exports that need Pro. */
 export const PRO_EXPORTS = new Set(["cursorrules", "claude"]);
 
-export const UPGRADE_HINT = "Pro'ya geç: 12 uzman, Mega Chain, 5 format ve Export to Builders — /pricing";
+export const UPGRADE_HINT = "Pro'ya geç: 18 uzman, Mega Chain, 5 format ve Export to Builders — /pricing";

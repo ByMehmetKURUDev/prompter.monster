@@ -163,6 +163,47 @@ export const TYPE_PRESETS: Record<string, TypePreset> = {
     monetization: ["Freemium", "Subscription (MRR)"],
     compliance: ["KVKK/GDPR"],
   },
+  "ai-agents": {
+    experts: ["agents", "ai", "cto", "security", "automation"],
+    features: ["Agent Memory & Tools (MCP)", "Scheduled Jobs & Triggers", "Human-in-the-loop Approvals", "Integrations (Slack/Notion/Sheets)", "Webhooks & Events", "Audit Logs", "API Keys & Rate Limit", "Analytics Charts"],
+    payments: ["stripe", "lemonsqueezy"],
+    monetization: ["Usage-Based", "Subscription (MRR)"],
+    compliance: ["KVKK/GDPR", "SOC2"],
+  },
+  automation: {
+    experts: ["automation", "agents", "cto", "data"],
+    features: ["Workflow Builder", "Scheduled Jobs & Triggers", "Webhooks & Events", "Integrations (Slack/Notion/Sheets)", "Human-in-the-loop Approvals", "Notifications Center", "Audit Logs"],
+    payments: ["stripe"],
+    monetization: ["Subscription (MRR)", "Usage-Based"],
+    compliance: ["KVKK/GDPR"],
+  },
+  wordpress: {
+    experts: ["design", "seo", "copy", "ads"],
+    features: ["CMS & Blog", "Contact Forms & Lead Capture", "SEO Pages & Sitemap", "Multi-language (i18n)", "Ratings & Reviews", "Analytics Charts"],
+    payments: ["iyzico", "stripe"],
+    monetization: ["One-time + Lifetime"],
+    compliance: ["KVKK/GDPR"],
+  },
+  landing: {
+    experts: ["design", "copy", "motion", "ads", "seo"],
+    features: ["Contact Forms & Lead Capture", "SEO Pages & Sitemap", "CMS & Blog", "Multi-language (i18n)", "Analytics Charts"],
+    payments: ["lemonsqueezy"],
+    monetization: ["One-time + Lifetime"],
+    compliance: ["KVKK/GDPR"],
+  },
+  mobile: {
+    experts: ["mobile", "cto", "design", "pm", "monet"],
+    features: ["Email/Pass + Magic Link", "Social OAuth (Google/Github)", "Push Notifications", "Offline Mode & Sync", "In-app Purchases", "In-app Onboarding Tour", "Analytics Charts"],
+    payments: ["stripe"],
+    monetization: ["Freemium", "Subscription (MRR)"],
+    compliance: ["KVKK/GDPR"],
+  },
+  "internal-tool": {
+    experts: ["cto", "design", "security", "data"],
+    features: ["RBAC + Permissions", "Advanced CRUD + Bulk Ops", "Audit Logs", "Global Search (⌘K)", "Kanban / Board View", "Analytics Charts", "Admin Panel + Impersonate"],
+    monetization: [],
+    compliance: ["KVKK/GDPR", "SOC2"],
+  },
 };
 
 /** Fields of a StudioState that a preset fills in. */

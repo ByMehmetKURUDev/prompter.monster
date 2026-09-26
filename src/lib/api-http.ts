@@ -2,6 +2,7 @@
 import { NextResponse } from "next/server";
 import { logApiCall, resolveApiKey, type ApiIdentity } from "./api-keys";
 import { SITE } from "./api-core";
+import { loadCatalog } from "./catalog-server";
 import { clientKey, consumeWindow } from "./ratelimit";
 import { readServerSettings } from "./settings-server";
 
@@ -38,7 +39,7 @@ const KEYS_URL = `${SITE}/account/api`;
 
 /** Feature flags + optional API key. requireKey: endpoints that spend credits or touch account data. */
 export async function authorize(req: Request, kind: "api" | "mcp", opts: { requireKey?: boolean } = {}): Promise<Authz> {
-  const s = await readServerSettings();
+  const [s] = await Promise.all([readServerSettings(), loadCatalog()]);
   const fail = (status: number, code: string, message: string, headers: Record<string, string> = {}): Authz => ({ ok: false, error: { status, code, message, headers } });
   if (s.maintenance_mode) return fail(503, "maintenance", "Prompt.Monster is in maintenance mode. Please try again shortly.");
   if (kind === "api" && !s.api_enabled) return fail(503, "api_disabled", "The public API is temporarily disabled.");

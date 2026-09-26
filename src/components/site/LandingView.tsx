@@ -15,10 +15,10 @@ const COPY = {
     badge: "Vibe-coder'lar için build-spec fabrikası",
     h1a: "Fikrini anlat.",
     h1b: "Canavar, build prompt'unu yazsın.",
-    sub: "12 uzman persona (CTO, PM, Design, AI, Monetization, SEO…) proje fikrini Claude Code, Cursor, v0, Lovable ve Bolt'a doğrudan yapıştırılacak, kopyala-çalıştır kalitesinde master build prompt'lara çevirir. Mimari, özellik matrisi, ödeme akışı ve kısıtlar dahil.",
+    sub: "18 uzman persona (CTO, PM, Design, AI, Monetization, SEO…) proje fikrini Claude Code, Cursor, v0, Lovable ve Bolt'a doğrudan yapıştırılacak, kopyala-çalıştır kalitesinde master build prompt'lara çevirir. Mimari, özellik matrisi, ödeme akışı ve kısıtlar dahil.",
     cta: "Ücretsiz başla — kayıt yok",
     howCta: "2 dakikada nasıl çalışır",
-    stats: ["24 proje tipi", "12 uzman canavar", "8 ödeme sistemi (Stripe, Iyzico, PayTR…)", `${FORMATS.length} çıktı formatı`],
+    stats: ["28 proje tipi", "18 uzman canavar", "8 ödeme sistemi (Stripe, Iyzico, PayTR…)", `${FORMATS.length} çıktı formatı`],
     howTitle: "4 adım, 1 mega prompt",
     steps: [
       { t: "Fikir & Vizyon", d: "Ad, pitch, hedef kitle, rakipler, USP. Claude ile 'Enhance'." },
@@ -28,7 +28,7 @@ const COPY = {
     ],
     typesTitle: "Proje tipine göre başla",
     typesSub: "Her tip için önerilen uzmanlar, stack ve özellikler hazır. Tıkla, örnek prompt'u gör, Studio o ayarlarla açılsın.",
-    expertsTitle: "12 uzman canavar",
+    expertsTitle: "18 uzman canavar",
     expertsSub: "Her uzman kendi görev bloğunu, mimari notlarını ve başarı kriterlerini prompt'a ekler.",
     chainTitle: `${MEGA_CHAIN_STEPS.length} adımda full-stack ürün`,
     chainText: "Tek bir prompt değil; her adımı bir öncekinin çıktısını kullanan bir zincir. PRD'den lansman checklist'ine kadar. .cursorrules ve CLAUDE.md olarak indir, deponun köküne koy, kodlamaya başla.",
@@ -39,7 +39,7 @@ const COPY = {
     yearly: "veya $290/yıl",
     popular: "POPÜLER",
     free: [`Günde ${D.free_credits_per_day} AI kredisi`, "3 uzman persona", "Markdown + Claude XML", "Proje kütüphanesi"],
-    pro: [`Ayda ${D.pro_credits_per_month.toLocaleString("tr-TR")} AI kredisi (Claude Sonnet 5)`, "12 uzman + Mega Chain", "5 çıktı formatı + .cursorrules / CLAUDE.md", "Proje kütüphanesi ve versiyon geçmişi", "Paylaşılabilir prompt sayfası", "Öncelikli destek"],
+    pro: [`Ayda ${D.pro_credits_per_month.toLocaleString("tr-TR")} AI kredisi (Claude Sonnet 5)`, "18 uzman + Mega Chain", "5 çıktı formatı + .cursorrules / CLAUDE.md", "Proje kütüphanesi ve versiyon geçmişi", "Paylaşılabilir prompt sayfası", "Öncelikli destek"],
     freeCta: "Ücretsiz başla",
     proCta: "Pro'ya geç →",
   },
@@ -48,10 +48,10 @@ const COPY = {
     badge: "The build-spec factory for vibe coders",
     h1a: "Describe your idea.",
     h1b: "The monster writes your build prompt.",
-    sub: "12 expert personas (CTO, PM, Design, AI, Monetization, SEO…) turn your idea into copy-paste-ready master build prompts for Claude Code, Cursor, v0, Lovable and Bolt — architecture, feature matrix, payment flow and constraints included.",
+    sub: "18 expert personas (CTO, PM, Design, AI, Monetization, SEO…) turn your idea into copy-paste-ready master build prompts for Claude Code, Cursor, v0, Lovable and Bolt — architecture, feature matrix, payment flow and constraints included.",
     cta: "Start free — no sign-up",
     howCta: "See how it works in 2 minutes",
-    stats: ["24 project types", "12 expert monsters", "8 payment providers (Stripe, Paddle, Lemon Squeezy…)", `${FORMATS.length} output formats`],
+    stats: ["28 project types", "18 expert monsters", "8 payment providers (Stripe, Paddle, Lemon Squeezy…)", `${FORMATS.length} output formats`],
     howTitle: "4 steps, 1 mega prompt",
     steps: [
       { t: "Idea & vision", d: "Name, pitch, audience, competitors, USP. 'Enhance' it with Claude." },
@@ -61,7 +61,7 @@ const COPY = {
     ],
     typesTitle: "Start from a project type",
     typesSub: "Recommended experts, stack and features are ready for every type. Click, see a sample prompt, and the Studio opens with those settings.",
-    expertsTitle: "12 expert monsters",
+    expertsTitle: "18 expert monsters",
     expertsSub: "Each expert adds its own task block, architecture notes and success criteria to the prompt.",
     chainTitle: `A full-stack product in ${MEGA_CHAIN_STEPS.length} steps`,
     chainText: "Not a single prompt — a chain where each step builds on the previous one, from PRD to launch checklist. Download it as .cursorrules or CLAUDE.md, drop it in your repo root and start coding.",
@@ -72,7 +72,7 @@ const COPY = {
     yearly: "or $290/year",
     popular: "POPULAR",
     free: [`${D.free_credits_per_day} AI credits a day`, "3 expert personas", "Markdown + Claude XML", "Project library"],
-    pro: [`${D.pro_credits_per_month.toLocaleString("en-US")} AI credits a month (Claude Sonnet 5)`, "12 experts + Mega Chain", "5 output formats + .cursorrules / CLAUDE.md", "Project library and version history", "Shareable prompt pages", "Priority support"],
+    pro: [`${D.pro_credits_per_month.toLocaleString("en-US")} AI credits a month (Claude Sonnet 5)`, "18 experts + Mega Chain", "5 output formats + .cursorrules / CLAUDE.md", "Project library and version history", "Shareable prompt pages", "Priority support"],
     freeCta: "Start free",
     proCta: "Go Pro →",
   },
@@ -196,7 +196,7 @@ export function LandingView({ locale }: { locale: Locale }) {
       <section className="max-w-[1100px] mx-auto px-4 lg:px-8 py-8">
         <h2 className="text-2xl md:text-3xl font-bold tracking-tight text-center">{c.expertsTitle}</h2>
         <p className="mt-3 text-center text-[13px] text-zinc-500">{c.expertsSub}</p>
-        <div className="mt-8 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+        <div className="mt-8 grid grid-cols-2 md:grid-cols-3 gap-3">
           {EXPERTS.map((e) => (
             <div key={e.id} className="rounded-xl bg-ink-800 border border-ink-600 p-4 flex items-start gap-3">
               <div className="w-9 h-9 rounded-lg bg-ink-950 border border-ink-600 grid place-items-center text-lg">{e.emoji}</div>

@@ -1,13 +1,15 @@
 "use client";
 
-import { Check, Copy, Crown, Download, FileText, Lock, Sparkles, Users, Zap } from "lucide-react";
+import { Check, Copy, Crown, Download, FileArchive, FileText, Lock, Sparkles, Users, Zap } from "lucide-react";
 import Link from "next/link";
 import { useMemo, useState } from "react";
 import { useLocale } from "@/components/site/LocaleProvider";
 import { BUILDERS, EXPERTS, EXPORT_TARGETS, MEGA_CHAIN_STEPS } from "@/lib/data";
 import { lhref } from "@/lib/i18n";
-import { buildExpertPrompt, buildMegaPreview, buildMegaPrompt, exportClaudeMd, exportCursorRules, exportJSON, sectionHeadings, slugify } from "@/lib/prompt";
-import { copyText, downloadText } from "@/lib/client";
+import { buildExpertPrompt, buildMegaPreview, buildMegaPrompt, exportJSON, sectionHeadings, slugify } from "@/lib/prompt";
+import { copyText, downloadBytes, downloadText } from "@/lib/client";
+import { PROJECT_FILES, buildProjectFiles } from "@/lib/exports";
+import { zipFiles } from "@/lib/zip";
 import { PRO_EXPORTS, type PlanId, type PlanLimits } from "@/lib/plans";
 import type { StudioState } from "@/lib/types";
 import { Spinner, cx } from "./ui";
@@ -22,6 +24,7 @@ const SECTIONS = [
   { id: "features", tone: "bg-ink-600/50", icon: "✅", lines: 12 },
   { id: "constraints", tone: "bg-red-500/10", icon: "⛔", lines: 12 },
   { id: "output", tone: "bg-ink-600/50", icon: "📦", lines: 12 },
+  { id: "check", tone: "bg-emerald-500/10", icon: "🧪", lines: 8 },
 ] as const;
 
 type SectionId = (typeof SECTIONS)[number]["id"];
@@ -36,6 +39,7 @@ function sectionOf(prompt: string, id: SectionId): string {
     features: "feature_matrix",
     constraints: "constraints",
     output: "output_format",
+    check: "self_check",
   };
   const tag = xmlTag[id];
   const xm = prompt.match(new RegExp(`<${tag}[^>]*>([\\s\\S]*?)</${tag}>`));
@@ -45,6 +49,12 @@ function sectionOf(prompt: string, id: SectionId): string {
     if (m) return m[1].trim();
   }
   return "";
+}
+
+/** Tab label: first word of the role, or two words when the first is a short acronym ("AI Agent", "QA Automation"). */
+function shortRole(role: string): string {
+  const words = role.split(/\s+/);
+  return words[0].length <= 3 && words[1] && words[1] !== "/" && words[1] !== "&" ? `${words[0]} ${words[1]}` : words[0];
 }
 
 export function OutputPanel({
@@ -110,13 +120,33 @@ export function OutputPanel({
         return downloadText(`${slug}-master-prompt.md`, buildMegaPrompt({ ...s, format: s.format === "Claude XML" ? "Claude XML" : "ChatGPT Markdown" }), "text/markdown;charset=utf-8");
       case "json":
         return downloadText(`${slug}-prompt-monster.json`, exportJSON(s), "application/json;charset=utf-8");
-      case "cursorrules":
-        return downloadText(".cursorrules", exportCursorRules(s));
-      case "claude":
-        return downloadText("CLAUDE.md", exportClaudeMd(s), "text/markdown;charset=utf-8");
       case "txt":
         return downloadText(`${slug}-master-prompt.txt`, buildMegaPrompt(s));
     }
+  };
+
+  /** Pro: project files for coding agents — one row, a folder (as .zip) or everything (.zip). */
+  const exportProjectFiles = (id: string | "all") => {
+    if (!limits.builders) {
+      toast(t.exportProOnly(pricing));
+      return;
+    }
+    const all = buildProjectFiles(s);
+    const slug = slugify(s.name);
+    if (id === "all") {
+      downloadBytes(`${slug}-agent-files.zip`, zipFiles(all));
+      toast(t.zipReady(Object.keys(all).length));
+      return;
+    }
+    const def = PROJECT_FILES.find((f) => f.id === id);
+    if (!def) return;
+    const picked = Object.entries(all).filter(([p]) => (def.path.endsWith("/") ? p.startsWith(def.path) : p === def.path));
+    if (picked.length === 1 && !def.path.endsWith("/")) {
+      const [p, body] = picked[0];
+      const name = p.split("/").pop() || p;
+      return downloadText(name, body, p.endsWith(".json") ? "application/json;charset=utf-8" : "text/markdown;charset=utf-8");
+    }
+    downloadBytes(`${slug}-${id}.zip`, zipFiles(Object.fromEntries(picked)));
   };
 
   return (
@@ -182,7 +212,8 @@ export function OutputPanel({
           {/* tabs */}
           <div className="flex items-center gap-1 px-2 py-2 border-b border-ink-600 overflow-x-auto scrollbar-none">
             {s.experts.map((id) => {
-              const e = EXPERTS.find((x) => x.id === id)!;
+              const e = EXPERTS.find((x) => x.id === id);
+              if (!e) return null; // expert hidden in the admin catalog since this project was saved
               return (
                 <button
                   key={id}
@@ -194,7 +225,7 @@ export function OutputPanel({
                   )}
                 >
                   <span>{e.emoji}</span>
-                  {e.role.split(" ")[0]}
+                  {shortRole(e.role)}
                   {refined[id] && <span className="w-1.5 h-1.5 rounded-full bg-lime" title={t.refinedDot} />}
                 </button>
               );
@@ -300,6 +331,50 @@ export function OutputPanel({
                     </button>
                   </div>
                 ))}
+                <div className="rounded-xl bg-ink-800 border border-ink-600 p-4">
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="min-w-0">
+                      <div className="text-[12px] font-bold flex items-center gap-1.5">
+                        {!limits.builders && <Lock className="w-3.5 h-3.5 text-lime" aria-hidden />} {t.agentFiles}
+                      </div>
+                      <div className="text-[11px] text-zinc-500 mt-1 leading-relaxed">{t.agentFilesHint}</div>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => exportProjectFiles("all")}
+                      className={cx(
+                        "shrink-0 h-8 px-3 rounded-lg text-[11px] font-bold flex items-center gap-1.5",
+                        limits.builders ? "bg-lime text-black" : "bg-ink-950 border border-ink-600 text-zinc-500",
+                      )}
+                    >
+                      {limits.builders ? <FileArchive className="w-3.5 h-3.5" aria-hidden /> : <Lock className="w-3 h-3" aria-hidden />}
+                      {limits.builders ? t.downloadAllZip : "Pro"}
+                    </button>
+                  </div>
+                  <div className="mt-3 divide-y divide-ink-600 rounded-lg border border-ink-600 bg-ink-950">
+                    {PROJECT_FILES.map((f) => (
+                      <div key={f.id} className="flex items-center justify-between gap-3 px-3 py-2">
+                        <div className="min-w-0">
+                          <div className="text-[11.5px] font-mono text-zinc-200 truncate">{f.label}</div>
+                          <div className="text-[10.5px] text-zinc-500 truncate">
+                            {f.tool} · {f.desc[locale]}
+                          </div>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => exportProjectFiles(f.id)}
+                          aria-label={`${t.download}: ${f.label}`}
+                          className={cx(
+                            "shrink-0 w-8 h-8 rounded-lg grid place-items-center border",
+                            limits.builders ? "bg-ink-800 border-ink-600 hover:border-ink-400 text-zinc-200" : "bg-ink-950 border-ink-600 text-zinc-600",
+                          )}
+                        >
+                          {limits.builders ? <Download className="w-3.5 h-3.5" aria-hidden /> : <Lock className="w-3 h-3" aria-hidden />}
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                </div>
                 <div className="rounded-xl bg-gradient-to-br from-lime/10 to-violet/10 border border-lime/20 p-4">
                   <div className="flex items-center justify-between">
                     <div className="text-[12px] font-bold flex items-center gap-1.5">

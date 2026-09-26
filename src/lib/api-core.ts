@@ -5,6 +5,7 @@
 import { z } from "zod";
 import { ALL_PROJECT_TYPES, EMPTY_STATE, EMPTY_STATE_EN, EXPERTS, FORMATS, PAYMENTS, PROJECT_CATEGORIES } from "./data";
 import { limitsFor, type PlanId } from "./plans";
+import { CUSTOM_TYPE_DESCRIPTIONS } from "./catalog";
 import { buildProjectFiles } from "./exports";
 import { buildExpertPrompt, buildMegaHeader, buildMegaPrompt, projectTypeName } from "./prompt";
 import { typePages } from "./seo-types";
@@ -32,7 +33,7 @@ export const GenerateInput = z.object({
   features: list(40).optional(),
   payments: list(8, 40).optional(),
   compliance: list(6).optional(),
-  experts: list(12, 40).optional(),
+  experts: list(18, 40).optional(),
   format: z.enum(FORMATS).default("Claude XML"),
   lang: z.enum(["TR", "EN"]).default("EN"),
   output: z.enum(["mega", "experts", "files"]).default("mega"),
@@ -64,7 +65,7 @@ export function stateFromInput(input: GenerateInputT, plan: PlanId): { state: St
   let experts = (input.experts?.length ? input.experts : base.experts).filter((id) => validExperts.has(id));
   if (!experts.length) experts = ["cto", "pm", "design"];
   if (experts.length > limits.experts) {
-    notes.push(`Free plan: ${limits.experts} experts max — kept ${experts.slice(0, limits.experts).join(", ")}. Monster Pro unlocks all 12.`);
+    notes.push(`Free plan: ${limits.experts} experts max — kept ${experts.slice(0, limits.experts).join(", ")}. Monster Pro unlocks all 18.`);
     experts = experts.slice(0, limits.experts);
   }
   if (!limits.formats.includes(input.format as OutputFormat)) {
@@ -159,7 +160,7 @@ export function listTypes(lang: "TR" | "EN" = "EN") {
         name: i.name,
         category: c.cat.replace(/^[^\w]+/u, "").trim(),
         badge: i.badge || undefined,
-        description: page?.description,
+        description: page?.description ?? CUSTOM_TYPE_DESCRIPTIONS[i.id]?.[lang === "EN" ? "en" : "tr"] ?? CUSTOM_TYPE_DESCRIPTIONS[i.id]?.en,
         url: page ? `${SITE}${lang === "EN" ? "/en" : ""}/prompt/${page.slug}` : undefined,
       };
     }),

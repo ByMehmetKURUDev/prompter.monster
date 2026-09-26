@@ -135,7 +135,7 @@ export function llmsTxt(): string {
   const lines: string[] = [];
   lines.push("# Prompt.Monster");
   lines.push("");
-  lines.push("> Prompt.Monster turns a product idea into a production-grade \"master build prompt\" for AI coding tools (Claude Code, Cursor, v0, Lovable, Bolt, ChatGPT). Twelve expert personas (CTO, PM, Design Director, AI Engineer, Security, Monetization, SEO/AEO, DevOps, QA, Data, Growth, Copy) each write their block; an 8-step Mega Chain sequences the build. Interface: Turkish and English (/en); outputs in TR or EN.");
+  lines.push("> Prompt.Monster turns a product idea into a production-grade \"master build prompt\" for AI coding tools (Claude Code, Cursor, v0, Lovable, Bolt, ChatGPT). Eighteen expert personas (CTO, PM, Design Director, AI Engineer, AI Agent Architect, Automation Engineer, Security, Monetization, SEO/AEO, DevOps, QA, Data, Growth, Copy, Motion & 3D, Performance Marketing, Launch & Community, Mobile & ASO) each write their block; an 8-step Mega Chain sequences the build. Interface: Turkish and English (/en); outputs in TR or EN.");
   lines.push("");
   lines.push("## How the Studio works (4 steps)");
   lines.push("1. Idea & vision: name, one-line pitch, description (100–200 words), audience (role, pain, budget), competitors, USP, monetization.");
@@ -172,7 +172,7 @@ export function llmsTxt(): string {
   lines.push("");
   lines.push("## Plans");
   lines.push("- Free: 3 experts, 2 formats (ChatGPT Markdown, Claude XML), 5 AI credits/day (visitors without an account: 3), project library, share pages. No card.");
-  lines.push("- Monster Pro ($29/mo or $290/yr): 12 experts, Mega Chain, 5 formats, project files for coding agents (AGENTS.md, CLAUDE.md, .claude/agents, Cursor rules, Copilot instructions, Task Master PRD), Export to Builders, 1,000 AI credits/month (enhance 1, stack suggestion 1, refine 3; max 150/day).");
+  lines.push("- Monster Pro ($29/mo or $290/yr): 18 experts, Mega Chain, 5 formats, project files for coding agents (AGENTS.md, CLAUDE.md, .claude/agents, Cursor rules, Copilot instructions, Task Master PRD), Export to Builders, 1,000 AI credits/month (enhance 1, stack suggestion 1, refine 3; max 150/day).");
   lines.push("");
   lines.push("## MCP server (Streamable HTTP)");
   lines.push(`- Endpoint: ${SITE}/api/mcp  — works without a key (Free plan); add "Authorization: Bearer pm_live_…" for your plan, refine and file exports. Keys: ${SITE}/account/api`);

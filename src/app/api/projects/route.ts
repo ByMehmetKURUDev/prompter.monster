@@ -28,7 +28,7 @@ const StateSchema = z
     features: z.array(z.string().max(80)).max(60),
     payments: z.array(z.string().max(40)).max(20),
     compliance: z.array(z.string().max(40)).max(20),
-    experts: z.array(z.string().max(40)).max(12),
+    experts: z.array(z.string().max(40)).max(24),
     lang: z.enum(["TR", "EN"]),
     format: z.enum(["ChatGPT Markdown", "Claude XML", "Cursor Rules", "v0", "Lovable/Bolt"]),
   })

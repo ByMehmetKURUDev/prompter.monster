@@ -44,7 +44,7 @@ const T = {
     toolRows: {
       list_project_types: "Proje tiplerini (id, ad, kategori, açıklama) listeler.",
       get_type_preset: "Bir tipin hazır ayarı: uzmanlar, stack, v1 özellikleri, ödeme, gelir modeli.",
-      list_experts: "12 uzman personayı listeler.",
+      list_experts: "18 uzman personayı listeler.",
       generate_build_prompt: "Fikirden master build prompt'u (veya uzman başına prompt) üretir. Deterministik, kredi harcamaz.",
       export_files: "AGENTS.md, CLAUDE.md, .claude/agents, Cursor kuralları, Copilot talimatları, Task Master PRD'si döner.",
       get_shared_prompt: "/p/… ile paylaşılmış bir prompt'u getirir.",
@@ -70,7 +70,7 @@ const T = {
     limits: "Planlar ve sınırlar",
     limitRows: (s: { free: number; pro: number; proDay: number; refine: number; keyRate: number; anonRate: number }) => [
       ["Free (anahtarsız da)", `3 uzman · ChatGPT Markdown ve Claude XML · günde ${s.free} AI kredisi (anahtarla)`],
-      ["Monster Pro", `12 uzman · 5 format · proje dosyaları · ayda ${s.pro} AI kredisi (günde ≤${s.proDay})`],
+      ["Monster Pro", `18 uzman · 5 format · proje dosyaları · ayda ${s.pro} AI kredisi (günde ≤${s.proDay})`],
       ["Kredi", `Prompt üretimi 0 · refine_prompt ${s.refine} kredi`],
       ["Hız", `Anahtarla dakikada ${s.keyRate}, anahtarsız ${s.anonRate} istek (MCP'de yalnız araç çağrıları sayılır)`],
     ],
@@ -115,7 +115,7 @@ const T = {
     toolRows: {
       list_project_types: "Lists project types (id, name, category, description).",
       get_type_preset: "A type's preset: experts, stack, v1 features, payments, monetization.",
-      list_experts: "Lists the 12 expert personas.",
+      list_experts: "Lists the 18 expert personas.",
       generate_build_prompt: "Builds the master build prompt (or one prompt per expert) from the idea. Deterministic, no credits.",
       export_files: "Returns AGENTS.md, CLAUDE.md, .claude/agents, Cursor rules, Copilot instructions and a Task Master PRD.",
       get_shared_prompt: "Fetches a prompt shared at /p/….",
@@ -141,7 +141,7 @@ const T = {
     limits: "Plans and limits",
     limitRows: (s: { free: number; pro: number; proDay: number; refine: number; keyRate: number; anonRate: number }) => [
       ["Free (also keyless)", `3 experts · ChatGPT Markdown and Claude XML · ${s.free} AI credits a day (with a key)`],
-      ["Monster Pro", `12 experts · 5 formats · project files · ${s.pro} AI credits a month (≤${s.proDay} a day)`],
+      ["Monster Pro", `18 experts · 5 formats · project files · ${s.pro} AI credits a month (≤${s.proDay} a day)`],
       ["Credits", `Prompt generation 0 · refine_prompt ${s.refine} credits`],
       ["Rate", `${s.keyRate} requests a minute with a key, ${s.anonRate} without (MCP counts tool calls only)`],
     ],

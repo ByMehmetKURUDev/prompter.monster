@@ -13,6 +13,19 @@ export interface ChangelogEntry {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: "4.5",
+    date: "2026-09-26",
+    title: "18 uzman, 28 proje tipi, ajan dosyaları, kendini doğrula, admin kataloğu",
+    items: [
+      "6 yeni uzman: AI Ajan Mimarı, Otomasyon Mühendisi, Motion & 3D Tasarımcı, Performans Pazarlamacısı, Lansman & Topluluk Yöneticisi, Mobil & ASO Uzmanı (Pro: 18 uzmanın hepsi).",
+      "6 yeni proje tipi (TR + EN SEO sayfalarıyla): Otonom AI ajan sistemi, n8n otomasyon akışı, WordPress / Elementor sitesi, Açılış sayfası / portfolyo, Mobil uygulama (iOS/Android), Şirket içi araç / admin paneli. Yeni kategoriler: AI & AUTOMATION, WEB & MOBILE.",
+      "Yeni stack seçenekleri (Claude Sonnet 5, Claude Agent SDK, MCP Servers, WordPress, MySQL, n8n, Expo EAS) ve 12 yeni özellik (ajan hafızası/MCP, zamanlanmış işler, insan onayı, CMS, push, çevrimdışı mod, uygulama içi satın alma…).",
+      "Kendini doğrula: her uzman prompt'u bir öz-kontrol listesiyle, her master prompt 'kendi çıktını test et ve düzelt' adımıyla biter (testler, Playwright ekran görüntüsü, Lighthouse ≥ 90, rapor).",
+      "Studio Export: kodlama ajanı dosyaları (Pro) — AGENTS.md, CLAUDE.md, .claude/agents (uzman başına alt ajan), .cursor/rules, .cursorrules, Copilot talimatları, Task Master PRD, JSON; tek tek ya da tek .zip.",
+      "Admin → Katalog: deploy gerekmeden yeni uzman / proje tipi ekle, yerleşik olanların metnini ve hazır ayarlarını düzenle, gizle ya da varsayılana döndür. Studio, API, MCP, /prompt sayfaları ve sitemap katalogu ~1 dakikada alır.",
+    ],
+  },
+  {
     version: "4.4",
     date: "2026-09-26",
     title: "Public API + MCP sunucusu — Prompt.Monster editörlerin içinde",

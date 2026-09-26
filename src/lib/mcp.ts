@@ -112,7 +112,7 @@ export function generateSchema(withOutput: boolean, outputs: string[] = ["mega",
       features: strArr("5–12 concrete v1 features, one per item.", 40),
       payments: strArr("Payment provider ids.", 8, { type: "string", enum: PAYMENTS.map((p) => p.id) }),
       compliance: strArr(`Compliance needs, e.g. ${COMPLIANCE.join(", ")}.`, 6),
-      experts: strArr("Expert ids (see list_experts). Free plan: first 3 are kept; Pro: up to 12. Omit to use the project type's picks.", 12, {
+      experts: strArr("Expert ids (see list_experts). Free plan: first 3 are kept; Pro: up to 18. Omit to use the project type's picks.", 18, {
         type: "string",
         enum: EXPERTS.map((e) => e.id),
       }),
@@ -178,7 +178,7 @@ const TOOLS: ToolDef[] = [
   {
     name: "list_experts",
     title: "List expert personas",
-    description: "Lists the 12 expert personas (id, role, speciality) that write sections of the build prompt. Free plan: 3 experts per prompt, Pro: all 12.",
+    description: "Lists the 18 expert personas (id, role, speciality) that write sections of the build prompt. Free plan: 3 experts per prompt, Pro: all 18.",
     inputSchema: { type: "object", properties: {} },
     annotations: { title: "List expert personas", readOnlyHint: true, idempotentHint: true, openWorldHint: false },
     async run() {

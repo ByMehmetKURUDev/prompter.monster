@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowRight, Check, ChevronRight, Layers, ShieldCheck, Sparkles, Users, Wallet, Zap } from "lucide-react";
-import { EXPERTS, FORMATS, MEGA_CHAIN_STEPS } from "@/lib/data";
+import { ALL_PROJECT_TYPES, EXPERTS, FORMATS, MEGA_CHAIN_STEPS } from "@/lib/data";
 import { lhref, type Locale } from "@/lib/i18n";
 import { SITE, categoryOf, expertsFor, pagesByCategory, paymentsFor, promptExcerpt, relatedPages, stackFor } from "@/lib/seo";
 import { typePageBySlug, typePages } from "@/lib/seo-types";
@@ -142,7 +142,7 @@ const TYPE = {
     how: (name: string, n: number) => [
       `"${name}" tipini seç, adını ve fikrini bir cümleyle yaz.`,
       "Önerilen stack ve özellikleri onayla ya da değiştir.",
-      `${n} uzman personayı seçili bul; istersen 12'ye çıkar.`,
+      `${n} uzman personayı seçili bul; istersen 18'e çıkar.`,
       "Formatı seç, üret, kopyala; Claude Code / Cursor / v0'a yapıştır.",
     ],
     expertsTitle: "Bu prompt'u yazan uzmanlar",
@@ -166,7 +166,7 @@ const TYPE = {
     ctaTitle: (name: string) => `${name} fikrini 4 adımda master prompt'a çevir.`,
     ctaText: "Uzmanlar, stack ve özellikler bu sayfadaki gibi hazır gelir; sen adını ve fikrini yaz. Ücretsiz, kart gerekmez.",
     ctaFree: "Ücretsiz üret",
-    ctaPro: "Pro ile 12 uzman + Mega Chain",
+    ctaPro: "Pro ile 18 uzman + Mega Chain",
     faq: [
       {
         q: "Üretilen prompt'u hangi araçlara yapıştırabilirim?",
@@ -174,7 +174,7 @@ const TYPE = {
       },
       {
         q: "Ücretsiz mi?",
-        a: "Evet. Free planda 3 uzman ve 2 format ile sınırsız prompt üretirsin; kart gerekmez. 12 uzman, Mega Chain ve Export to Builders Monster Pro'da ($29/ay).",
+        a: "Evet. Free planda 3 uzman ve 2 format ile sınırsız prompt üretirsin; kart gerekmez. 18 uzman, Mega Chain ve Export to Builders Monster Pro'da ($29/ay).",
       },
     ],
     notFound: "Sayfa bulunamadı",
@@ -193,7 +193,7 @@ const TYPE = {
     how: (name: string, n: number) => [
       `Pick the "${name}" type and describe your idea in one sentence.`,
       "Confirm or tweak the suggested stack and features.",
-      `${n} expert personas come preselected — go up to 12 if you like.`,
+      `${n} expert personas come preselected — go up to 18 if you like.`,
       "Pick a format, generate, copy and paste into Claude Code / Cursor / v0.",
     ],
     expertsTitle: "The experts who write this prompt",
@@ -217,7 +217,7 @@ const TYPE = {
     ctaTitle: (name: string) => `Turn your ${name} idea into a master prompt in 4 steps.`,
     ctaText: "Experts, stack and features come preloaded like on this page — you add the name and the idea. Free, no card required.",
     ctaFree: "Generate for free",
-    ctaPro: "Pro: 12 experts + Mega Chain",
+    ctaPro: "Pro: 18 experts + Mega Chain",
     faq: [
       {
         q: "Which tools can I paste the generated prompt into?",
@@ -225,7 +225,7 @@ const TYPE = {
       },
       {
         q: "Is it free?",
-        a: "Yes. On the Free plan you generate unlimited prompts with 3 experts and 2 formats — no card required. 12 experts, the Mega Chain and Export to Builders come with Monster Pro ($29/mo).",
+        a: "Yes. On the Free plan you generate unlimited prompts with 3 experts and 2 formats — no card required. 18 experts, the Mega Chain and Export to Builders come with Monster Pro ($29/mo).",
       },
     ],
     notFound: "Page not found",
@@ -240,7 +240,8 @@ export function typePageMeta(slug: string, locale: Locale) {
 
 export function TypePageView({ slug, locale }: { slug: string; locale: Locale }) {
   const page = typePageBySlug(slug, locale);
-  if (!page) notFound();
+  // Types hidden in /admin/catalog are gone from ALL_PROJECT_TYPES (catalog applied by the route).
+  if (!page || !ALL_PROJECT_TYPES.some((t) => t.id === page.id)) notFound();
   const t = TYPE[locale];
   const L = (p: string) => lhref(p, locale);
   const category = categoryOf(page.id);

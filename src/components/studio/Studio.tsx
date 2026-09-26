@@ -23,6 +23,7 @@ import { Step3Features } from "./Step3Features";
 import { Step4Experts } from "./Step4Experts";
 import { StepBar } from "./StepBar";
 import { Toast, cx } from "./ui";
+import { useCatalog } from "./useCatalog";
 import { useStudio } from "./useStudio";
 import { useT } from "./useT";
 
@@ -41,6 +42,8 @@ export function Studio({ dailyLimit }: { dailyLimit: number }) {
   const t = useT().studio;
   const pricing = lhref("/pricing", locale);
   const { state: s, patch, toggle, reset, setArray, load, hydrated } = useStudio();
+  // Admin-managed experts / project types; URL actions (?type=, ?project=) wait for it so custom types resolve.
+  const catalog = useCatalog();
   const [navTab, setNavTab] = useState("Studio");
   const [toast, setToast] = useState<string | null>(null);
   const [released, setReleased] = useState(false);
@@ -203,7 +206,7 @@ export function Studio({ dailyLimit }: { dailyLimit: number }) {
 
   // ?project=<id>&version=<n>  |  ?new=1  |  ?fork=<slug>  |  ?type=<projectType> (from /prompt/[slug])
   useEffect(() => {
-    if (!hydrated) return;
+    if (!hydrated || !catalog.ready) return;
     const sp = new URLSearchParams(window.location.search);
     const id = sp.get("project");
     const v = Number(sp.get("version"));
@@ -258,7 +261,7 @@ export function Studio({ dailyLimit }: { dailyLimit: number }) {
       }, 3000);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [hydrated]);
+  }, [hydrated, catalog.ready]);
 
   /** Create/copy the public link for the active version. */
   const [sharing, setSharing] = useState(false);

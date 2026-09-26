@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { ArrowRight, Eye, Sparkles } from "lucide-react";
 import { ShareActions } from "@/components/share/ShareActions";
 import { EXPERTS, PROJECT_CATEGORIES } from "@/lib/data";
+import { loadCatalog } from "@/lib/catalog-server";
 import { bumpViews, getShared } from "@/lib/share";
 import { LegalLinks } from "@/components/site/LegalLinks";
 
@@ -23,7 +24,7 @@ function projectTypeOf(id: string) {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
-  const shared = await getShared(slug);
+  const [shared] = await Promise.all([getShared(slug), loadCatalog()]);
   if (!shared) return { title: "Paylaşım bulunamadı", robots: { index: false } };
   const type = projectTypeOf(shared.project_type);
   const title = `${shared.name || "Adsız canavar"} — master build prompt`;
@@ -42,7 +43,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function SharedPromptPage({ params }: Props) {
   const { slug } = await params;
-  const shared = await getShared(slug);
+  const [shared] = await Promise.all([getShared(slug), loadCatalog()]);
   if (!shared) notFound();
   await bumpViews(shared.slug);
 
@@ -114,7 +115,7 @@ export default async function SharedPromptPage({ params }: Props) {
         <section className="mt-10 rounded-2xl border border-lime/30 bg-gradient-to-br from-lime/10 to-violet/10 p-6 md:p-8">
           <h2 className="text-xl md:text-2xl font-bold tracking-tight">Bu prompt Prompt.Monster ile üretildi.</h2>
           <p className="mt-2 text-[14px] text-zinc-400 max-w-[640px] leading-relaxed">
-            Kendi fikrini 4 adımda anlat; 12 uzman canavar (CTO, PM, Design, AI, SEO…) Claude Code, Cursor, v0, Lovable ve Bolt için
+            Kendi fikrini 4 adımda anlat; 18 uzman canavar (CTO, PM, Design, AI, SEO…) Claude Code, Cursor, v0, Lovable ve Bolt için
             kopyala-çalıştır kalitesinde build prompt&apos;unu yazsın. Kayıt gerektirmez.
           </p>
           <div className="mt-5 flex flex-wrap gap-3">

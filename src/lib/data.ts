@@ -17,6 +17,22 @@ export const PROJECT_CATEGORIES: ProjectCategory[] = [
     ],
   },
   {
+    cat: "🦾 AI & AUTOMATION",
+    items: [
+      { id: "ai-agents", name: "AI Agent System", icon: "🕸️", badge: "HOT" },
+      { id: "automation", name: "n8n Automation", icon: "🔁", badge: "NEW" },
+    ],
+  },
+  {
+    cat: "🌐 WEB & MOBILE",
+    items: [
+      { id: "wordpress", name: "WordPress Site", icon: "🌐", badge: "HOT" },
+      { id: "landing", name: "Landing / Portfolio", icon: "✨", badge: "" },
+      { id: "mobile", name: "Mobile App", icon: "📱", badge: "NEW" },
+      { id: "internal-tool", name: "Internal Tool", icon: "🛠️", badge: "" },
+    ],
+  },
+  {
     cat: "🛒 COMMERCE",
     items: [
       { id: "headless", name: "Headless E-Commerce", icon: "🛍️", badge: "HOT" },
@@ -77,12 +93,12 @@ export const TEMPLATES = [
 ];
 
 export const STACK = {
-  frontend: ["Next.js 15 (App Router)", "Remix v2", "Astro 4", "SvelteKit 2", "Nuxt 3", "React Native Expo", "Vite + TanStack", "Qwik City"],
-  backend: ["NestJS", "Hono + CF Workers", "Elysia (Bun)", "Go Fiber", "Laravel 11", "Django 5 + FastAPI", "Rust Axum", "tRPC + Next"],
-  database: ["PostgreSQL + pgvector", "Neon Serverless", "PlanetScale", "Supabase", "Turso Edge", "MongoDB Atlas", "ClickHouse", "Upstash Redis", "Qdrant Vector DB"],
+  frontend: ["Next.js 15 (App Router)", "Remix v2", "Astro 4", "SvelteKit 2", "Nuxt 3", "React Native Expo", "Vite + TanStack", "Qwik City", "WordPress + Elementor"],
+  backend: ["NestJS", "Hono + CF Workers", "Elysia (Bun)", "Go Fiber", "Laravel 11", "Django 5 + FastAPI", "Rust Axum", "tRPC + Next", "WordPress (PHP 8)"],
+  database: ["PostgreSQL + pgvector", "Neon Serverless", "PlanetScale", "Supabase", "Turso Edge", "MongoDB Atlas", "ClickHouse", "Upstash Redis", "Qdrant Vector DB", "MySQL / MariaDB"],
   auth: ["Clerk", "Auth.js v5", "Supabase Auth", "Lucia + Oslo", "Custom JWT", "WorkOS SSO"],
-  ai: ["OpenAI GPT-4o", "Claude 3.5 Sonnet", "Groq Llama 3 70B", "Perplexity API", "Replicate SDXL", "Fal.ai Flux", "ElevenLabs", "Pinecone"],
-  realtime: ["PartyKit", "Liveblocks", "Pusher", "Cloudflare R2", "UploadThing", "Resend", "Trigger.dev", "Inngest"],
+  ai: ["Claude Sonnet 5", "Claude Agent SDK", "MCP Servers", "OpenAI GPT-4o", "Claude 3.5 Sonnet", "Groq Llama 3 70B", "Perplexity API", "Replicate SDXL", "Fal.ai Flux", "ElevenLabs", "Pinecone"],
+  realtime: ["PartyKit", "Liveblocks", "Pusher", "Cloudflare R2", "UploadThing", "Resend", "Trigger.dev", "Inngest", "n8n (self-hosted)", "Expo EAS + Push"],
   search: ["Algolia", "Typesense", "Meilisearch"],
 } as const;
 
@@ -107,6 +123,12 @@ export const STACK_SUGGESTIONS: Record<string, string[]> = {
   neobank: ["Next.js 15 (App Router)", "Go Fiber", "PostgreSQL + pgvector", "WorkOS SSO"],
   social: ["Next.js 15 (App Router)", "tRPC + Next", "Supabase", "Supabase Auth", "Liveblocks"],
   edtech: ["Next.js 15 (App Router)", "NestJS", "Supabase", "Supabase Auth", "UploadThing"],
+  "ai-agents": ["Next.js 15 (App Router)", "Hono + CF Workers", "Supabase", "Supabase Auth", "Claude Sonnet 5", "Claude Agent SDK", "MCP Servers", "Trigger.dev"],
+  automation: ["Hono + CF Workers", "Supabase", "n8n (self-hosted)", "Claude Sonnet 5", "Resend"],
+  wordpress: ["WordPress + Elementor", "WordPress (PHP 8)", "MySQL / MariaDB", "Cloudflare R2"],
+  landing: ["Astro 4", "Hono + CF Workers", "Resend"],
+  mobile: ["React Native Expo", "Hono + CF Workers", "Supabase", "Supabase Auth", "Expo EAS + Push"],
+  "internal-tool": ["Next.js 15 (App Router)", "tRPC + Next", "PostgreSQL + pgvector", "WorkOS SSO", "Meilisearch"],
 };
 
 export const FEATURE_GROUPS: FeatureGroup[] = [
@@ -143,6 +165,23 @@ export const FEATURE_GROUPS: FeatureGroup[] = [
       "Referral + Credits",
       "In-app Onboarding Tour",
       "AI Assistant Copilot",
+    ],
+  },
+  {
+    cat: "AI, Web & Mobile",
+    items: [
+      "Agent Memory & Tools (MCP)",
+      "Scheduled Jobs & Triggers",
+      "Human-in-the-loop Approvals",
+      "Workflow Builder",
+      "Integrations (Slack/Notion/Sheets)",
+      "CMS & Blog",
+      "Contact Forms & Lead Capture",
+      "SEO Pages & Sitemap",
+      "Multi-language (i18n)",
+      "Push Notifications",
+      "Offline Mode & Sync",
+      "In-app Purchases",
     ],
   },
 ];
@@ -295,6 +334,72 @@ export const EXPERTS: Expert[] = [
     task: "Pricing: Freemium vs Free Trial, 3 tier ($19/$49/$149), annual %20 indirim, credit system. Seçilen ödeme sağlayıcılarıyla hybrid akış. Churn reduction taktikleri.",
     taskEn: "Pricing: Freemium vs. Free Trial, 3 tiers ($19/$49/$149), 20% annual discount, credit system. Hybrid flow with the selected payment providers. Churn-reduction tactics.",
   },
+  {
+    id: "agents",
+    emoji: "🕸️",
+    role: "AI Agent Architect",
+    org: "Multi-Agent Systems",
+    spec: "Agents, Memory & MCP",
+    years: 7,
+    color: "#22D3EE",
+    task: "Çoklu ajan sistemini tasarla: ajan rolleri ve sorumlulukları, orkestratör / alt ajan düzeni, ajan dosyaları (CLAUDE.md, AGENTS.md, .claude/agents), kısa ve uzun süreli hafıza, araçlar ve MCP sunucuları, zamanlayıcı ve tetikleyiciler, insan onayı gereken adımlar, diğer ajanları denetleyen bir 'bekçi' ajan, token/maliyet bütçesi ve bir değerlendirme (eval) seti.",
+    taskEn: "Design the multi-agent system: agent roles and responsibilities, orchestrator / sub-agent layout, agent files (CLAUDE.md, AGENTS.md, .claude/agents), short- and long-term memory, tools and MCP servers, schedules and triggers, steps that need human approval, a 'watchdog' agent that audits the others, a token/cost budget and an eval set.",
+  },
+  {
+    id: "automation",
+    emoji: "🔁",
+    role: "Automation Engineer",
+    org: "n8n & Make Power User",
+    spec: "Workflows & Integrations",
+    years: 8,
+    color: "#F59E0B",
+    task: "Otomasyon katmanını kur: n8n / Make akışları (tetikleyici → adımlar → çıktı), webhook sözleşmeleri, idempotency anahtarları, hata / yeniden deneme ve dead-letter kuralları, gizli anahtar yönetimi. Uygulamanın dışarıya açtığı MCP araçlarını ve entegrasyonları (Slack, Notion, Google Sheets, e-posta) tanımla; her akış için izleme ve uyarı kur.",
+    taskEn: "Build the automation layer: n8n / Make workflows (trigger → steps → output), webhook contracts, idempotency keys, error / retry and dead-letter rules, secrets handling. Define the MCP tools and integrations the app exposes (Slack, Notion, Google Sheets, email), and add monitoring and alerts for every flow.",
+  },
+  {
+    id: "motion",
+    emoji: "🌀",
+    role: "Motion & 3D Designer",
+    org: "Awwwards SOTD",
+    spec: "Three.js & GSAP",
+    years: 9,
+    color: "#E879F9",
+    task: "Hareket ve 3D deneyimini tasarla: Three.js / React Three Fiber sahneleri, GSAP ve ScrollTrigger geçişleri, mikro etkileşimler. Performans bütçesi (60 fps, LCP'yi bozmayan lazy-load, GPU maliyeti), mobil yedekler ve prefers-reduced-motion ile erişilebilirlik. Her animasyonun amacını, süresini ve tetikleyicisini tablo olarak ver.",
+    taskEn: "Design the motion and 3D experience: Three.js / React Three Fiber scenes, GSAP and ScrollTrigger transitions, micro-interactions. A performance budget (60 fps, lazy-loading that doesn't hurt LCP, GPU cost), mobile fallbacks and accessibility via prefers-reduced-motion. List every animation's purpose, duration and trigger in a table.",
+  },
+  {
+    id: "ads",
+    emoji: "🎯",
+    role: "Performance Marketer",
+    org: "$5M+ Ad Spend",
+    spec: "Paid Acquisition & CRO",
+    years: 9,
+    color: "#F97316",
+    task: "Performans pazarlama altyapısını kur: GA4 + Meta Pixel + Conversions API (sunucu tarafı), olay şeması ve UTM kuralları, çerez iznine uyumlu etiketleme. İlk Google / Meta kampanya yapısı (kitle, bütçe, kreatif açıları), açılış sayfası CRO kontrol listesi, A/B test planı ve CAC / ROAS hedefleri.",
+    taskEn: "Set up performance marketing: GA4 + Meta Pixel + Conversions API (server-side), an event schema and UTM rules, consent-aware tagging. The first Google / Meta campaign structure (audiences, budget, creative angles), a landing-page CRO checklist, an A/B test plan and CAC / ROAS targets.",
+  },
+  {
+    id: "launch",
+    emoji: "📣",
+    role: "Launch & Community Manager",
+    org: "Product Hunt #1",
+    spec: "Launch & First 100 Users",
+    years: 7,
+    color: "#FDE047",
+    task: "Lansman planını yaz: Product Hunt günü takvimi (saat saat), lansman teklifi ve indirim kodları, bekleme listesi ve e-posta dizisi, içerik üreticisi / ortaklık listesi, topluluk kanalları (Discord, Reddit, X) ve ilk 100 kullanıcıya ulaşma planı. Geri bildirim döngüsü ve lansman sonrası 30 günlük ritim.",
+    taskEn: "Write the launch plan: a Product Hunt day schedule (hour by hour), the launch offer and discount codes, a waitlist and email sequence, a creator / partner list, community channels (Discord, Reddit, X) and a plan to reach the first 100 users. A feedback loop and a 30-day post-launch cadence.",
+  },
+  {
+    id: "mobile",
+    emoji: "📱",
+    role: "Mobile & ASO Specialist",
+    org: "Top-10 App Store Apps",
+    spec: "Expo & App Store Optimization",
+    years: 8,
+    color: "#34D399",
+    task: "Mobil uygulamayı planla: Expo / React Native mimarisi, navigasyon, çevrimdışı çalışma ve senkronizasyon, push bildirimleri, uygulama içi satın alma (RevenueCat / StoreKit), EAS build ve sürüm yönetimi. App Store / Google Play için ASO: başlık, alt başlık, anahtar kelimeler, ekran görüntüsü senaryosu, ülkeye göre fiyat ve mağaza inceleme kurallarına uyum.",
+    taskEn: "Plan the mobile app: Expo / React Native architecture, navigation, offline mode and sync, push notifications, in-app purchases (RevenueCat / StoreKit), EAS builds and release management. ASO for the App Store / Google Play: title, subtitle, keywords, screenshot storyboard, per-country pricing and store-review compliance.",
+  },
 ];
 
 export const FORMATS = ["ChatGPT Markdown", "Claude XML", "Cursor Rules", "v0", "Lovable/Bolt"] as const;
@@ -314,8 +419,6 @@ export const MEGA_CHAIN_STEPS = [
 export const EXPORT_TARGETS = [
   { id: "md", name: "Markdown (.md)", desc: "Notion / GitHub için", descEn: "For Notion / GitHub", icon: "📝", ext: "md" },
   { id: "json", name: "JSON (structured)", desc: "API & Automation", descEn: "API & Automation", icon: "🧩", ext: "json" },
-  { id: "cursorrules", name: ".cursorrules", desc: "Cursor IDE kuralları", descEn: "Cursor IDE rules", icon: "⚡", ext: "cursorrules" },
-  { id: "claude", name: "CLAUDE.md", desc: "Claude Code için", descEn: "For Claude Code", icon: "🤖", ext: "md" },
   { id: "txt", name: "Plain text (.txt)", desc: "Her araca yapıştır", descEn: "Paste into any tool", icon: "📄", ext: "txt" },
 ] as const;
 

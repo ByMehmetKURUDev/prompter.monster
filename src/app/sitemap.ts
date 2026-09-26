@@ -1,5 +1,7 @@
 import type { MetadataRoute } from "next";
 import { createClient } from "@supabase/supabase-js";
+import { loadCatalog } from "@/lib/catalog-server";
+import { ALL_PROJECT_TYPES } from "@/lib/data";
 import { TYPE_PAGES, TYPE_PAGES_EN } from "@/lib/seo-types";
 import { LEGAL_SLUGS, LEGAL_UPDATED } from "@/lib/legal/types";
 
@@ -9,6 +11,8 @@ export const dynamic = "force-dynamic";
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const site = process.env.NEXT_PUBLIC_SITE_URL || "https://prompter.monster";
   const now = new Date();
+  await loadCatalog();
+  const visible = new Set(ALL_PROJECT_TYPES.map((t) => t.id));
   const entries: MetadataRoute.Sitemap = [
     { url: `${site}/`, lastModified: now, changeFrequency: "weekly", priority: 1 },
     { url: `${site}/studio`, lastModified: now, changeFrequency: "weekly", priority: 0.9 },
@@ -16,7 +20,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${site}/prompt`, lastModified: now, changeFrequency: "weekly", priority: 0.8 },
     { url: `${site}/docs`, lastModified: now, changeFrequency: "monthly", priority: 0.7 },
     { url: `${site}/developers`, lastModified: now, changeFrequency: "monthly", priority: 0.7 },
-    ...TYPE_PAGES.map((p) => ({ url: `${site}/prompt/${p.slug}`, lastModified: now, changeFrequency: "monthly" as const, priority: 0.7 })),
+    ...TYPE_PAGES.filter((p) => visible.has(p.id)).map((p) => ({ url: `${site}/prompt/${p.slug}`, lastModified: now, changeFrequency: "monthly" as const, priority: 0.7 })),
     // English twins
     { url: `${site}/en`, lastModified: now, changeFrequency: "weekly", priority: 0.9 },
     { url: `${site}/en/studio`, lastModified: now, changeFrequency: "weekly", priority: 0.8 },
@@ -24,7 +28,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${site}/en/prompt`, lastModified: now, changeFrequency: "weekly", priority: 0.7 },
     { url: `${site}/en/docs`, lastModified: now, changeFrequency: "monthly", priority: 0.6 },
     { url: `${site}/en/developers`, lastModified: now, changeFrequency: "monthly", priority: 0.7 },
-    ...TYPE_PAGES_EN.map((p) => ({ url: `${site}/en/prompt/${p.slug}`, lastModified: now, changeFrequency: "monthly" as const, priority: 0.6 })),
+    ...TYPE_PAGES_EN.filter((p) => visible.has(p.id)).map((p) => ({ url: `${site}/en/prompt/${p.slug}`, lastModified: now, changeFrequency: "monthly" as const, priority: 0.6 })),
     ...LEGAL_SLUGS.flatMap((slug) => [
       { url: `${site}/legal/${slug}`, lastModified: new Date(LEGAL_UPDATED), changeFrequency: "yearly" as const, priority: 0.2 },
       { url: `${site}/en/legal/${slug}`, lastModified: new Date(LEGAL_UPDATED), changeFrequency: "yearly" as const, priority: 0.2 },
