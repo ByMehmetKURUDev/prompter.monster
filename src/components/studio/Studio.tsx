@@ -5,6 +5,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { EXPERTS } from "@/lib/data";
 import type { MeResponse } from "@/lib/db";
 import { ApiError, enhanceDescription, refinePrompt, suggestStack } from "@/lib/client";
+import { type PlanId, UPGRADE_HINT, limitsFor } from "@/lib/plans";
 import { buildExpertPrompt, estimateTokens, qualityScore } from "@/lib/prompt";
 import type { StudioState } from "@/lib/types";
 import { Footer } from "./Footer";
@@ -73,6 +74,48 @@ export function Studio({ dailyLimit }: { dailyLimit: number }) {
     const now = JSON.stringify(s);
     setDirty(now !== lastSaved.current);
   }, [s, hydrated]);
+
+  /* ---- plan entitlements (Free vs Pro) ---- */
+  const plan: PlanId = me?.plan === "pro" ? "pro" : "free";
+  const limits = useMemo(() => limitsFor(plan), [plan]);
+
+  // Once we know the plan, bring a loaded/forked/default state within the Free limits.
+  useEffect(() => {
+    if (!hydrated || !me) return; // wait for /api/me so a Pro user is never trimmed
+    if (plan === "pro") return;
+    const fixes: Partial<StudioState> = {};
+    if (s.experts.length > limits.experts) fixes.experts = s.experts.slice(0, limits.experts);
+    if (!limits.formats.includes(s.format)) fixes.format = "Claude XML";
+    if (Object.keys(fixes).length) {
+      patch(fixes);
+      say(`Free plan: en fazla ${limits.experts} uzman ve ${limits.formats.length} format. ${UPGRADE_HINT}`, 5000);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [hydrated, me, plan, s.experts.length, s.format]);
+
+  /** Expert toggle with the plan cap applied. */
+  const toggleExpert = useCallback(
+    (id: string) => {
+      if (!s.experts.includes(id) && s.experts.length >= limits.experts) {
+        say(plan === "pro" ? `En fazla ${limits.experts} uzman seçilebilir.` : `Free planda en fazla ${limits.experts} uzman. ${UPGRADE_HINT}`, 4500);
+        return;
+      }
+      toggle("experts", id);
+    },
+    [s.experts, limits.experts, plan, say, toggle],
+  );
+
+  /** Format change with the plan gate applied. */
+  const setFormat = useCallback(
+    (format: StudioState["format"]) => {
+      if (!limits.formats.includes(format)) {
+        say(`"${format}" formatı Pro planda. ${UPGRADE_HINT}`, 4500);
+        return;
+      }
+      patch({ format });
+    },
+    [limits.formats, patch, say],
+  );
 
   const loadProject = useCallback(
     async (id: string, version?: number | null) => {
@@ -450,7 +493,9 @@ export function Studio({ dailyLimit }: { dailyLimit: number }) {
             {s.step === 1 && <Step1Idea s={s} patch={patch} toggle={toggle} onEnhance={enhance} enhancing={enhancing} />}
             {s.step === 2 && <Step2Stack s={s} toggle={toggleStack} onSuggest={suggest} suggesting={suggesting} aiPicks={aiPicks} aiWhy={aiWhy} />}
             {s.step === 3 && <Step3Features s={s} toggle={toggle} />}
-            {s.step === 4 && <Step4Experts s={s} toggle={toggle} patch={patch} onGenerate={generate} generating={generating} tokens={tokens} />}
+            {s.step === 4 && (
+              <Step4Experts s={s} onToggleExpert={toggleExpert} onFormat={setFormat} patch={patch} onGenerate={generate} generating={generating} tokens={tokens} plan={plan} limits={limits} />
+            )}
 
             <div className="mt-8 flex items-center justify-between border-t border-ink-600 pt-6">
               <button
@@ -491,6 +536,8 @@ export function Studio({ dailyLimit }: { dailyLimit: number }) {
                 refined={refined}
                 onClearRefined={clearRefined}
                 toast={say}
+                plan={plan}
+                limits={limits}
               />
             </div>
           </div>
@@ -515,6 +562,8 @@ export function Studio({ dailyLimit }: { dailyLimit: number }) {
             refined={refined}
             onClearRefined={clearRefined}
             toast={say}
+            plan={plan}
+            limits={limits}
           />
         </aside>
       </div>

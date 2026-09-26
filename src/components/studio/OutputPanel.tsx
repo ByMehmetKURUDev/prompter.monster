@@ -1,10 +1,12 @@
 "use client";
 
-import { Check, Copy, Crown, Download, FileText, Sparkles, Users, Zap } from "lucide-react";
+import { Check, Copy, Crown, Download, FileText, Lock, Sparkles, Users, Zap } from "lucide-react";
+import Link from "next/link";
 import { useMemo, useState } from "react";
 import { BUILDERS, EXPERTS, EXPORT_TARGETS, MEGA_CHAIN_STEPS } from "@/lib/data";
 import { buildExpertPrompt, buildMegaPreview, buildMegaPrompt, exportClaudeMd, exportCursorRules, exportJSON, slugify } from "@/lib/prompt";
 import { copyText, downloadText } from "@/lib/client";
+import { PRO_EXPORTS, type PlanId, type PlanLimits } from "@/lib/plans";
 import type { StudioState } from "@/lib/types";
 import { Spinner, cx } from "./ui";
 
@@ -61,6 +63,8 @@ export function OutputPanel({
   refined,
   onClearRefined,
   toast,
+  plan,
+  limits,
 }: {
   s: StudioState;
   released: boolean;
@@ -74,6 +78,8 @@ export function OutputPanel({
   refined: Record<string, string>;
   onClearRefined: (expertId: string) => void;
   toast: (m: string) => void;
+  plan: PlanId;
+  limits: PlanLimits;
 }) {
   const [copied, setCopied] = useState<string | null>(null);
 
@@ -91,6 +97,10 @@ export function OutputPanel({
   const isRefined = Boolean(activeExpert && refined[activeExpert.id]);
 
   const doExport = (id: (typeof EXPORT_TARGETS)[number]["id"]) => {
+    if (PRO_EXPORTS.has(id) && !limits.builders) {
+      toast("Bu export Pro planda — /pricing");
+      return;
+    }
     const slug = slugify(s.name);
     switch (id) {
       case "md":
@@ -193,7 +203,7 @@ export function OutputPanel({
                 tab === "mega" ? "bg-lime text-black border-lime" : "bg-ink-800 border-ink-600 text-zinc-400",
               )}
             >
-              <Zap className="w-3 h-3" aria-hidden /> MEGA CHAIN
+              {limits.megaChain ? <Zap className="w-3 h-3" aria-hidden /> : <Lock className="w-3 h-3" aria-hidden />} MEGA CHAIN
             </button>
             <button
               type="button"
@@ -208,7 +218,33 @@ export function OutputPanel({
           </div>
 
           <div className="flex-1 overflow-y-auto scrollbar-thin">
-            {tab === "mega" ? (
+            {tab === "mega" && !limits.megaChain ? (
+              <div className="p-4 space-y-4">
+                <div className="rounded-xl bg-gradient-to-br from-lime/10 to-violet/10 border border-lime/30 p-5 text-center">
+                  <div className="w-12 h-12 mx-auto rounded-xl bg-ink-950 border border-ink-600 grid place-items-center">
+                    <Lock className="w-5 h-5 text-lime" aria-hidden />
+                  </div>
+                  <div className="mt-3 text-[14px] font-bold">Mega Chain Pro planda</div>
+                  <p className="mt-1 text-[12px] text-zinc-400 leading-relaxed">
+                    {MEGA_CHAIN_STEPS.length} adımlı zincir + tek parça master prompt: PRD&apos;den deploy&apos;a kadar her adım bir öncekinin çıktısını kullanır. 12 uzman ve 5 format da Pro&apos;yla açılır.
+                  </p>
+                  <Link href="/pricing" className="mt-4 inline-flex h-9 px-4 rounded-lg bg-lime text-black text-[12px] font-bold items-center gap-1.5">
+                    <Crown className="w-3.5 h-3.5" aria-hidden /> Pro&apos;ya geç — $29/ay
+                  </Link>
+                </div>
+                <div className="rounded-xl bg-ink-800 border border-ink-600 p-4 opacity-60 select-none" aria-hidden>
+                  <div className="text-[11px] font-bold tracking-widest text-zinc-500 mb-3">ÖNİZLEME • {MEGA_CHAIN_STEPS.length} ADIM</div>
+                  <div className="space-y-2">
+                    {MEGA_CHAIN_STEPS.map((st, i) => (
+                      <div key={st} className="flex items-center gap-3 text-[12px] text-zinc-500">
+                        <span className="w-6 h-6 rounded-full bg-ink-950 border border-ink-600 grid place-items-center text-[10px] font-bold">{i + 1}</span>
+                        {st}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            ) : tab === "mega" ? (
               <div className="p-4 space-y-4">
                 <div className="rounded-xl bg-ink-800 border border-ink-600 p-4">
                   <div className="text-[11px] font-bold tracking-widest text-lime mb-3">MEGA CHAIN • {MEGA_CHAIN_STEPS.length} ADIM</div>
@@ -252,24 +288,44 @@ export function OutputPanel({
                         <div className="text-[11px] text-zinc-500">{t.desc}</div>
                       </div>
                     </div>
-                    <button type="button" onClick={() => doExport(t.id)} className="h-8 px-3 rounded-lg bg-white text-black text-[11px] font-bold">
-                      İndir
+                    <button
+                      type="button"
+                      onClick={() => doExport(t.id)}
+                      className={cx("h-8 px-3 rounded-lg text-[11px] font-bold flex items-center gap-1", PRO_EXPORTS.has(t.id) && !limits.builders ? "bg-ink-950 border border-ink-600 text-zinc-500" : "bg-white text-black")}
+                    >
+                      {PRO_EXPORTS.has(t.id) && !limits.builders && <Lock className="w-3 h-3" aria-hidden />}
+                      {PRO_EXPORTS.has(t.id) && !limits.builders ? "Pro" : "İndir"}
                     </button>
                   </div>
                 ))}
                 <div className="rounded-xl bg-gradient-to-br from-lime/10 to-violet/10 border border-lime/20 p-4">
-                  <div className="text-[12px] font-bold">Export to Builders</div>
-                  <div className="text-[11px] text-zinc-500 mt-1">Aracın formatında kopyalar; yapıştırman yeter.</div>
+                  <div className="flex items-center justify-between">
+                    <div className="text-[12px] font-bold flex items-center gap-1.5">
+                      {!limits.builders && <Lock className="w-3.5 h-3.5 text-lime" aria-hidden />} Export to Builders
+                    </div>
+                    {!limits.builders && (
+                      <Link href="/pricing" className="text-[11px] text-lime font-semibold">
+                        Pro&apos;ya geç →
+                      </Link>
+                    )}
+                  </div>
+                  <div className="text-[11px] text-zinc-500 mt-1">
+                    {limits.builders ? "Aracın formatında kopyalar; yapıştırman yeter." : "Cursor, Windsurf, v0, Lovable ve Bolt formatında tek tıkla kopyalama Pro planda."}
+                  </div>
                   <div className="grid grid-cols-3 gap-2 mt-3">
                     {BUILDERS.map((b) => (
                       <button
                         key={b}
                         type="button"
                         onClick={() => {
+                          if (!limits.builders) {
+                            toast("Export to Builders Pro planda — /pricing");
+                            return;
+                          }
                           const fmt = b === "Cursor" || b === "Windsurf" ? "Cursor Rules" : b === "v0" ? "v0" : b === "Lovable" || b === "Bolt" ? "Lovable/Bolt" : "ChatGPT Markdown";
                           copy(buildMegaPrompt({ ...s, format: fmt }), `b:${b}`);
                         }}
-                        className="h-9 rounded-lg bg-ink-950 border border-ink-600 text-[11px] font-medium hover:border-ink-400 flex items-center justify-center gap-1"
+                        className={cx("h-9 rounded-lg bg-ink-950 border border-ink-600 text-[11px] font-medium hover:border-ink-400 flex items-center justify-center gap-1", !limits.builders && "opacity-60")}
                       >
                         {copied === `b:${b}` ? <Check className="w-3 h-3 text-lime" /> : null}
                         {b}
