@@ -1,11 +1,34 @@
-import type { NextRequest, NextResponse } from "next/server";
+import { NextResponse, type NextRequest } from "next/server";
+import { LOCALE_COOKIE, enReady, localePath, stripLocale } from "@/lib/i18n";
 import { ATTR_CODE_COOKIE, ATTR_SOURCE_COOKIE, CODE_MAX_AGE, SOURCE_MAX_AGE, sanitizeCode, serializeSource, sourceFromRequest } from "@/lib/attribution";
 import { updateSession } from "@/lib/supabase/middleware";
 
 export async function middleware(request: NextRequest) {
+  const langRedirect = preferredLanguageRedirect(request);
+  if (langRedirect) {
+    applyAttribution(request, langRedirect);
+    return langRedirect;
+  }
   const response = await updateSession(request);
   applyAttribution(request, response);
   return response;
+}
+
+/**
+ * Visitors who explicitly chose English (pm_lang=en, set by the language switch) are sent from a Turkish URL
+ * to its /en twin. No cookie → no redirect (search engines always see the URL they asked for).
+ */
+function preferredLanguageRedirect(request: NextRequest): NextResponse | null {
+  if (request.method !== "GET") return null;
+  if (request.cookies.get(LOCALE_COOKIE)?.value !== "en") return null;
+  const dest = request.headers.get("sec-fetch-dest");
+  const isDocument = dest ? dest === "document" : (request.headers.get("accept") || "").includes("text/html");
+  if (!isDocument) return null;
+  const { locale, path } = stripLocale(request.nextUrl.pathname);
+  if (locale === "en" || !enReady(path)) return null;
+  const to = request.nextUrl.clone();
+  to.pathname = localePath(path, "en");
+  return NextResponse.redirect(to, 307);
 }
 
 /**

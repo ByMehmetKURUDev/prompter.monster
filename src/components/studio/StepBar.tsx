@@ -1,25 +1,23 @@
 "use client";
 
 import { cx } from "./ui";
+import { useT } from "./useT";
 
-const STEPS = [
-  { n: 1, t: "FİKİR & VİZYON" },
-  { n: 2, t: "TEKNOLOJİ & MİMARİ" },
-  { n: 3, t: "ÖZELLİKLER & ÖDEME" },
-  { n: 4, t: "UZMANLAR & ÜRET" },
-] as const;
+const STEP_NUMBERS = [1, 2, 3, 4] as const;
 
 export function StepBar({ step, onStep, quality }: { step: number; onStep: (n: 1 | 2 | 3 | 4) => void; quality: number }) {
+  const t = useT().stepBar;
+  const steps = STEP_NUMBERS.map((n) => ({ n, t: t.steps[n - 1] }));
   return (
     <div className="sticky top-[56px] z-30 bg-ink-950/90 backdrop-blur border-b border-ink-600">
       <div className="px-4 lg:px-8 py-4 flex items-center gap-4 overflow-x-auto scrollbar-none">
         <div className="flex items-center gap-2">
-          {STEPS.map((s) => (
+          {steps.map((s) => (
             <div key={s.n} className="flex items-center gap-2">
               <button
                 type="button"
                 onClick={() => onStep(s.n)}
-                aria-label={`Adım ${s.n}: ${s.t}`}
+                aria-label={t.stepAria(s.n, s.t)}
                 aria-current={step === s.n ? "step" : undefined}
                 className={cx(
                   "w-8 h-8 rounded-full grid place-items-center text-[12px] font-bold border transition",
@@ -37,7 +35,7 @@ export function StepBar({ step, onStep, quality }: { step: number; onStep: (n: 1
           ))}
         </div>
         <div className="ml-4 hidden md:flex items-center gap-6 text-[12px]">
-          {STEPS.map((s) => (
+          {steps.map((s) => (
             <span key={s.n} className={cx(step === s.n ? "text-white font-semibold" : "text-zinc-500", "flex items-center gap-1.5")}>
               {s.t}
               {step === s.n && <span className="w-1 h-1 rounded-full bg-lime" />}

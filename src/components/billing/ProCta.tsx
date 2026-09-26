@@ -104,7 +104,16 @@ export function ProCta({ className, next = "/pricing", code }: { className?: str
     try {
       const r = await fetch("/api/billing/checkout", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ plan }) });
       const j = (await r.json().catch(() => ({}))) as { url?: string; error?: string; code?: string | null };
-      if (!r.ok || !j.url) throw new Error(j.error ?? c.failed);
+      if (!r.ok || !j.url) {
+        const en: Record<string, string> = {
+          checkout_disabled: "Pro checkout is temporarily unavailable. Please try again shortly.",
+          unauthenticated: "Please sign in first.",
+          already_pro: "You're already on Pro.",
+          billing_not_configured: "Payments aren't switched on yet.",
+          checkout_failed: "Couldn't create the checkout page — please try again in a moment.",
+        };
+        throw new Error((locale === "en" && j.code && en[j.code]) || j.error || c.failed);
+      }
       track("begin_checkout", { plan, value: plan === "yearly" ? 290 : 29, currency: "USD", coupon: j.code ?? undefined });
       window.location.assign(j.url);
     } catch (e) {

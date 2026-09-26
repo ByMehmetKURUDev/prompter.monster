@@ -1,7 +1,8 @@
 "use client";
 
 import { useCallback, useEffect, useReducer, useRef, useState } from "react";
-import { DEFAULT_STATE, EMPTY_STATE } from "@/lib/data";
+import { useLocale } from "@/components/site/LocaleProvider";
+import { DEFAULT_STATE, DEFAULT_STATE_EN, EMPTY_STATE, EMPTY_STATE_EN } from "@/lib/data";
 import type { StudioState } from "@/lib/types";
 
 const STORAGE_KEY = "prompt-monster:studio:v1";
@@ -32,28 +33,33 @@ function reducer(s: StudioState, a: Action): StudioState {
   }
 }
 
-function loadSaved(): StudioState | null {
+/** The visitor's saved draft on top of `base` (a draft keeps its own `lang`). */
+function loadSaved(base: StudioState): StudioState | null {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (!raw) return null;
     const parsed = JSON.parse(raw) as Partial<StudioState>;
-    return { ...DEFAULT_STATE, ...parsed, step: 1 };
+    return { ...base, ...parsed, step: 1 };
   } catch {
     return null;
   }
 }
 
 export function useStudio() {
-  const [state, dispatch] = useReducer(reducer, DEFAULT_STATE);
+  // English pages (/en/studio) start from the English sample and blank project; Turkish pages as before.
+  const en = useLocale() === "en";
+  const base = en ? DEFAULT_STATE_EN : DEFAULT_STATE;
+  const blank = en ? EMPTY_STATE_EN : EMPTY_STATE;
+  const [state, dispatch] = useReducer(reducer, base);
   const [hydrated, setHydrated] = useState(false);
   const skipSave = useRef(true);
 
   // Restore the visitor's last project (per-browser convenience until accounts arrive in Faz 2).
   useEffect(() => {
-    const saved = loadSaved();
+    const saved = loadSaved(base);
     if (saved) dispatch({ type: "replace", state: saved });
     setHydrated(true);
-  }, []);
+  }, [base]);
 
   useEffect(() => {
     if (!hydrated) return;
@@ -71,9 +77,9 @@ export function useStudio() {
   const patch = useCallback((p: Partial<StudioState>) => dispatch({ type: "patch", patch: p }), []);
   const toggle = useCallback((key: ArrayKey, value: string) => dispatch({ type: "toggle", key, value }), []);
   const setArray = useCallback((key: ArrayKey, value: string[]) => dispatch({ type: "setArray", key, value }), []);
-  const reset = useCallback((blank = false) => dispatch({ type: "replace", state: blank ? EMPTY_STATE : DEFAULT_STATE }), []);
+  const reset = useCallback((toBlank = false) => dispatch({ type: "replace", state: toBlank ? blank : base }), [base, blank]);
   /** Replace the whole state (e.g. a project loaded from the library). */
-  const load = useCallback((next: StudioState) => dispatch({ type: "replace", state: { ...DEFAULT_STATE, ...next } }), []);
+  const load = useCallback((next: StudioState) => dispatch({ type: "replace", state: { ...base, ...next } }), [base]);
 
   return { state, patch, toggle, setArray, reset, load, hydrated };
 }

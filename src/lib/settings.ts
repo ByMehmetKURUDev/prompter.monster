@@ -31,6 +31,7 @@ export const SETTINGS_REGISTRY: SettingDef[] = [
 
   // Duyuru
   { key: "announcement", label: "Duyuru şeridi", description: "Boş değilse sitenin üstünde görünür (örn. 'Product Hunt lansmanı: yıllık planda %30 — kod PH30').", type: "text", default: "", group: "Duyuru", isPublic: true, since: "2026-09-26" },
+  { key: "announcement_en", label: "Duyuru şeridi (İngilizce)", description: "İngilizce sayfalarda (/en) gösterilir. Boşsa Türkçe metin gösterilir.", type: "text", default: "", group: "Duyuru", isPublic: true, since: "2026-09-26" },
   { key: "announcement_url", label: "Duyuru bağlantısı", description: "Şeride tıklanınca gidilecek adres (boş bırakılabilir).", type: "string", default: "", group: "Duyuru", isPublic: true, since: "2026-09-26" },
 
   // AI
@@ -104,6 +105,7 @@ export interface PublicSettings {
   signup_enabled: boolean;
   share_enabled: boolean;
   announcement: string;
+  announcement_en: string;
   announcement_url: string;
   ai_enabled: boolean;
   anon_credits_per_day: number;

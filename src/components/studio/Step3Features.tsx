@@ -4,6 +4,7 @@ import { Layers, Shield } from "lucide-react";
 import { COMPLIANCE, FEATURE_GROUPS, PAYMENTS } from "@/lib/data";
 import type { StudioState } from "@/lib/types";
 import { Card, CheckBox, Pill, Radio, SectionLabel, StepHeader, cx } from "./ui";
+import { useT } from "./useT";
 
 export function Step3Features({
   s,
@@ -12,9 +13,10 @@ export function Step3Features({
   s: StudioState;
   toggle: (key: "features" | "payments" | "compliance", v: string) => void;
 }) {
+  const t = useT().step3;
   return (
     <div className="space-y-6 animate-fade-in">
-      <StepHeader icon={<Layers className="w-5 h-5 text-lime" aria-hidden />} title="Özellikler & Ödeme" subtitle="30+ özellik, 8 ödeme sistemi" />
+      <StepHeader icon={<Layers className="w-5 h-5 text-lime" aria-hidden />} title={t.title} subtitle={t.subtitle} />
 
       <div className="grid gap-4">
         {FEATURE_GROUPS.map((g) => (
@@ -44,7 +46,7 @@ export function Step3Features({
         ))}
 
         <Card className="p-5">
-          <SectionLabel className="mb-3">ÖDEME SİSTEMLERİ</SectionLabel>
+          <SectionLabel className="mb-3">{t.payments}</SectionLabel>
           <div className="grid md:grid-cols-2 gap-3">
             {PAYMENTS.map((p) => {
               const on = s.payments.includes(p.id);

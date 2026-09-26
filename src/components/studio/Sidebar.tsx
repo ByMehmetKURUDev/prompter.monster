@@ -2,8 +2,11 @@
 
 import { ArrowRight } from "lucide-react";
 import Link from "next/link";
+import { useLocale } from "@/components/site/LocaleProvider";
 import { PROJECT_CATEGORIES, TEMPLATES } from "@/lib/data";
+import { lhref } from "@/lib/i18n";
 import { cx } from "./ui";
+import { useT } from "./useT";
 
 export function Sidebar({
   projectType,
@@ -29,6 +32,8 @@ export function Sidebar({
   signedIn: boolean;
   plan: "free" | "pro" | null;
 }) {
+  const locale = useLocale();
+  const t = useT().sidebar;
   const pct = Math.min(100, Math.round((usedToday / Math.max(1, dailyLimit)) * 100));
   const monthPct = monthLimit ? Math.min(100, Math.round(((monthUsed ?? 0) / Math.max(1, monthLimit)) * 100)) : 0;
   return (
@@ -39,13 +44,13 @@ export function Sidebar({
           onClick={onNew}
           className="w-full h-11 rounded-xl bg-lime text-black font-bold text-[13px] tracking-wide flex items-center justify-center gap-2 shadow-[0_0_20px_rgba(163,255,18,0.3)] hover:shadow-[0_0_30px_rgba(163,255,18,0.5)] transition"
         >
-          <span className="text-lg">+</span> Yeni Canavar Yarat
+          <span className="text-lg">+</span> {t.newProject}
         </button>
       </div>
 
       <div className="flex-1 overflow-y-auto px-3 pb-4 space-y-6 scrollbar-thin">
         <div>
-          <div className="text-[11px] font-semibold tracking-widest text-zinc-500 px-2 mb-2">PROJE TİPLERİ</div>
+          <div className="text-[11px] font-semibold tracking-widest text-zinc-500 px-2 mb-2">{t.projectTypes}</div>
           {PROJECT_CATEGORIES.map((c) => (
             <div key={c.cat} className="mb-4">
               <div className="text-[10px] font-bold text-zinc-600 px-2 mb-1 tracking-widest">{c.cat}</div>
@@ -84,7 +89,7 @@ export function Sidebar({
         </div>
 
         <div>
-          <div className="text-[11px] font-semibold tracking-widest text-zinc-500 px-2 mb-2">HAZIR ŞABLONLAR</div>
+          <div className="text-[11px] font-semibold tracking-widest text-zinc-500 px-2 mb-2">{t.templates}</div>
           <div className="space-y-1">
             {TEMPLATES.slice(0, 10).map((t) => (
               <button
@@ -106,7 +111,7 @@ export function Sidebar({
           {plan === "pro" && monthLimit ? (
             <>
               <div className="flex justify-between text-[11px] text-zinc-500 mb-1.5">
-                <span>AI kredisi — bu ay (Pro)</span>
+                <span>{t.proMonthCredits}</span>
                 <span className="tabular-nums">
                   {monthUsed ?? 0}/{monthLimit}
                 </span>
@@ -114,14 +119,12 @@ export function Sidebar({
               <div className="h-1.5 rounded-full bg-ink-600 overflow-hidden">
                 <div className="h-full bg-gradient-to-r from-lime to-violet" style={{ width: `${monthPct}%` }} />
               </div>
-              <div className="mt-1.5 text-[10px] text-zinc-600 tabular-nums">
-                Bugün {usedToday}/{dailyLimit} (günlük adil kullanım)
-              </div>
+              <div className="mt-1.5 text-[10px] text-zinc-600 tabular-nums">{t.proToday(usedToday, dailyLimit)}</div>
             </>
           ) : (
             <>
               <div className="flex justify-between text-[11px] text-zinc-500 mb-1.5">
-                <span>{signedIn ? "Günlük AI kredisi (Free)" : "Günlük AI kredisi (ziyaretçi)"}</span>
+                <span>{signedIn ? t.dailyCreditsFree : t.dailyCreditsGuest}</span>
                 <span className="tabular-nums">
                   {usedToday}/{dailyLimit}
                 </span>
@@ -129,23 +132,26 @@ export function Sidebar({
               <div className="h-1.5 rounded-full bg-ink-600 overflow-hidden">
                 <div className="h-full bg-gradient-to-r from-lime to-violet" style={{ width: `${pct}%` }} />
               </div>
-              <div className="mt-1.5 text-[10px] text-zinc-600">Enhance ve stack önerisi 1, iyileştir 3 kredi. Prompt üretimi ücretsiz ve sınırsız.</div>
+              <div className="mt-1.5 text-[10px] text-zinc-600">{t.creditsNote}</div>
             </>
           )}
         </div>
         {!signedIn && (
-          <a href="/login?next=/studio" className="block rounded-xl bg-ink-800 border border-ink-600 p-3 hover:border-ink-400 transition">
-            <div className="text-[12px] font-semibold">Giriş yap, kaydet</div>
-            <div className="text-[11px] text-zinc-500 mt-1">Projelerini ve versiyonlarını kütüphanende sakla.</div>
+          <a
+            href={lhref(`/login?next=${lhref("/studio", locale)}`, locale)}
+            className="block rounded-xl bg-ink-800 border border-ink-600 p-3 hover:border-ink-400 transition"
+          >
+            <div className="text-[12px] font-semibold">{t.signInTitle}</div>
+            <div className="text-[11px] text-zinc-500 mt-1">{t.signInBody}</div>
           </a>
         )}
         {plan !== "pro" && (
         <div className="rounded-xl bg-gradient-to-br from-ink-800 to-ink-700 border border-ink-400 p-3 relative overflow-hidden">
           <div className="absolute -right-6 -top-6 w-20 h-20 bg-lime/20 blur-2xl rounded-full" />
           <div className="text-[12px] font-semibold">Upgrade to Monster Pro</div>
-          <div className="text-[11px] text-zinc-500 mt-1">12 uzman, Mega Chain, 5 format ve ayda 1.000 AI kredisi.</div>
-          <Link href="/pricing" className="mt-2.5 w-full h-8 rounded-lg bg-white text-black text-[12px] font-bold flex items-center justify-center">
-            Yükselt — $29/ay
+          <div className="text-[11px] text-zinc-500 mt-1">{t.upgradeBody}</div>
+          <Link href={lhref("/pricing", locale)} className="mt-2.5 w-full h-8 rounded-lg bg-white text-black text-[12px] font-bold flex items-center justify-center">
+            {t.upgradeCta}
           </Link>
         </div>
         )}

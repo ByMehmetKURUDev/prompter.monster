@@ -6,8 +6,35 @@ import { useState } from "react";
 import type { ProjectSummary } from "@/lib/db";
 import { ALL_PROJECT_TYPES } from "@/lib/data";
 import { cx } from "@/components/studio/ui";
+import { useLocale } from "@/components/site/LocaleProvider";
+import { lhref } from "@/lib/i18n";
+
+const COPY = {
+  tr: {
+    emptyTitle: "Henüz kayıtlı canavar yok",
+    emptyText: "Studio'da bir proje üretip \"Kaydet\" deyince burada görünür.",
+    goStudio: "Studio'ya git",
+    versions: (n: number) => `${n} versiyon`,
+    open: "Aç",
+    confirm: "Evet, sil",
+    cancel: "Vazgeç",
+    del: "Sil",
+  },
+  en: {
+    emptyTitle: "No saved monsters yet",
+    emptyText: "Generate a project in the Studio and hit \"Save\" — it will show up here.",
+    goStudio: "Go to the Studio",
+    versions: (n: number) => `${n} ${n === 1 ? "version" : "versions"}`,
+    open: "Open",
+    confirm: "Yes, delete",
+    cancel: "Cancel",
+    del: "Delete",
+  },
+} as const;
 
 export function LibraryList({ initial }: { initial: ProjectSummary[] }) {
+  const locale = useLocale();
+  const c = COPY[locale];
   const [items, setItems] = useState(initial);
   const [busy, setBusy] = useState<string | null>(null);
   const [confirmId, setConfirmId] = useState<string | null>(null);
@@ -27,10 +54,10 @@ export function LibraryList({ initial }: { initial: ProjectSummary[] }) {
     return (
       <div className="rounded-2xl bg-ink-800 border border-ink-600 p-10 text-center">
         <div className="text-4xl mb-3">👹</div>
-        <div className="text-[14px] font-bold">Henüz kayıtlı canavar yok</div>
-        <p className="text-[12px] text-zinc-500 mt-1">Studio&apos;da bir proje üretip &quot;Kaydet&quot; deyince burada görünür.</p>
-        <Link href="/studio" className="inline-flex mt-5 h-10 px-4 rounded-lg bg-lime text-black text-[13px] font-bold items-center">
-          Studio&apos;ya git
+        <div className="text-[14px] font-bold">{c.emptyTitle}</div>
+        <p className="text-[12px] text-zinc-500 mt-1">{c.emptyText}</p>
+        <Link href={lhref("/studio", locale)} className="inline-flex mt-5 h-10 px-4 rounded-lg bg-lime text-black text-[13px] font-bold items-center">
+          {c.goStudio}
         </Link>
       </div>
     );
@@ -47,19 +74,19 @@ export function LibraryList({ initial }: { initial: ProjectSummary[] }) {
               <div className="min-w-0 flex-1">
                 <div className="text-[14px] font-bold truncate">{p.name}</div>
                 <div className="text-[11px] text-zinc-500">
-                  {type?.name ?? p.project_type} • {new Date(p.updated_at).toLocaleString("tr-TR", { dateStyle: "medium", timeStyle: "short" })}
+                  {type?.name ?? p.project_type} • {new Date(p.updated_at).toLocaleString(locale === "en" ? "en-US" : "tr-TR", { dateStyle: "medium", timeStyle: "short" })}
                 </div>
               </div>
               <span className="text-[10px] px-2 py-1 rounded-full bg-ink-950 border border-ink-600 text-zinc-400 flex items-center gap-1 shrink-0">
-                <History className="w-3 h-3" aria-hidden /> {p.versions} versiyon
+                <History className="w-3 h-3" aria-hidden /> {c.versions(p.versions)}
               </span>
             </div>
             <div className="flex items-center gap-2">
               <Link
-                href={`/studio?project=${p.id}${p.latest_version ? `&version=${p.latest_version}` : ""}`}
+                href={`${lhref("/studio", locale)}?project=${p.id}${p.latest_version ? `&version=${p.latest_version}` : ""}`}
                 className="h-9 px-3 rounded-lg bg-white text-black text-[12px] font-bold flex items-center gap-1.5"
               >
-                <FolderOpen className="w-3.5 h-3.5" aria-hidden /> Aç
+                <FolderOpen className="w-3.5 h-3.5" aria-hidden /> {c.open}
               </Link>
               {confirmId === p.id ? (
                 <>
@@ -69,10 +96,10 @@ export function LibraryList({ initial }: { initial: ProjectSummary[] }) {
                     disabled={busy === p.id}
                     className="h-9 px-3 rounded-lg bg-red-500/20 border border-red-500/40 text-red-300 text-[12px] font-semibold disabled:opacity-60"
                   >
-                    Evet, sil
+                    {c.confirm}
                   </button>
                   <button type="button" onClick={() => setConfirmId(null)} className="h-9 px-3 rounded-lg bg-ink-950 border border-ink-600 text-[12px]">
-                    Vazgeç
+                    {c.cancel}
                   </button>
                 </>
               ) : (
@@ -81,7 +108,7 @@ export function LibraryList({ initial }: { initial: ProjectSummary[] }) {
                   onClick={() => setConfirmId(p.id)}
                   className={cx("ml-auto h-9 px-3 rounded-lg bg-ink-950 border border-ink-600 text-[12px] text-zinc-400 hover:text-red-300 flex items-center gap-1.5")}
                 >
-                  <Trash2 className="w-3.5 h-3.5" aria-hidden /> Sil
+                  <Trash2 className="w-3.5 h-3.5" aria-hidden /> {c.del}
                 </button>
               )}
             </div>

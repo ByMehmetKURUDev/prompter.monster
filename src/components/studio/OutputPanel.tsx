@@ -3,26 +3,32 @@
 import { Check, Copy, Crown, Download, FileText, Lock, Sparkles, Users, Zap } from "lucide-react";
 import Link from "next/link";
 import { useMemo, useState } from "react";
+import { useLocale } from "@/components/site/LocaleProvider";
 import { BUILDERS, EXPERTS, EXPORT_TARGETS, MEGA_CHAIN_STEPS } from "@/lib/data";
-import { buildExpertPrompt, buildMegaPreview, buildMegaPrompt, exportClaudeMd, exportCursorRules, exportJSON, slugify } from "@/lib/prompt";
+import { lhref } from "@/lib/i18n";
+import { buildExpertPrompt, buildMegaPreview, buildMegaPrompt, exportClaudeMd, exportCursorRules, exportJSON, sectionHeadings, slugify } from "@/lib/prompt";
 import { copyText, downloadText } from "@/lib/client";
 import { PRO_EXPORTS, type PlanId, type PlanLimits } from "@/lib/plans";
 import type { StudioState } from "@/lib/types";
 import { Spinner, cx } from "./ui";
+import { useT } from "./useT";
 
+/** Section cards of the expert view; titles come from the locale's `output.sections`. */
 const SECTIONS = [
-  { id: "role", title: "ROL", tone: "bg-violet-500/10", icon: "🎭", lines: 8 },
-  { id: "context", title: "BAĞLAM", tone: "bg-blue-500/10", icon: "🗺️", lines: 12 },
-  { id: "task", title: "GÖREV", tone: "bg-lime/10", icon: "🎯", lines: 12 },
-  { id: "arch", title: "TEKNİK MİMARİ", tone: "bg-orange-500/10", icon: "🏗️", lines: 12 },
-  { id: "features", title: "ÖZELLİK MATRİSİ", tone: "bg-ink-600/50", icon: "✅", lines: 12 },
-  { id: "constraints", title: "KISITLAR", tone: "bg-red-500/10", icon: "⛔", lines: 12 },
-  { id: "output", title: "ÇIKTI FORMATI", tone: "bg-ink-600/50", icon: "📦", lines: 12 },
+  { id: "role", tone: "bg-violet-500/10", icon: "🎭", lines: 8 },
+  { id: "context", tone: "bg-blue-500/10", icon: "🗺️", lines: 12 },
+  { id: "task", tone: "bg-lime/10", icon: "🎯", lines: 12 },
+  { id: "arch", tone: "bg-orange-500/10", icon: "🏗️", lines: 12 },
+  { id: "features", tone: "bg-ink-600/50", icon: "✅", lines: 12 },
+  { id: "constraints", tone: "bg-red-500/10", icon: "⛔", lines: 12 },
+  { id: "output", tone: "bg-ink-600/50", icon: "📦", lines: 12 },
 ] as const;
 
-/** Split a generated prompt into its sections by XML tag or ### heading. */
-function sectionOf(prompt: string, id: string): string {
-  const xmlTag: Record<string, string> = {
+type SectionId = (typeof SECTIONS)[number]["id"];
+
+/** Split a generated prompt into its sections by XML tag or ### heading (TR or EN, whatever the prompt's language). */
+function sectionOf(prompt: string, id: SectionId): string {
+  const xmlTag: Record<SectionId, string> = {
     role: "role",
     context: "context",
     task: "task",
@@ -31,19 +37,10 @@ function sectionOf(prompt: string, id: string): string {
     constraints: "constraints",
     output: "output_format",
   };
-  const mdHead: Record<string, string[]> = {
-    role: ["ROL", "ROLE"],
-    context: ["BAĞLAM", "CONTEXT"],
-    task: ["GÖREV", "TASK"],
-    arch: ["TEKNİK MİMARİ", "TECHNICAL ARCHITECTURE"],
-    features: ["ÖZELLİK MATRİSİ", "FEATURE MATRIX"],
-    constraints: ["KISITLAR", "CONSTRAINTS"],
-    output: ["ÇIKTI FORMATI", "OUTPUT FORMAT"],
-  };
   const tag = xmlTag[id];
   const xm = prompt.match(new RegExp(`<${tag}[^>]*>([\\s\\S]*?)</${tag}>`));
   if (xm) return xm[1].trim();
-  for (const h of mdHead[id] ?? []) {
+  for (const h of sectionHeadings(id)) {
     const m = prompt.match(new RegExp(`##+ ${h}[^\\n]*\\n([\\s\\S]*?)(?=\\n##+ |$)`));
     if (m) return m[1].trim();
   }
@@ -85,13 +82,16 @@ export function OutputPanel({
   limits: PlanLimits;
 }) {
   const [copied, setCopied] = useState<string | null>(null);
+  const locale = useLocale();
+  const t = useT().output;
+  const pricing = lhref("/pricing", locale);
 
   const copy = async (text: string, key: string) => {
     const ok = await copyText(text);
     if (ok) {
       setCopied(key);
       setTimeout(() => setCopied(null), 1500);
-    } else toast("Panoya kopyalanamadı — metni elle seçin.");
+    } else toast(t.copyFailed);
   };
 
   const activeExpert = EXPERTS.find((e) => e.id === tab);
@@ -101,7 +101,7 @@ export function OutputPanel({
 
   const doExport = (id: (typeof EXPORT_TARGETS)[number]["id"]) => {
     if (PRO_EXPORTS.has(id) && !limits.builders) {
-      toast("Bu export Pro planda — /pricing");
+      toast(t.exportProOnly(pricing));
       return;
     }
     const slug = slugify(s.name);
@@ -124,7 +124,7 @@ export function OutputPanel({
       {/* header + stats */}
       <div className="p-4 border-b border-ink-600 space-y-3">
         <div className="flex items-center justify-between">
-          <div className="text-[11px] font-bold tracking-widest text-zinc-400">OUTPUT • CANAVAR FABRİKASI</div>
+          <div className="text-[11px] font-bold tracking-widest text-zinc-400">{t.header}</div>
           <div className="flex items-center gap-1.5">
             <span className="w-2 h-2 rounded-full bg-lime animate-pulse" />
             <span className="text-[10px] text-lime">LIVE</span>
@@ -141,32 +141,33 @@ export function OutputPanel({
             </div>
             <div>
               <div className="text-[10px] text-zinc-500">QUALITY</div>
-              <div className="text-[11px] font-semibold truncate">{quality >= 90 ? "Mükemmel" : "İyi"}</div>
+              <div className="text-[11px] font-semibold truncate">{quality >= 90 ? t.excellent : t.good}</div>
             </div>
           </div>
           <div className="rounded-xl bg-ink-800 border border-ink-600 p-3">
             <div className="text-[10px] text-zinc-500">TOKENS</div>
-            <div className="text-[13px] font-mono font-bold">{tokens.toLocaleString("tr-TR")}</div>
-            <div className="text-[10px] text-zinc-600">~${(tokens * 0.000003).toFixed(2)} maliyet</div>
+            <div className="text-[13px] font-mono font-bold">{tokens.toLocaleString(locale === "en" ? "en-US" : "tr-TR")}</div>
+            <div className="text-[10px] text-zinc-600">{t.cost((tokens * 0.000003).toFixed(2))}</div>
           </div>
           <div className="rounded-xl bg-ink-800 border border-ink-600 p-3">
             <div className="text-[10px] text-zinc-500">OPTIMIZED</div>
             <div className="text-[11px] font-semibold flex items-center gap-1">
               <Crown className="w-3 h-3 text-lime" aria-hidden /> {s.format}
             </div>
-            <div className="text-[10px] text-violet mt-1">{s.lang === "TR" ? "Türkçe çıktı" : "English output"}</div>
+            <div className="text-[10px] text-violet mt-1">{s.lang === "TR" ? t.langTR : t.langEN}</div>
           </div>
         </div>
+        {s.lang === "EN" && /[çğıöşüÇĞİÖŞÜ]/.test([s.name, s.pitch, s.description, s.usp, s.audience.role, s.audience.pain, s.audience.budget].join(" ")) && (
+          <p className="mt-3 rounded-lg border border-amber-500/30 bg-amber-500/10 px-3 py-2 text-[11px] text-amber-200 leading-relaxed">{t.langMismatch}</p>
+        )}
       </div>
 
       {!released ? (
         <div className="flex-1 grid place-items-center p-8 text-center">
           <div className="space-y-4 max-w-[280px]">
             <div className="w-20 h-20 mx-auto rounded-2xl bg-gradient-to-br from-lime/20 to-violet/20 border border-ink-600 grid place-items-center text-4xl">👹</div>
-            <div className="text-[14px] font-bold">Canavar uyuyor...</div>
-            <div className="text-[12px] text-zinc-500 leading-relaxed">
-              Fikir, teknoloji ve özellikleri tamamla, uzmanları seç ve canavarı serbest bırak. 12 uzman sana özel 500+ kelimelik ultra promptlar üretecek.
-            </div>
+            <div className="text-[14px] font-bold">{t.asleepTitle}</div>
+            <div className="text-[12px] text-zinc-500 leading-relaxed">{t.asleepBody}</div>
             <div className="flex flex-wrap justify-center gap-1.5 pt-2">
               {EXPERTS.slice(0, 6).map((e) => (
                 <span key={e.id} className="px-2 py-1 rounded-full bg-ink-800 border border-ink-600 text-[10px]">
@@ -194,7 +195,7 @@ export function OutputPanel({
                 >
                   <span>{e.emoji}</span>
                   {e.role.split(" ")[0]}
-                  {refined[id] && <span className="w-1.5 h-1.5 rounded-full bg-lime" title="AI ile iyileştirildi" />}
+                  {refined[id] && <span className="w-1.5 h-1.5 rounded-full bg-lime" title={t.refinedDot} />}
                 </button>
               );
             })}
@@ -227,16 +228,14 @@ export function OutputPanel({
                   <div className="w-12 h-12 mx-auto rounded-xl bg-ink-950 border border-ink-600 grid place-items-center">
                     <Lock className="w-5 h-5 text-lime" aria-hidden />
                   </div>
-                  <div className="mt-3 text-[14px] font-bold">Mega Chain Pro planda</div>
-                  <p className="mt-1 text-[12px] text-zinc-400 leading-relaxed">
-                    {MEGA_CHAIN_STEPS.length} adımlı zincir + tek parça master prompt: PRD&apos;den deploy&apos;a kadar her adım bir öncekinin çıktısını kullanır. 12 uzman ve 5 format da Pro&apos;yla açılır.
-                  </p>
-                  <Link href="/pricing" className="mt-4 inline-flex h-9 px-4 rounded-lg bg-lime text-black text-[12px] font-bold items-center gap-1.5">
-                    <Crown className="w-3.5 h-3.5" aria-hidden /> Pro&apos;ya geç — $29/ay
+                  <div className="mt-3 text-[14px] font-bold">{t.megaLockedTitle}</div>
+                  <p className="mt-1 text-[12px] text-zinc-400 leading-relaxed">{t.megaLockedBody(MEGA_CHAIN_STEPS.length)}</p>
+                  <Link href={pricing} className="mt-4 inline-flex h-9 px-4 rounded-lg bg-lime text-black text-[12px] font-bold items-center gap-1.5">
+                    <Crown className="w-3.5 h-3.5" aria-hidden /> {t.goProPrice}
                   </Link>
                 </div>
                 <div className="rounded-xl bg-ink-800 border border-ink-600 p-4 opacity-60 select-none" aria-hidden>
-                  <div className="text-[11px] font-bold tracking-widest text-zinc-500 mb-3">ÖNİZLEME • {MEGA_CHAIN_STEPS.length} ADIM</div>
+                  <div className="text-[11px] font-bold tracking-widest text-zinc-500 mb-3">{t.previewSteps(MEGA_CHAIN_STEPS.length)}</div>
                   <div className="space-y-2">
                     {MEGA_CHAIN_STEPS.map((st, i) => (
                       <div key={st} className="flex items-center gap-3 text-[12px] text-zinc-500">
@@ -250,7 +249,7 @@ export function OutputPanel({
             ) : tab === "mega" ? (
               <div className="p-4 space-y-4">
                 <div className="rounded-xl bg-ink-800 border border-ink-600 p-4">
-                  <div className="text-[11px] font-bold tracking-widest text-lime mb-3">MEGA CHAIN • {MEGA_CHAIN_STEPS.length} ADIM</div>
+                  <div className="text-[11px] font-bold tracking-widest text-lime mb-3">{t.megaSteps(MEGA_CHAIN_STEPS.length)}</div>
                   <div className="space-y-0 relative">
                     <div className="absolute left-[15px] top-4 bottom-4 w-px bg-gradient-to-b from-lime via-violet to-lime/20" />
                     {MEGA_CHAIN_STEPS.map((st, i) => (
@@ -258,7 +257,7 @@ export function OutputPanel({
                         <div className="w-8 h-8 rounded-full bg-ink-950 border border-ink-400 grid place-items-center text-[11px] font-bold shrink-0 z-10">{i + 1}</div>
                         <div className="flex-1 rounded-xl bg-ink-950 border border-ink-600 p-3">
                           <div className="text-[12px] font-semibold">{st}</div>
-                          <div className="text-[11px] text-zinc-500 mt-1">Prompt + Checklist + Kod iskeleti</div>
+                          <div className="text-[11px] text-zinc-500 mt-1">{t.stepDeliverables}</div>
                         </div>
                       </div>
                     ))}
@@ -282,22 +281,22 @@ export function OutputPanel({
               </div>
             ) : tab === "export" ? (
               <div className="p-4 space-y-3">
-                {EXPORT_TARGETS.map((t) => (
-                  <div key={t.id} className="flex items-center justify-between p-3 rounded-xl bg-ink-800 border border-ink-600 hover:border-ink-400 transition">
+                {EXPORT_TARGETS.map((x) => (
+                  <div key={x.id} className="flex items-center justify-between p-3 rounded-xl bg-ink-800 border border-ink-600 hover:border-ink-400 transition">
                     <div className="flex items-center gap-3">
-                      <span className="text-lg">{t.icon}</span>
+                      <span className="text-lg">{x.icon}</span>
                       <div>
-                        <div className="text-[12px] font-semibold">{t.name}</div>
-                        <div className="text-[11px] text-zinc-500">{t.desc}</div>
+                        <div className="text-[12px] font-semibold">{x.name}</div>
+                        <div className="text-[11px] text-zinc-500">{locale === "en" ? x.descEn : x.desc}</div>
                       </div>
                     </div>
                     <button
                       type="button"
-                      onClick={() => doExport(t.id)}
-                      className={cx("h-8 px-3 rounded-lg text-[11px] font-bold flex items-center gap-1", PRO_EXPORTS.has(t.id) && !limits.builders ? "bg-ink-950 border border-ink-600 text-zinc-500" : "bg-white text-black")}
+                      onClick={() => doExport(x.id)}
+                      className={cx("h-8 px-3 rounded-lg text-[11px] font-bold flex items-center gap-1", PRO_EXPORTS.has(x.id) && !limits.builders ? "bg-ink-950 border border-ink-600 text-zinc-500" : "bg-white text-black")}
                     >
-                      {PRO_EXPORTS.has(t.id) && !limits.builders && <Lock className="w-3 h-3" aria-hidden />}
-                      {PRO_EXPORTS.has(t.id) && !limits.builders ? "Pro" : "İndir"}
+                      {PRO_EXPORTS.has(x.id) && !limits.builders && <Lock className="w-3 h-3" aria-hidden />}
+                      {PRO_EXPORTS.has(x.id) && !limits.builders ? "Pro" : t.download}
                     </button>
                   </div>
                 ))}
@@ -307,14 +306,12 @@ export function OutputPanel({
                       {!limits.builders && <Lock className="w-3.5 h-3.5 text-lime" aria-hidden />} Export to Builders
                     </div>
                     {!limits.builders && (
-                      <Link href="/pricing" className="text-[11px] text-lime font-semibold">
-                        Pro&apos;ya geç →
+                      <Link href={pricing} className="text-[11px] text-lime font-semibold">
+                        {t.goPro}
                       </Link>
                     )}
                   </div>
-                  <div className="text-[11px] text-zinc-500 mt-1">
-                    {limits.builders ? "Aracın formatında kopyalar; yapıştırman yeter." : "Cursor, Windsurf, v0, Lovable ve Bolt formatında tek tıkla kopyalama Pro planda."}
-                  </div>
+                  <div className="text-[11px] text-zinc-500 mt-1">{limits.builders ? t.buildersOn : t.buildersOff}</div>
                   <div className="grid grid-cols-3 gap-2 mt-3">
                     {BUILDERS.map((b) => (
                       <button
@@ -322,7 +319,7 @@ export function OutputPanel({
                         type="button"
                         onClick={() => {
                           if (!limits.builders) {
-                            toast("Export to Builders Pro planda — /pricing");
+                            toast(t.buildersProOnly(pricing));
                             return;
                           }
                           const fmt = b === "Cursor" || b === "Windsurf" ? "Cursor Rules" : b === "v0" ? "v0" : b === "Lovable" || b === "Bolt" ? "Lovable/Bolt" : "ChatGPT Markdown";
@@ -354,11 +351,11 @@ export function OutputPanel({
                   >
                     {copied === activeExpert.id ? (
                       <>
-                        <Check className="w-3 h-3 text-lime" /> Kopyalandı
+                        <Check className="w-3 h-3 text-lime" /> {t.copied}
                       </>
                     ) : (
                       <>
-                        <Copy className="w-3 h-3" /> Kopyala
+                        <Copy className="w-3 h-3" /> {t.copy}
                       </>
                     )}
                   </button>
@@ -367,10 +364,10 @@ export function OutputPanel({
                 {isRefined && (
                   <div className="flex items-center justify-between rounded-lg bg-lime/10 border border-lime/20 px-3 py-2 text-[11px]">
                     <span className="text-lime flex items-center gap-1">
-                      <Sparkles className="w-3 h-3" /> Claude ile iyileştirilmiş sürüm
+                      <Sparkles className="w-3 h-3" /> {t.refinedVersion}
                     </span>
                     <button type="button" onClick={() => onClearRefined(activeExpert.id)} className="text-zinc-400 hover:text-white">
-                      Orijinale dön
+                      {t.backToOriginal}
                     </button>
                   </div>
                 )}
@@ -378,17 +375,18 @@ export function OutputPanel({
                 <div className="space-y-3">
                   {SECTIONS.map((sec) => {
                     const text = sectionOf(shownPrompt, sec.id);
+                    const title = t.sections[sec.id];
                     return (
                       <div key={sec.id} className="rounded-xl bg-ink-800 border border-ink-600 overflow-hidden">
                         <div className={cx("h-8 px-3 flex items-center justify-between border-b border-ink-600", sec.tone)}>
                           <span className="text-[11px] font-bold tracking-widest flex items-center gap-1.5">
                             <span>{sec.icon}</span>
-                            {sec.title}
+                            {title}
                           </span>
                           <button
                             type="button"
                             onClick={() => copy(text, `${activeExpert.id}:${sec.id}`)}
-                            aria-label={`${sec.title} bölümünü kopyala`}
+                            aria-label={t.copySection(title)}
                             className="w-6 h-6 rounded-md bg-ink-950 border border-ink-600 grid place-items-center"
                           >
                             {copied === `${activeExpert.id}:${sec.id}` ? <Check className="w-3 h-3 text-lime" /> : <Copy className="w-3 h-3" />}
@@ -404,7 +402,7 @@ export function OutputPanel({
 
                 <div className="rounded-xl bg-ink-950 border border-ink-600 p-3">
                   <div className="text-[11px] font-semibold mb-2 flex items-center gap-1">
-                    <FileText className="w-3 h-3" aria-hidden /> TAM PROMPT ÖNİZLEME
+                    <FileText className="w-3 h-3" aria-hidden /> {t.fullPreview}
                   </div>
                   <div className="mono text-[11px] leading-relaxed text-zinc-400 whitespace-pre-wrap max-h-[400px] overflow-y-auto bg-ink-800 rounded-lg p-3 border border-ink-600 scrollbar-thin">
                     {shownPrompt}
@@ -418,7 +416,7 @@ export function OutputPanel({
                   className="w-full h-10 rounded-xl bg-ink-600 border border-ink-400 text-[12px] font-medium flex items-center justify-center gap-2 hover:bg-ink-500 disabled:opacity-60"
                 >
                   {refining ? <Spinner className="w-4 h-4" /> : <Sparkles className="w-4 h-4 text-violet" aria-hidden />}
-                  {refining ? "Claude iyileştiriyor..." : `Bu promptu iyileştir ✨ · ${refineCost} kredi`}
+                  {refining ? t.refining : t.refine(refineCost)}
                 </button>
               </div>
             ) : null}
@@ -426,11 +424,11 @@ export function OutputPanel({
 
           <div className="p-3 border-t border-ink-600 flex items-center justify-between">
             <div className="text-[11px] text-zinc-500 flex items-center gap-2">
-              <Users className="w-3 h-3" aria-hidden /> Team • {s.experts.length} uzman aktif
+              <Users className="w-3 h-3" aria-hidden /> {t.teamActive(s.experts.length)}
             </div>
             <div className="flex items-center gap-2">
               <button type="button" onClick={onReset} className="h-8 px-3 rounded-lg bg-ink-800 border border-ink-600 text-[11px]">
-                Sıfırla
+                {t.reset}
               </button>
               <button type="button" onClick={() => onTab("export")} className="h-8 px-3 rounded-lg bg-lime text-black text-[11px] font-bold">
                 Export All

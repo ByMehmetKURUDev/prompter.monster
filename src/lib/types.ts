@@ -36,6 +36,8 @@ export interface Expert {
   color: string;
   /** Expert-specific task block injected into the prompt. */
   task: string;
+  /** English task block, used when the prompt's output language is EN (falls back to `task`). */
+  taskEn?: string;
 }
 
 export type OutputLang = "TR" | "EN";

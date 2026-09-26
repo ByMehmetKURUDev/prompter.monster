@@ -13,6 +13,20 @@ export interface ChangelogEntry {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: "4.3",
+    date: "2026-09-26",
+    title: "İngilizce arayüz (/en) — Product Hunt'a hazırlık",
+    items: [
+      "Tüm herkese açık sayfaların İngilizcesi: /en (ana sayfa), /en/studio, /en/pricing, /en/docs, /en/prompt + 22 proje tipi sayfası, /en/login, /en/library, /en/legal/*.",
+      "Studio tamamen iki dilli (146 metin); İngilizce Studio İngilizce örnek projeyle ve EN çıktı diliyle açılır.",
+      "Uzman görevlerinin İngilizcesi eklendi: EN çıktıda artık Türkçe görev metni yok. EN çıktı + Türkçe girdi için uyarı.",
+      "Dil düğmesi (TR/EN) seçimi hatırlar; İngilizce seçen ziyaretçi Türkçe bağlantılardan İngilizce sayfaya yönlenir. Türkçe olmayan tarayıcılara 'English' önerisi.",
+      "hreflang (tr/en/x-default), İngilizce sitemap girdileri, İngilizce meta açıklamaları.",
+      "Duyuru şeridinin İngilizcesi için yeni ayar: announcement_en.",
+    ],
+    settings: ["announcement_en"],
+  },
+  {
     version: "4.2",
     date: "2026-09-26",
     title: "Kredi sistemi, gerçek maliyet takibi, kanal/indirim bağlantıları, güvenlik düzeltmesi",

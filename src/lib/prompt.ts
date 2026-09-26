@@ -111,6 +111,14 @@ export function estimateTokens(s: StudioState): number {
 
 type Section = { key: keyof typeof L.TR; tag: string; body: string };
 
+/** Keys of the prompt sections that carry a heading in L. */
+export type PromptSection = "role" | "context" | "task" | "arch" | "features" | "constraints" | "output" | "success" | "never";
+
+/** A section's Markdown heading in both output languages, TR first (the Studio splits generated prompts with these). */
+export function sectionHeadings(key: PromptSection): [string, string] {
+  return [L.TR[key], L.EN[key]];
+}
+
 function wrap(format: OutputFormat, sec: Section, lang: "TR" | "EN", attrs = ""): string {
   const title = L[lang][sec.key] as string;
   if (format === "Claude XML") {
@@ -158,7 +166,7 @@ export function buildExpertPrompt(s: StudioState, expertId: string): string {
     ].join("\n"),
   };
 
-  const task: Section = { key: "task", tag: "task", body: `${e.task}\n${t.general}` };
+  const task: Section = { key: "task", tag: "task", body: `${s.lang === "EN" ? (e.taskEn ?? e.task) : e.task}\n${t.general}` };
 
   const arch: Section = {
     key: "arch",

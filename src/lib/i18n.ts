@@ -35,15 +35,16 @@ export function stripLocale(pathname: string): { locale: Locale; path: string } 
 }
 
 /**
- * English routes that exist today. Links to other paths stay on the Turkish page until their
- * /en wrapper ships (then add the prefix here, or "/" for everything).
+ * English routes that exist (besides the home page "/"): each prefix has an /en wrapper route.
+ * Links to anything else (admin, auth callbacks, shared /p pages) stay on the Turkish path.
  */
-export const EN_READY_PREFIXES = ["/legal"];
+export const EN_READY_PREFIXES = ["/studio", "/pricing", "/docs", "/prompt", "/login", "/library", "/account", "/legal"];
 
 /** True when the English version of this (locale-free) path exists. */
 export function enReady(path: string): boolean {
   const clean = stripLocale(path).path.split(/[?#]/)[0] || "/";
-  return EN_READY_PREFIXES.some((p) => p === "/" || clean === p || clean.startsWith(`${p}/`));
+  if (clean === "/") return true;
+  return EN_READY_PREFIXES.some((p) => clean === p || clean.startsWith(`${p}/`));
 }
 
 /** Like localePath, but only switches to /en when that English route exists. */
@@ -51,6 +52,16 @@ export function lhref(path: string, locale: Locale): string {
   if (locale === "tr") return localePath(path, "tr");
   const clean = stripLocale(path).path;
   return enReady(clean) ? localePath(clean, "en") : clean;
+}
+
+const SITE_URL = (process.env.NEXT_PUBLIC_SITE_URL || "https://prompter.monster").replace(/\/$/, "");
+
+/** Metadata `alternates` (canonical + hreflang) for a page that exists in both languages. */
+export function alternatesFor(path: string, locale: Locale) {
+  const clean = stripLocale(path).path;
+  const tr = `${SITE_URL}${clean === "/" ? "" : clean}` || SITE_URL;
+  const en = `${SITE_URL}${localePath(clean, "en")}`;
+  return { canonical: locale === "en" ? en : tr, languages: { tr, en, "x-default": tr } };
 }
 
 /** Pick the right string for a locale from a { tr, en } pair. */

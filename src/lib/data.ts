@@ -19,7 +19,7 @@ export const PROJECT_CATEGORIES: ProjectCategory[] = [
   {
     cat: "🛒 COMMERCE",
     items: [
-      { id: "headless", name: "Headless E-Ticaret", icon: "🛍️", badge: "HOT" },
+      { id: "headless", name: "Headless E-Commerce", icon: "🛍️", badge: "HOT" },
       { id: "marketplace", name: "Multi-Vendor Marketplace", icon: "🏪", badge: "" },
       { id: "d2c", name: "D2C Subscription Box", icon: "📦", badge: "NEW" },
       { id: "b2b", name: "B2B Wholesale Portal", icon: "🏭", badge: "" },
@@ -172,6 +172,7 @@ export const EXPERTS: Expert[] = [
     years: 12,
     color: "#A3FF12",
     task: "Sistem mimarisini tasarla. Edge-first, 100ms p95. DB schema, API contract, caching stratejisi, multi-tenancy, RLS, idempotency. Seçilen backend + DB kombinasyonunun neden doğru olduğunu ve scaling planını yaz.",
+    taskEn: "Design the system architecture. Edge-first, 100ms p95. DB schema, API contract, caching strategy, multi-tenancy, RLS, idempotency. Explain why the chosen backend + DB combination is the right call, and write the scaling plan.",
   },
   {
     id: "pm",
@@ -182,6 +183,7 @@ export const EXPERTS: Expert[] = [
     years: 8,
     color: "#8B5CF6",
     task: "Kusursuz PRD yaz. User stories (Jobs-to-be-Done), acceptance criteria, edge cases, metrics (North Star, activation, retention), roadmap'i RICE ile önceliklendir. 7 gün içinde MVP scope.",
+    taskEn: "Write a flawless PRD. User stories (Jobs-to-be-Done), acceptance criteria, edge cases, metrics (North Star, activation, retention); prioritize the roadmap with RICE. Scope an MVP that ships in 7 days.",
   },
   {
     id: "design",
@@ -192,6 +194,7 @@ export const EXPERTS: Expert[] = [
     years: 10,
     color: "#FF6B6B",
     task: "Design system oluştur: Tailwind tokens, shadcn/ui, dark mode only, Linear benzeri density, command palette, keyboard-first. 3 kritik flow için wireframe tarif et.",
+    taskEn: "Build the design system: Tailwind tokens, shadcn/ui, dark mode only, Linear-like density, command palette, keyboard-first. Describe wireframes for the 3 critical flows.",
   },
   {
     id: "growth",
@@ -202,6 +205,7 @@ export const EXPERTS: Expert[] = [
     years: 9,
     color: "#A3FF12",
     task: "PLG büyüme planı: aktivasyon funnel'ı, aha-moment tanımı, viral loop / referral mekaniği, onboarding checklist, ilk 90 gün için haftalık deney listesi (hipotez, metrik, başarı eşiği).",
+    taskEn: "PLG growth plan: activation funnel, aha-moment definition, viral loop / referral mechanics, onboarding checklist, and a weekly experiment list for the first 90 days (hypothesis, metric, success threshold).",
   },
   {
     id: "seo",
@@ -212,6 +216,7 @@ export const EXPERTS: Expert[] = [
     years: 7,
     color: "#38BDF8",
     task: "AEO + SEO: Programmatic SEO sayfaları, schema.org, Perplexity / ChatGPT Search için optimize, internal linking, waitlist -> launch playbook.",
+    taskEn: "AEO + SEO: programmatic SEO pages, schema.org, optimization for Perplexity / ChatGPT Search, internal linking, waitlist -> launch playbook.",
   },
   {
     id: "devops",
@@ -222,6 +227,7 @@ export const EXPERTS: Expert[] = [
     years: 11,
     color: "#FB923C",
     task: "Deploy ve operasyon planı: CI/CD pipeline (preview + production), IaC, secrets yönetimi, observability (logs, traces, alerts), SLO/SLA tanımı, incident runbook, maliyet tahmini ve ölçekleme eşikleri.",
+    taskEn: "Deployment and operations plan: CI/CD pipeline (preview + production), IaC, secrets management, observability (logs, traces, alerts), SLO/SLA definitions, incident runbook, cost estimate and scaling thresholds.",
   },
   {
     id: "security",
@@ -232,6 +238,7 @@ export const EXPERTS: Expert[] = [
     years: 10,
     color: "#F472B6",
     task: "Threat model (STRIDE), OWASP Top 10 kontrol listesi, auth/session sertleştirme, veri sınıflandırma, KVKK/GDPR uyum haritası (veri envanteri, saklama süreleri, silme akışı), audit log şeması.",
+    taskEn: "Threat model (STRIDE), OWASP Top 10 checklist, auth/session hardening, data classification, GDPR/KVKK compliance map (data inventory, retention periods, deletion flow), audit log schema.",
   },
   {
     id: "copy",
@@ -242,6 +249,7 @@ export const EXPERTS: Expert[] = [
     years: 8,
     color: "#A3FF12",
     task: "Landing page copy: hero (başlık + alt başlık + CTA), 3 fayda bloğu, sosyal kanıt, itiraz karşılama, pricing sayfası metinleri, onboarding e-posta serisi (5 e-posta), UX microcopy (boş durumlar, hatalar).",
+    taskEn: "Landing page copy: hero (headline + subheadline + CTA), 3 benefit blocks, social proof, objection handling, pricing page copy, onboarding email sequence (5 emails), UX microcopy (empty states, errors).",
   },
   {
     id: "data",
@@ -252,6 +260,7 @@ export const EXPERTS: Expert[] = [
     years: 9,
     color: "#22D3EE",
     task: "Event tracking planı: North Star ve destekleyici metrikler, event/property sözlüğü, funnel ve retention tanımları, veri ambarı şeması, dashboard listesi, veri kalitesi testleri.",
+    taskEn: "Event tracking plan: North Star and supporting metrics, event/property dictionary, funnel and retention definitions, data warehouse schema, dashboard list, data quality tests.",
   },
   {
     id: "ai",
@@ -262,6 +271,7 @@ export const EXPERTS: Expert[] = [
     years: 6,
     color: "#8B5CF6",
     task: "LLM mimarisi: ana model + fallback model, RAG (chunking, embedding, vektör DB), prompt chaining, evals. Context window yönetimi, tool calling, streaming UX, maliyet/gecikme bütçesi.",
+    taskEn: "LLM architecture: primary model + fallback model, RAG (chunking, embeddings, vector DB), prompt chaining, evals. Context window management, tool calling, streaming UX, cost/latency budget.",
   },
   {
     id: "qa",
@@ -272,6 +282,7 @@ export const EXPERTS: Expert[] = [
     years: 8,
     color: "#4ADE80",
     task: "Test stratejisi: test piramidi (unit/integration/e2e), Playwright e2e senaryoları kritik akışlar için, visual regression, contract testleri, CI'da kalite kapıları, flaky test politikası.",
+    taskEn: "Testing strategy: test pyramid (unit/integration/e2e), Playwright e2e scenarios for the critical flows, visual regression, contract tests, quality gates in CI, flaky-test policy.",
   },
   {
     id: "monet",
@@ -282,6 +293,7 @@ export const EXPERTS: Expert[] = [
     years: 9,
     color: "#FACC15",
     task: "Pricing: Freemium vs Free Trial, 3 tier ($19/$49/$149), annual %20 indirim, credit system. Seçilen ödeme sağlayıcılarıyla hybrid akış. Churn reduction taktikleri.",
+    taskEn: "Pricing: Freemium vs. Free Trial, 3 tiers ($19/$49/$149), 20% annual discount, credit system. Hybrid flow with the selected payment providers. Churn-reduction tactics.",
   },
 ];
 
@@ -298,12 +310,13 @@ export const MEGA_CHAIN_STEPS = [
   "Launch & Growth Checklist",
 ];
 
+/** `desc` is the Turkish UI line, `descEn` the English one. */
 export const EXPORT_TARGETS = [
-  { id: "md", name: "Markdown (.md)", desc: "Notion / GitHub için", icon: "📝", ext: "md" },
-  { id: "json", name: "JSON (structured)", desc: "API & Automation", icon: "🧩", ext: "json" },
-  { id: "cursorrules", name: ".cursorrules", desc: "Cursor IDE kuralları", icon: "⚡", ext: "cursorrules" },
-  { id: "claude", name: "CLAUDE.md", desc: "Claude Code için", icon: "🤖", ext: "md" },
-  { id: "txt", name: "Plain text (.txt)", desc: "Her araca yapıştır", icon: "📄", ext: "txt" },
+  { id: "md", name: "Markdown (.md)", desc: "Notion / GitHub için", descEn: "For Notion / GitHub", icon: "📝", ext: "md" },
+  { id: "json", name: "JSON (structured)", desc: "API & Automation", descEn: "API & Automation", icon: "🧩", ext: "json" },
+  { id: "cursorrules", name: ".cursorrules", desc: "Cursor IDE kuralları", descEn: "Cursor IDE rules", icon: "⚡", ext: "cursorrules" },
+  { id: "claude", name: "CLAUDE.md", desc: "Claude Code için", descEn: "For Claude Code", icon: "🤖", ext: "md" },
+  { id: "txt", name: "Plain text (.txt)", desc: "Her araca yapıştır", descEn: "Paste into any tool", icon: "📄", ext: "txt" },
 ] as const;
 
 export const BUILDERS = ["Cursor", "Windsurf", "v0", "Lovable", "Bolt", "Replit"];
@@ -348,6 +361,34 @@ export const DEFAULT_STATE: StudioState = {
 /** A blank project for "Yeni Canavar Yarat". */
 export const EMPTY_STATE: StudioState = {
   ...DEFAULT_STATE,
+  name: "",
+  pitch: "",
+  description: "",
+  audience: { role: "", pain: "", budget: "" },
+  competitors: ["", "", ""],
+  usp: "",
+  monetization: [],
+  features: [],
+  experts: [],
+};
+
+/**
+ * English twin of DEFAULT_STATE: what a fresh /en/studio opens with. Same idea, English copy and output;
+ * Iyzico (Turkey-only) is swapped for Paddle, like the English docs swap Turkey-specific examples.
+ */
+export const DEFAULT_STATE_EN: StudioState = {
+  ...DEFAULT_STATE,
+  description:
+    "A work OS for small teams with the speed of Linear, the flexibility of Notion and the focus of Superhuman. Tasks, docs, meetings and AI agents in one place. Ship 10x faster with zero context switching.",
+  audience: { role: "Seed CTO", pain: "Tool sprawl, getting lost across 7 apps", budget: "$29-99/mo" },
+  usp: "One keyboard shortcut for everything: task -> doc -> meeting notes -> AI action. Every interaction under 100ms, offline-first.",
+  payments: ["stripe", "paddle"],
+  lang: "EN",
+};
+
+/** A blank project for "Create New Monster" on English pages (EMPTY_STATE over the English defaults). */
+export const EMPTY_STATE_EN: StudioState = {
+  ...DEFAULT_STATE_EN,
   name: "",
   pitch: "",
   description: "",

@@ -11,7 +11,7 @@ const NAV = {
 } as const;
 
 /** Header + footer used by the public marketing pages (/prompt, /docs, /legal …). */
-export function PublicShell({ children, cta, locale = "tr", langSwitch = false }: { children: ReactNode; cta?: { href: string; label: string }; locale?: Locale; langSwitch?: boolean }) {
+export function PublicShell({ children, cta, locale = "tr", langSwitch = true }: { children: ReactNode; cta?: { href: string; label: string }; locale?: Locale; langSwitch?: boolean }) {
   const n = NAV[locale];
   const action = cta ?? { href: lhref("/studio?new=1", locale), label: n.studio };
   return (

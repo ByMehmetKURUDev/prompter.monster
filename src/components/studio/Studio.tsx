@@ -2,11 +2,14 @@
 
 import { ChevronRight, History, Share2 } from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useLocale } from "@/components/site/LocaleProvider";
 import { EXPERTS } from "@/lib/data";
 import type { MeResponse } from "@/lib/db";
 import { ApiError, type CreditInfo, enhanceDescription, refinePrompt, suggestStack } from "@/lib/client";
-import { type PlanId, UPGRADE_HINT, limitsFor } from "@/lib/plans";
+import { lhref, type Locale } from "@/lib/i18n";
+import { type PlanId, limitsFor } from "@/lib/plans";
 import { buildExpertPrompt, estimateTokens, projectTypeName, qualityScore } from "@/lib/prompt";
+import type { StudioText } from "@/lib/studio-i18n";
 import { track } from "@/lib/track";
 import { quickStartState } from "@/lib/type-presets";
 import type { StudioState } from "@/lib/types";
@@ -21,10 +24,22 @@ import { Step4Experts } from "./Step4Experts";
 import { StepBar } from "./StepBar";
 import { Toast, cx } from "./ui";
 import { useStudio } from "./useStudio";
+import { useT } from "./useT";
 
 type VersionRow = { id: string; version: number; format: string; lang: string; experts: string[]; created_at: string };
 
+/**
+ * Toast for a failed /api/projects or /api/share call. Those routes answer in Turkish only, so English pages
+ * show their own text for the error code (or the fallback) instead of the server's message.
+ */
+function failText(locale: Locale, t: StudioText["studio"], j: { error?: string; code?: string }, fallback: string): string {
+  return (locale === "en" ? t.apiErrors[j.code ?? ""] : j.error) ?? fallback;
+}
+
 export function Studio({ dailyLimit }: { dailyLimit: number }) {
+  const locale = useLocale();
+  const t = useT().studio;
+  const pricing = lhref("/pricing", locale);
   const { state: s, patch, toggle, reset, setArray, load, hydrated } = useStudio();
   const [navTab, setNavTab] = useState("Studio");
   const [toast, setToast] = useState<string | null>(null);
@@ -93,7 +108,7 @@ export function Studio({ dailyLimit }: { dailyLimit: number }) {
     if (!limits.formats.includes(s.format)) fixes.format = "Claude XML";
     if (Object.keys(fixes).length) {
       patch(fixes);
-      if (Date.now() > quietTrimUntil.current) say(`Free plan: en fazla ${limits.experts} uzman ve ${limits.formats.length} format. ${UPGRADE_HINT}`, 5000);
+      if (Date.now() > quietTrimUntil.current) say(`${t.freeTrimmed(limits.experts, limits.formats.length)} ${t.upgradeHint(pricing)}`, 5000);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [hydrated, me, plan, s.experts.length, s.format]);
@@ -102,24 +117,24 @@ export function Studio({ dailyLimit }: { dailyLimit: number }) {
   const toggleExpert = useCallback(
     (id: string) => {
       if (!s.experts.includes(id) && s.experts.length >= limits.experts) {
-        say(plan === "pro" ? `En fazla ${limits.experts} uzman seçilebilir.` : `Free planda en fazla ${limits.experts} uzman. ${UPGRADE_HINT}`, 4500);
+        say(plan === "pro" ? t.maxExperts(limits.experts) : `${t.freeMaxExperts(limits.experts)} ${t.upgradeHint(pricing)}`, 4500);
         return;
       }
       toggle("experts", id);
     },
-    [s.experts, limits.experts, plan, say, toggle],
+    [s.experts, limits.experts, plan, say, toggle, t, pricing],
   );
 
   /** Format change with the plan gate applied. */
   const setFormat = useCallback(
     (format: StudioState["format"]) => {
       if (!limits.formats.includes(format)) {
-        say(`"${format}" formatı Pro planda. ${UPGRADE_HINT}`, 4500);
+        say(`${t.formatProOnly(format)} ${t.upgradeHint(pricing)}`, 4500);
         return;
       }
       patch({ format });
     },
-    [limits.formats, patch, say],
+    [limits.formats, patch, say, t, pricing],
   );
 
   const loadProject = useCallback(
@@ -127,7 +142,7 @@ export function Studio({ dailyLimit }: { dailyLimit: number }) {
       try {
         const r = await fetch(`/api/projects/${id}${version ? `?version=${version}` : ""}`, { cache: "no-store" });
         if (!r.ok) {
-          say(r.status === 401 ? "Bu projeyi açmak için giriş yapın." : "Proje yüklenemedi.", 3500);
+          say(r.status === 401 ? t.signInToOpen : t.loadFailed, 3500);
           return;
         }
         const data = (await r.json()) as {
@@ -150,12 +165,12 @@ export function Studio({ dailyLimit }: { dailyLimit: number }) {
           setReleased(false);
           setRefined({});
         }
-        say(`Proje yüklendi: ${data.project.state.name || "Adsız"}${data.generation ? ` • v${data.generation.version}` : ""}`);
+        say(t.projectLoaded(data.project.state.name || t.untitled, data.generation ? data.generation.version : null));
       } catch {
-        say("Proje yüklenemedi.", 3000);
+        say(t.loadFailed, 3000);
       }
     },
-    [load, say],
+    [load, say, t],
   );
 
   /** Public share → a fresh, unsaved copy of that project in my Studio. */
@@ -164,7 +179,7 @@ export function Studio({ dailyLimit }: { dailyLimit: number }) {
       try {
         const r = await fetch(`/api/share/${encodeURIComponent(slug)}`, { cache: "no-store" });
         if (!r.ok) {
-          say("Paylaşım bulunamadı ya da kaldırılmış.", 3500);
+          say(t.shareNotFound, 3500);
           return;
         }
         const data = (await r.json()) as { name: string; state: StudioState };
@@ -178,12 +193,12 @@ export function Studio({ dailyLimit }: { dailyLimit: number }) {
         const url = new URL(window.location.href);
         url.searchParams.delete("fork");
         window.history.replaceState(null, "", url.toString());
-        say(`"${data.name || "Adsız"}" çatallandı — artık senin kopyan, istediğin gibi değiştir.`, 4000);
+        say(t.forked(data.name || t.untitled), 4000);
       } catch {
-        say("Paylaşım yüklenemedi.", 3000);
+        say(t.shareLoadFailed, 3000);
       }
     },
-    [load, say],
+    [load, say, t],
   );
 
   // ?project=<id>&version=<n>  |  ?new=1  |  ?fork=<slug>  |  ?type=<projectType> (from /prompt/[slug])
@@ -198,7 +213,7 @@ export function Studio({ dailyLimit }: { dailyLimit: number }) {
     if (id) loadProject(id, Number.isFinite(v) && v > 0 ? v : null);
     else if (fork) forkShared(fork);
     else if (preset) {
-      load(preset);
+      load(locale === "en" ? { ...preset, lang: "EN" } : preset);
       setProjectId(null);
       setVersions([]);
       setActiveVersion(null);
@@ -210,7 +225,7 @@ export function Studio({ dailyLimit }: { dailyLimit: number }) {
       window.history.replaceState(null, "", url.toString());
       quietTrimUntil.current = Date.now() + 8000;
       track("quick_start", { project_type: preset.projectType });
-      say(`${projectTypeName(preset.projectType)} şablonu yüklendi: uzmanlar, stack ve özellikler hazır — adını ve fikrini yaz.`, 5000);
+      say(t.quickStart(projectTypeName(preset.projectType)), 5000);
     } else if (sp.get("new") === "1") {
       reset(true);
       setProjectId(null);
@@ -224,7 +239,7 @@ export function Studio({ dailyLimit }: { dailyLimit: number }) {
       url.searchParams.delete("upgraded");
       url.searchParams.delete("plan");
       window.history.replaceState(null, "", url.toString());
-      say("Ödeme alındı 🎉 Pro birkaç saniye içinde aktif olur…", 6000);
+      say(t.paymentReceived, 6000);
       let tries = 0;
       const timer = window.setInterval(async () => {
         tries += 1;
@@ -234,7 +249,7 @@ export function Studio({ dailyLimit }: { dailyLimit: number }) {
           setMe(j);
           if (j.plan === "pro") {
             window.clearInterval(timer);
-            say(`Monster Pro aktif — 12 uzman ve ayda ${j.usage?.monthLimit ?? 1000} AI kredisi senin 👹`, 6000);
+            say(t.proActive(j.usage?.monthLimit ?? 1000), 6000);
           }
         } catch {
           /* retry */
@@ -253,41 +268,41 @@ export function Studio({ dailyLimit }: { dailyLimit: number }) {
     try {
       const r = await fetch("/api/share", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", "x-pm-locale": locale },
         body: JSON.stringify({ project_id: projectId, version: activeVersion }),
       });
-      const j = (await r.json().catch(() => ({}))) as { url?: string; error?: string; created?: boolean };
+      const j = (await r.json().catch(() => ({}))) as { url?: string; error?: string; code?: string; created?: boolean };
       if (!r.ok || !j.url) {
-        say(j.error ?? "Paylaşım bağlantısı oluşturulamadı.", 3500);
+        say(failText(locale, t, j, t.shareFailed), 3500);
         return;
       }
       const ok = await navigator.clipboard.writeText(j.url).then(() => true, () => false);
-      say(ok ? `Herkese açık bağlantı kopyalandı: ${j.url}` : `Herkese açık bağlantı: ${j.url}`, 6000);
+      say(ok ? t.linkCopied(j.url) : t.linkShown(j.url), 6000);
       window.open(j.url, "_blank", "noopener");
     } catch {
-      say("Paylaşım bağlantısı oluşturulamadı.", 3000);
+      say(t.shareFailed, 3000);
     } finally {
       setSharing(false);
     }
-  }, [sharing, projectId, activeVersion, say]);
+  }, [sharing, projectId, activeVersion, say, locale, t]);
 
   const save = useCallback(
     async (snapshot: boolean) => {
       if (saving) return null;
       if (!me?.user) {
-        say("Kaydetmek için giriş yapın — sağ üstteki Giriş düğmesi.", 3500);
+        say(t.signInToSave, 3500);
         return null;
       }
       setSaving(true);
       try {
         const r = await fetch("/api/projects", {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers: { "Content-Type": "application/json", "x-pm-locale": locale },
           body: JSON.stringify({ id: projectId ?? undefined, state: s, snapshot, refined: snapshot ? refined : undefined }),
         });
         if (!r.ok) {
-          const j = (await r.json().catch(() => ({}))) as { error?: string };
-          say(j.error ?? "Kaydedilemedi.", 3500);
+          const j = (await r.json().catch(() => ({}))) as { error?: string; code?: string };
+          say(failText(locale, t, j, t.saveFailed), 3500);
           return null;
         }
         const data = (await r.json()) as { id: string; version: number | null };
@@ -305,16 +320,16 @@ export function Studio({ dailyLimit }: { dailyLimit: number }) {
         url.searchParams.set("project", data.id);
         url.searchParams.delete("new");
         window.history.replaceState(null, "", url.toString());
-        say(data.version ? `Kaydedildi • v${data.version}` : "Proje kaydedildi");
+        say(data.version ? t.savedVersion(data.version) : t.saved);
         return data;
       } catch {
-        say("Kaydedilemedi.", 3000);
+        say(t.saveFailed, 3000);
         return null;
       } finally {
         setSaving(false);
       }
     },
-    [me, projectId, refined, s, saving, say],
+    [me, projectId, refined, s, saving, say, locale, t],
   );
 
   const onApiError = useCallback(
@@ -322,10 +337,10 @@ export function Studio({ dailyLimit }: { dailyLimit: number }) {
       if (e instanceof ApiError) {
         if (e.code === "rate_limited") setUsedToday(dailyLimit);
         say(e.message, e.code === "rate_limited" ? 6000 : 4000);
-      } else say("Beklenmeyen bir hata oldu.", 3000);
+      } else say(t.unexpectedError, 3000);
       refreshMe();
     },
-    [dailyLimit, say, refreshMe],
+    [dailyLimit, say, refreshMe, t],
   );
 
   /** Updates the credit meter right away from the AI response, then re-syncs with the server. */
@@ -351,7 +366,7 @@ export function Studio({ dailyLimit }: { dailyLimit: number }) {
       const r = await enhanceDescription(s);
       patch({ description: r.text });
       applyCredits(r.credits, r.remaining);
-      say("Açıklama Claude ile güçlendirildi ✨");
+      say(t.enhanced);
     } catch (e) {
       onApiError(e);
     } finally {
@@ -372,7 +387,7 @@ export function Studio({ dailyLimit }: { dailyLimit: number }) {
         if (r.picks[k].length) setArray(key, r.picks[k]);
       });
       applyCredits(r.credits, r.remaining);
-      say("Stack Claude tarafından önerildi — istediğini değiştirebilirsin.");
+      say(t.stackSuggested);
     } catch (e) {
       onApiError(e);
     } finally {
@@ -396,7 +411,7 @@ export function Studio({ dailyLimit }: { dailyLimit: number }) {
         (c) => applyCredits(c),
       );
       refreshMe();
-      say("Prompt iyileştirildi ✨");
+      say(t.refined);
     } catch (err) {
       setRefined((prev) => {
         const next = { ...prev };
@@ -417,7 +432,7 @@ export function Studio({ dailyLimit }: { dailyLimit: number }) {
       setReleased(true);
       setOutTab(s.experts[0] ?? "cto");
       track("generate", { project_type: s.projectType, experts: s.experts.length, format: s.format, plan });
-      if (me?.user) await save(true); // her üretim bir versiyon olarak saklanır
+      if (me?.user) await save(true); // every generation is stored as a version
     }, 1400);
   };
 
@@ -435,17 +450,17 @@ export function Studio({ dailyLimit }: { dailyLimit: number }) {
     url.searchParams.delete("project");
     url.searchParams.delete("version");
     window.history.replaceState(null, "", url.toString());
-    say("Yeni canavar — boş proje açıldı");
+    say(t.newProject);
   };
 
   const onTemplate = (name: string) => {
-    patch({ name: name.replace(" Clone", ""), pitch: `${name} — ${s.pitch || "kendi pazarın için yeniden düşün"}`, step: 1 });
-    say(`Şablon uygulandı: ${name}`);
+    patch({ name: name.replace(" Clone", ""), pitch: `${name} — ${s.pitch || t.templatePitch}`, step: 1 });
+    say(t.templateApplied(name));
   };
 
-  const onNavTab = (t: string) => {
-    setNavTab(t);
-    say(t === "Studio" ? "Studio aktif • Canavar fabrikası açık 👹" : `${t} çok yakında • Studio aktif`);
+  const onNavTab = (tab: string) => {
+    setNavTab(tab);
+    say(tab === "Studio" ? t.studioActive : t.comingSoon(tab));
   };
 
   const setStep = (n: 1 | 2 | 3 | 4) => patch({ step: n });
@@ -494,14 +509,14 @@ export function Studio({ dailyLimit }: { dailyLimit: number }) {
           {projectId && versions.length > 0 && (
             <div className="px-4 lg:px-8 pt-4 flex items-center gap-2 flex-wrap text-[11px]">
               <span className="text-zinc-500 flex items-center gap-1">
-                <History className="w-3 h-3" aria-hidden /> Versiyonlar:
+                <History className="w-3 h-3" aria-hidden /> {t.versions}
               </span>
               {versions.map((v) => (
                 <button
                   key={v.id}
                   type="button"
                   onClick={() => loadProject(projectId, v.version)}
-                  title={`${v.format} • ${v.lang} • ${new Date(v.created_at).toLocaleString("tr-TR")}`}
+                  title={`${v.format} • ${v.lang} • ${new Date(v.created_at).toLocaleString(locale === "en" ? "en-US" : "tr-TR")}`}
                   className={cx(
                     "h-6 px-2 rounded-full border font-mono",
                     activeVersion === v.version ? "bg-lime text-black border-lime" : "bg-ink-800 border-ink-600 text-zinc-400 hover:text-white",
@@ -515,10 +530,10 @@ export function Studio({ dailyLimit }: { dailyLimit: number }) {
                   type="button"
                   onClick={share}
                   disabled={sharing}
-                  title="Bu versiyonu herkese açık bir sayfa olarak paylaş"
+                  title={t.shareTitle}
                   className="ml-auto h-7 px-3 rounded-full border border-ink-600 bg-ink-800 text-zinc-300 hover:text-white flex items-center gap-1.5 disabled:opacity-60"
                 >
-                  <Share2 className="w-3 h-3" aria-hidden /> Paylaş v{activeVersion}
+                  <Share2 className="w-3 h-3" aria-hidden /> {t.shareVersion(activeVersion)}
                 </button>
               )}
             </div>
@@ -539,7 +554,7 @@ export function Studio({ dailyLimit }: { dailyLimit: number }) {
                 disabled={s.step === 1}
                 className="h-10 px-5 rounded-xl bg-ink-800 border border-ink-600 text-[13px] disabled:opacity-40"
               >
-                ← Geri
+                {t.back}
               </button>
               <button
                 type="button"
@@ -547,7 +562,7 @@ export function Studio({ dailyLimit }: { dailyLimit: number }) {
                 disabled={s.step === 4}
                 className="h-10 px-5 rounded-xl bg-white text-black font-semibold text-[13px] disabled:opacity-40 flex items-center gap-1"
               >
-                İleri <ChevronRight className="w-4 h-4" aria-hidden />
+                {t.next} <ChevronRight className="w-4 h-4" aria-hidden />
               </button>
             </div>
           </div>

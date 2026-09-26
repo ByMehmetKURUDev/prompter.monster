@@ -1,5 +1,6 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
+import { localePath, stripLocale } from "@/lib/i18n";
 
 /** Refreshes the Supabase session cookie on every request and protects /library. */
 export async function updateSession(request: NextRequest) {
@@ -27,18 +28,19 @@ export async function updateSession(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser();
 
-  const path = request.nextUrl.pathname;
+  const fullPath = request.nextUrl.pathname;
+  const { locale, path } = stripLocale(fullPath);
   if (!user && (path.startsWith("/library") || path.startsWith("/account") || path.startsWith("/admin"))) {
     const login = request.nextUrl.clone();
-    login.pathname = "/login";
-    login.searchParams.set("next", path);
+    login.pathname = path.startsWith("/admin") ? "/login" : localePath("/login", locale);
+    login.search = "";
+    login.searchParams.set("next", fullPath);
     return NextResponse.redirect(login);
   }
   if (user && path === "/login") {
-    const next = request.nextUrl.searchParams.get("next") || "/studio";
-    const to = request.nextUrl.clone();
-    to.pathname = next;
-    to.search = "";
+    const raw = request.nextUrl.searchParams.get("next") || localePath("/studio", locale);
+    const next = raw.startsWith("/") && !raw.startsWith("//") ? raw : "/studio";
+    const to = new URL(next, request.nextUrl.origin);
     return NextResponse.redirect(to);
   }
 
