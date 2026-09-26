@@ -1,6 +1,6 @@
 "use client";
 
-import { Bell, Crown, FolderOpen, KeyRound, LogIn, LogOut, Save, Search } from "lucide-react";
+import { Bell, Crown, FolderOpen, KeyRound, LogIn, LogOut, Plug, Save, Search } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 import { useLocale } from "@/components/site/LocaleProvider";
@@ -105,6 +105,9 @@ export function Nav({
                 </Link>
                 <Link href={lhref("/pricing", locale)} role="menuitem" className="flex items-center gap-2 px-3 py-2 rounded-lg text-[13px] hover:bg-ink-600">
                   <Crown className="w-4 h-4" aria-hidden /> {me?.plan === "pro" ? t.myPlanPro : t.goPro}
+                </Link>
+                <Link href={lhref("/account/api", locale)} role="menuitem" className="flex items-center gap-2 px-3 py-2 rounded-lg text-[13px] hover:bg-ink-600">
+                  <Plug className="w-4 h-4" aria-hidden /> {t.apiKeys}
                 </Link>
                 <Link href={lhref("/account/password", locale)} role="menuitem" className="flex items-center gap-2 px-3 py-2 rounded-lg text-[13px] hover:bg-ink-600">
                   <KeyRound className="w-4 h-4" aria-hidden /> {t.changePassword}

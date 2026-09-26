@@ -31,10 +31,13 @@ export class AiRouteError extends Error {
 type Lang = "tr" | "en";
 
 /** UI language of the caller (the Studio sends x-pm-locale; API clients may send Accept-Language). */
-export function requestLang(req: Request): Lang {
+export function requestLang(req: Request, fallback: Lang = "tr"): Lang {
   const h = req.headers.get("x-pm-locale") || "";
   if (h === "en" || h === "tr") return h;
-  return /^en\b/i.test(req.headers.get("accept-language") || "") ? "en" : "tr";
+  const al = req.headers.get("accept-language") || "";
+  if (/^en\b/i.test(al)) return "en";
+  if (/^tr\b/i.test(al)) return "tr";
+  return fallback;
 }
 
 const MSG = {
@@ -95,8 +98,9 @@ const MAX_TOKENS: Record<AiEndpoint, number> = { enhance: 600, suggest: 700, ref
  * Signed-in users: credit-weighted daily (and Pro monthly) quota in Postgres (consume_ai_call).
  * Visitors: per-IP daily credits in KV; the call is also logged (hashed IP) for statistics.
  */
-export async function guard(req: Request, endpoint: AiEndpoint, source = "web"): Promise<AiContext> {
-  const lang = requestLang(req);
+export async function guard(req: Request, endpoint: AiEndpoint, source = "web", identity?: { userId: string }): Promise<AiContext> {
+  // API / MCP callers get English messages unless they ask for Turkish (Accept-Language: tr).
+  const lang = requestLang(req, identity ? "en" : "tr");
   if (!hasApiKey()) throw new AiRouteError(503, "no_api_key", MSG.no_api_key[lang]);
 
   const s = await readServerSettings();
@@ -105,6 +109,37 @@ export async function guard(req: Request, endpoint: AiEndpoint, source = "web"):
 
   const cost = creditCosts(s as unknown as Parameters<typeof creditCosts>[0])[endpoint];
   const maxTokens = endpoint === "refine" ? Number(s.refine_max_tokens) || MAX_TOKENS.refine : MAX_TOKENS[endpoint];
+
+  // API key / MCP callers: spend the key owner's credits through the service-role-only RPC.
+  if (identity) {
+    if (!adminConfigured()) throw new AiRouteError(503, "ai_disabled", MSG.ai_disabled[lang]);
+    const { data, error } = await createAdminClient()
+      .rpc("consume_ai_credits", { p_uid: identity.userId, p_endpoint: endpoint, p_credits: cost, p_source: source })
+      .single<{ ok: boolean; remaining: number; plan: string; usage_id: number | null; day_limit: number; month_used: number; month_limit: number }>();
+    if (error || !data) throw new AiRouteError(500, "ai_failed", lang === "en" ? "Could not check your credits." : "Kredin kontrol edilemedi.");
+    if (data.plan === "banned") throw new AiRouteError(403, "banned", MSG.banned[lang]);
+    if (data.plan === "disabled") throw new AiRouteError(503, "ai_disabled", MSG.ai_disabled[lang]);
+    const plan = data.plan === "pro" ? "pro" : "free";
+    if (!data.ok) {
+      const monthly = plan === "pro" && data.month_limit > 0 && data.month_used + cost > data.month_limit;
+      throw new AiRouteError(429, "rate_limited", limitMessage(lang, plan, cost, data.remaining, s, monthly));
+    }
+    return {
+      endpoint,
+      plan,
+      model: await resolveModel(plan),
+      cost,
+      remaining: data.remaining,
+      limit: data.day_limit,
+      monthUsed: plan === "pro" ? data.month_used : null,
+      monthLimit: plan === "pro" ? data.month_limit : null,
+      maxTokens,
+      usageId: data.usage_id ?? null,
+      anonKey: null,
+      source,
+      lang,
+    };
+  }
 
   if (supabaseConfigured()) {
     try {

@@ -6,8 +6,8 @@ import { LanguageSwitch } from "./LanguageSwitch";
 import { LegalLinks } from "./LegalLinks";
 
 const NAV = {
-  tr: { prompts: "Build prompt'lar", guide: "Rehber", pricing: "Fiyat", studio: "Studio'yu aç", footerPrompts: "Proje tipine göre build prompt'lar" },
-  en: { prompts: "Build prompts", guide: "Guide", pricing: "Pricing", studio: "Open Studio", footerPrompts: "Build prompts by project type" },
+  tr: { prompts: "Build prompt'lar", guide: "Rehber", pricing: "Fiyat", studio: "Studio'yu aç", footerPrompts: "Proje tipine göre build prompt'lar", api: "API ve MCP" },
+  en: { prompts: "Build prompts", guide: "Guide", pricing: "Pricing", studio: "Open Studio", footerPrompts: "Build prompts by project type", api: "API & MCP" },
 } as const;
 
 /** Header + footer used by the public marketing pages (/prompt, /docs, /legal …). */
@@ -49,6 +49,10 @@ export function PublicShell({ children, cta, locale = "tr", langSwitch = true }:
         <span aria-hidden>•</span>
         <Link href={lhref("/docs", locale)} className="hover:text-zinc-300">
           {n.guide}
+        </Link>
+        <span aria-hidden>•</span>
+        <Link href={lhref("/developers", locale)} className="hover:text-zinc-300">
+          {n.api}
         </Link>
         <span aria-hidden>•</span>
         <LegalLinks locale={locale} />

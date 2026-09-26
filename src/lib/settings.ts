@@ -14,7 +14,7 @@ export interface SettingDef {
   description: string;
   type: SettingType;
   default: boolean | number | string;
-  group: "Genel" | "AI" | "Krediler" | "Planlar" | "Ödeme" | "Duyuru" | "Yasal";
+  group: "Genel" | "AI" | "Krediler" | "Entegrasyon" | "Planlar" | "Ödeme" | "Duyuru" | "Yasal";
   /** Exposed to anonymous clients via public_settings() (never put secrets here). */
   isPublic?: boolean;
   /** ISO date the setting was introduced — drives the "YENİ" badge. */
@@ -48,6 +48,12 @@ export const SETTINGS_REGISTRY: SettingDef[] = [
   { key: "credit_cost_enhance", label: "Kredi — açıklamayı güçlendir", description: "Enhance işleminin kredi maliyeti.", type: "number", default: 1, group: "Krediler", isPublic: true, since: "2026-09-26", min: 1, max: 50 },
   { key: "credit_cost_suggest", label: "Kredi — stack öner", description: "Stack önerisinin kredi maliyeti.", type: "number", default: 1, group: "Krediler", isPublic: true, since: "2026-09-26", min: 1, max: 50 },
   { key: "credit_cost_refine", label: "Kredi — promptu iyileştir", description: "İyileştir işleminin kredi maliyeti (en uzun yanıt; en pahalı işlem).", type: "number", default: 3, group: "Krediler", isPublic: true, since: "2026-09-26", min: 1, max: 50 },
+
+  // Entegrasyon (public API + MCP sunucusu)
+  { key: "api_enabled", label: "Public API (/api/v1)", description: "Kapalıyken /api/v1 uçları 503 döner. Anahtar yönetimi açık kalır.", type: "boolean", default: true, group: "Entegrasyon", isPublic: true, since: "2026-09-26" },
+  { key: "mcp_enabled", label: "MCP sunucusu (/api/mcp)", description: "Claude Code, Cursor, Claude Desktop gibi MCP istemcileri için uzak sunucu. Kapalıyken 503 döner.", type: "boolean", default: true, group: "Entegrasyon", isPublic: true, since: "2026-09-26" },
+  { key: "api_rate_per_minute", label: "API anahtarı — dakikalık istek", description: "Anahtar başına dakikada izin verilen istek (API + MCP toplam).", type: "number", default: 30, group: "Entegrasyon", since: "2026-09-26", min: 1, max: 1000 },
+  { key: "api_anon_rate_per_minute", label: "Anahtarsız — dakikalık istek", description: "Anahtarsız (IP başına) dakikalık istek; yalnız ücretsiz araçlar (tip listesi, prompt üretimi Free sınırlarıyla).", type: "number", default: 10, group: "Entegrasyon", since: "2026-09-26", min: 0, max: 1000 },
 
   // Ödeme
   { key: "checkout_enabled", label: "Pro satın alma", description: "Kapalıyken /pricing'de 'Pro'ya geç' yerine 'yakında' görünür (mağaza bakımı, canlı moda geçiş anı).", type: "boolean", default: true, group: "Ödeme", isPublic: true, since: "2026-09-26" },
@@ -115,6 +121,8 @@ export interface PublicSettings {
   credit_cost_enhance: number;
   credit_cost_suggest: number;
   credit_cost_refine: number;
+  api_enabled: boolean;
+  mcp_enabled: boolean;
   checkout_enabled: boolean;
   launch_coupon: string;
   launch_coupon_text: string;

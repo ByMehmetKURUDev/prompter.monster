@@ -1,9 +1,15 @@
+import { BookOpen, Crown } from "lucide-react";
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import { ApiKeysPanel, type KeyItem } from "@/components/account/ApiKeysPanel";
 import { LoginForm } from "@/components/auth/LoginForm";
 import { PasswordForm } from "@/components/auth/PasswordForm";
 import { LibraryList } from "@/components/library/LibraryList";
+import { MAX_ACTIVE_KEYS } from "@/lib/api-keys";
+import { KEY_COLUMNS } from "@/lib/api-keys-server";
 import type { ProjectSummary } from "@/lib/db";
+import { limitsFor } from "@/lib/plans";
+import { readServerSettings } from "@/lib/settings-server";
 import { lhref, type Locale } from "@/lib/i18n";
 import { createClient, supabaseConfigured } from "@/lib/supabase/server";
 import { LanguageSwitch } from "./LanguageSwitch";
@@ -16,6 +22,19 @@ const COPY = {
     signOut: "Çıkış",
     newPassword: "Yeni şifre belirle",
     backStudio: "Studio'ya dön",
+    apiTitle: "API ve MCP",
+    apiText: "Prompt.Monster'ı Claude Code, Cursor, VS Code, Windsurf, Claude Desktop ve ChatGPT'den kullan. Prompt üretimi ücretsiz; AI iyileştirme planının kredisini harcar.",
+    docs: "Dokümantasyon",
+    plan: "Planın",
+    viaApi: "API / MCP üzerinden",
+    experts: (n: number) => `${n} uzman`,
+    formats: (n: number) => `${n} format`,
+    files: "Proje dosyaları (AGENTS.md, CLAUDE.md, .claude/agents …)",
+    noFiles: "Proje dosyası export'u Pro'da",
+    credits: (d: number, m: number | null) => (m ? `Ayda ${m} AI kredisi (günde ≤${d})` : `Günde ${d} AI kredisi`),
+    rate: (k: number, a: number) => `Dakikada ${k} istek (anahtarsız: ${a})`,
+    upgrade: "Pro'ya geç",
+    off: (what: string) => `${what} şu an bakım için kapalı; anahtarların saklanıyor.`,
   },
   en: {
     library: "My projects",
@@ -24,6 +43,19 @@ const COPY = {
     signOut: "Sign out",
     newPassword: "Set a new password",
     backStudio: "Back to the Studio",
+    apiTitle: "API & MCP",
+    apiText: "Use Prompt.Monster from Claude Code, Cursor, VS Code, Windsurf, Claude Desktop and ChatGPT. Prompt generation is free; AI refine spends your plan's credits.",
+    docs: "Documentation",
+    plan: "Your plan",
+    viaApi: "Through the API / MCP",
+    experts: (n: number) => `${n} experts`,
+    formats: (n: number) => `${n} formats`,
+    files: "Project files (AGENTS.md, CLAUDE.md, .claude/agents …)",
+    noFiles: "Project file exports are on Pro",
+    credits: (d: number, m: number | null) => (m ? `${m} AI credits a month (≤${d} a day)` : `${d} AI credits a day`),
+    rate: (k: number, a: number) => `${k} requests a minute (without a key: ${a})`,
+    upgrade: "Go Pro",
+    off: (what: string) => `${what} is switched off for maintenance right now; your keys are kept.`,
   },
 } as const;
 
@@ -144,6 +176,80 @@ export async function LibraryPageView({ locale }: { locale: Locale }) {
           </Link>
         </div>
         <LibraryList initial={items} />
+      </main>
+    </div>
+  );
+}
+
+export async function ApiAccountView({ locale }: { locale: Locale }) {
+  const c = COPY[locale];
+  if (!supabaseConfigured()) redirect(lhref("/developers", locale));
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) redirect(`${lhref("/login", locale)}?next=${encodeURIComponent(lhref("/account/api", locale))}`);
+
+  const [{ data: keys }, { data: prof }, s] = await Promise.all([
+    supabase.from("api_keys").select(KEY_COLUMNS).eq("owner_id", user.id).order("created_at", { ascending: false }).limit(50),
+    supabase.from("profiles").select("plan").eq("id", user.id).maybeSingle<{ plan: string }>(),
+    readServerSettings(),
+  ]);
+  const plan = prof?.plan === "pro" ? "pro" : "free";
+  const limits = limitsFor(plan);
+  const perDay = Number(plan === "pro" ? s.pro_credits_per_day : s.free_credits_per_day);
+  const perMonth = plan === "pro" ? Number(s.pro_credits_per_month) : null;
+  const off = [!s.api_enabled && "REST API", !s.mcp_enabled && "MCP"].filter(Boolean).join(" + ");
+
+  return (
+    <div className="min-h-screen bg-ink-950 text-zinc-100">
+      <header className="h-[56px] border-b border-ink-600 bg-ink-950/80 backdrop-blur-xl sticky top-0 z-50 flex items-center px-4 lg:px-8 gap-4">
+        <Brand locale={locale} />
+        <nav className="ml-auto flex items-center gap-2 text-[13px]">
+          <span className="hidden md:block text-zinc-500 truncate max-w-[240px]">{user.email}</span>
+          <LanguageSwitch />
+          <Link href={lhref("/studio", locale)} className="h-9 px-4 rounded-lg bg-lime text-black font-bold flex items-center">
+            Studio
+          </Link>
+        </nav>
+      </header>
+      <main className="max-w-[900px] mx-auto px-4 lg:px-8 py-10 space-y-6">
+        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+          <div className="min-w-0">
+            <h1 className="text-2xl font-bold tracking-tight">{c.apiTitle}</h1>
+            <p className="text-[13px] text-zinc-400 mt-1 max-w-[560px]">{c.apiText}</p>
+          </div>
+          <Link href={lhref("/developers", locale)} className="h-10 px-4 rounded-lg bg-ink-800 border border-ink-600 text-[13px] font-semibold flex items-center gap-2 shrink-0 self-start sm:self-auto">
+            <BookOpen className="w-4 h-4" aria-hidden /> {c.docs}
+          </Link>
+        </div>
+
+        {off && <p className="rounded-xl border border-amber-500/40 bg-amber-500/10 px-4 py-3 text-[12.5px] text-amber-200">{c.off(off)}</p>}
+
+        <section className="rounded-2xl bg-ink-800 border border-ink-600 p-5 flex flex-col md:flex-row md:items-center gap-4">
+          <div className="shrink-0">
+            <div className="text-[11px] tracking-widest text-zinc-500 font-semibold">{c.plan.toUpperCase()}</div>
+            <div className="mt-1 flex items-center gap-2 text-[18px] font-bold">
+              <Crown className="w-4 h-4 text-lime" aria-hidden /> {plan === "pro" ? "Monster Pro" : "Free"}
+            </div>
+          </div>
+          <div className="min-w-0 flex-1 text-[12.5px] text-zinc-300">
+            <div className="text-[11px] tracking-widest text-zinc-500 font-semibold mb-1">{c.viaApi.toUpperCase()}</div>
+            <ul className="grid sm:grid-cols-2 gap-x-4 gap-y-1">
+              <li>• {c.experts(limits.experts)} · {c.formats(limits.formats.length)}</li>
+              <li>• {limits.builders ? c.files : c.noFiles}</li>
+              <li>• {c.credits(perDay, perMonth)}</li>
+              <li>• {c.rate(Number(s.api_rate_per_minute) || 30, Number(s.api_anon_rate_per_minute) || 10)}</li>
+            </ul>
+          </div>
+          {plan !== "pro" && (
+            <Link href={lhref("/pricing", locale)} className="h-10 px-4 rounded-lg bg-white text-black text-[13px] font-bold flex items-center justify-center shrink-0">
+              {c.upgrade}
+            </Link>
+          )}
+        </section>
+
+        <ApiKeysPanel locale={locale} initial={(keys ?? []) as KeyItem[]} max={MAX_ACTIVE_KEYS} />
       </main>
     </div>
   );

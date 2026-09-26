@@ -13,6 +13,21 @@ export interface ChangelogEntry {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: "4.4",
+    date: "2026-09-26",
+    title: "Public API + MCP sunucusu — Prompt.Monster editörlerin içinde",
+    items: [
+      "MCP sunucusu (/api/mcp, Streamable HTTP): Claude Code, Cursor, VS Code, Windsurf, Claude Desktop. Araçlar: generate_build_prompt, list_project_types, get_type_preset, list_experts, export_files (Pro), get_shared_prompt, refine_prompt (kredi). Claude Code'da /mcp__prompt-monster__new_project komutu.",
+      "REST API (/api/v1): types, types/{id}, generate, refine, shared/{slug} + OpenAPI 3.1 şeması (ChatGPT GPT Actions ile uyumlu).",
+      "Kullanıcı API anahtarları: /account/api (en fazla 5 aktif; anahtar bir kez gösterilir, yalnız özeti saklanır; iptal edilebilir). Studio menüsünde 'API ve MCP'.",
+      "Pro proje dosyaları (API/MCP): AGENTS.md, CLAUDE.md, .claude/agents/*.md (uzman başına alt ajan), .cursor/rules/*.mdc, .cursorrules, .github/copilot-instructions.md, Task Master prd.txt, prompt-monster.json.",
+      "Anahtarsız kullanım Free sınırlarıyla çalışır (3 uzman, 2 format). Hız sınırı: anahtarla 30/dk, anahtarsız 10/dk — Ayarlar → Entegrasyon.",
+      "Yeni admin sayfası: API ve MCP (günlük çağrılar, uç nokta/araç dağılımı, kaynağa göre AI kredisi, tüm anahtarlar).",
+      "Herkese açık geliştirici sayfası: /developers ve /en/developers; llms.txt API/MCP bölümüyle güncellendi.",
+    ],
+    settings: ["api_enabled", "mcp_enabled", "api_rate_per_minute", "api_anon_rate_per_minute"],
+  },
+  {
     version: "4.3",
     date: "2026-09-26",
     title: "İngilizce arayüz (/en) — Product Hunt'a hazırlık",

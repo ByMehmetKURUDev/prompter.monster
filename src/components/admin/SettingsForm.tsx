@@ -58,7 +58,7 @@ export function SettingsForm({ defs, values }: { defs: Def[]; values: SettingsMa
   return (
     <div className="space-y-6">
       {groups.map(([group, list]) => (
-        <section key={group} className="rounded-2xl bg-ink-900 border border-ink-600">
+        <section key={group} id={group} className="rounded-2xl bg-ink-900 border border-ink-600 scroll-mt-20">
           <div className="px-4 h-11 border-b border-ink-600 flex items-center text-[11px] font-semibold tracking-widest text-zinc-400 uppercase">{group}</div>
           <div className="divide-y divide-ink-600">
             {list.map((d) => (

@@ -97,3 +97,28 @@ export async function ipHash(req: Request): Promise<string> {
     .map((b) => b.toString(16).padStart(2, "0"))
     .join("");
 }
+
+/** Fixed-window counter (e.g. requests per minute for the public API). Soft limit — KV is eventually consistent. */
+export async function consumeWindow(key: string, limit: number, windowSec = 60): Promise<{ ok: boolean; remaining: number; reset: number }> {
+  const now = Math.floor(Date.now() / 1000);
+  const win = Math.floor(now / windowSec);
+  const reset = (win + 1) * windowSec - now;
+  const k = `rlw:${windowSec}:${win}:${key}`;
+  const store = kv();
+  if (store) {
+    try {
+      const used = Number((await store.get(k)) ?? 0);
+      if (used >= limit) return { ok: false, remaining: 0, reset };
+      // KV allows ~1 write/sec per key; a failed write must not block the request.
+      await store.put(k, String(used + 1), { expirationTtl: Math.max(60, windowSec * 2) }).catch(() => undefined);
+      return { ok: true, remaining: limit - used - 1, reset };
+    } catch {
+      return { ok: true, remaining: limit, reset };
+    }
+  }
+  const b = memory.get(k);
+  const used = b ? b.count : 0;
+  if (used >= limit) return { ok: false, remaining: 0, reset };
+  memory.set(k, { day: String(win), count: used + 1 });
+  return { ok: true, remaining: limit - used - 1, reset };
+}

@@ -15,6 +15,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${site}/pricing`, lastModified: now, changeFrequency: "monthly", priority: 0.8 },
     { url: `${site}/prompt`, lastModified: now, changeFrequency: "weekly", priority: 0.8 },
     { url: `${site}/docs`, lastModified: now, changeFrequency: "monthly", priority: 0.7 },
+    { url: `${site}/developers`, lastModified: now, changeFrequency: "monthly", priority: 0.7 },
     ...TYPE_PAGES.map((p) => ({ url: `${site}/prompt/${p.slug}`, lastModified: now, changeFrequency: "monthly" as const, priority: 0.7 })),
     // English twins
     { url: `${site}/en`, lastModified: now, changeFrequency: "weekly", priority: 0.9 },
@@ -22,6 +23,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${site}/en/pricing`, lastModified: now, changeFrequency: "monthly", priority: 0.7 },
     { url: `${site}/en/prompt`, lastModified: now, changeFrequency: "weekly", priority: 0.7 },
     { url: `${site}/en/docs`, lastModified: now, changeFrequency: "monthly", priority: 0.6 },
+    { url: `${site}/en/developers`, lastModified: now, changeFrequency: "monthly", priority: 0.7 },
     ...TYPE_PAGES_EN.map((p) => ({ url: `${site}/en/prompt/${p.slug}`, lastModified: now, changeFrequency: "monthly" as const, priority: 0.6 })),
     ...LEGAL_SLUGS.flatMap((slug) => [
       { url: `${site}/legal/${slug}`, lastModified: new Date(LEGAL_UPDATED), changeFrequency: "yearly" as const, priority: 0.2 },

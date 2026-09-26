@@ -135,7 +135,7 @@ export function llmsTxt(): string {
   const lines: string[] = [];
   lines.push("# Prompt.Monster");
   lines.push("");
-  lines.push("> Prompt.Monster turns a product idea into a production-grade \"master build prompt\" for AI coding tools (Claude Code, Cursor, v0, Lovable, Bolt, ChatGPT). Twelve expert personas (CTO, PM, Design Director, AI Engineer, Security, Monetization, SEO/AEO, DevOps, QA, Data, Growth, Copy) each write their block; an 8-step Mega Chain sequences the build. Interface language: Turkish (outputs in TR or EN).");
+  lines.push("> Prompt.Monster turns a product idea into a production-grade \"master build prompt\" for AI coding tools (Claude Code, Cursor, v0, Lovable, Bolt, ChatGPT). Twelve expert personas (CTO, PM, Design Director, AI Engineer, Security, Monetization, SEO/AEO, DevOps, QA, Data, Growth, Copy) each write their block; an 8-step Mega Chain sequences the build. Interface: Turkish and English (/en); outputs in TR or EN.");
   lines.push("");
   lines.push("## How the Studio works (4 steps)");
   lines.push("1. Idea & vision: name, one-line pitch, description (100–200 words), audience (role, pain, budget), competitors, USP, monetization.");
@@ -172,10 +172,21 @@ export function llmsTxt(): string {
   lines.push("");
   lines.push("## Plans");
   lines.push("- Free: 3 experts, 2 formats (ChatGPT Markdown, Claude XML), 5 AI credits/day (visitors without an account: 3), project library, share pages. No card.");
-  lines.push("- Monster Pro ($29/mo or $290/yr): 12 experts, Mega Chain, 5 formats, .cursorrules / CLAUDE.md, Export to Builders, 1,000 AI credits/month (enhance 1, stack suggestion 1, refine 3; max 150/day).");
+  lines.push("- Monster Pro ($29/mo or $290/yr): 12 experts, Mega Chain, 5 formats, project files for coding agents (AGENTS.md, CLAUDE.md, .claude/agents, Cursor rules, Copilot instructions, Task Master PRD), Export to Builders, 1,000 AI credits/month (enhance 1, stack suggestion 1, refine 3; max 150/day).");
   lines.push("");
-  lines.push("## Roadmap for integrations");
-  lines.push("- MCP server (generate_prompt / list_types tools) for Claude Code, Cursor and other MCP clients — planned.");
-  lines.push("- Chrome extension and ChatGPT Action — planned. Contact: hello@prompter.monster");
+  lines.push("## MCP server (Streamable HTTP)");
+  lines.push(`- Endpoint: ${SITE}/api/mcp  — works without a key (Free plan); add "Authorization: Bearer pm_live_…" for your plan, refine and file exports. Keys: ${SITE}/account/api`);
+  lines.push(`- Claude Code: claude mcp add --transport http prompt-monster ${SITE}/api/mcp --header "Authorization: Bearer <key>"`);
+  lines.push("- Tools: list_project_types, get_type_preset, list_experts, generate_build_prompt (free, deterministic), export_files (Pro: AGENTS.md, CLAUDE.md, .claude/agents/*.md, .cursor/rules/*.mdc, .cursorrules, .github/copilot-instructions.md, .taskmaster/docs/prd.txt, prompt-monster.json), get_shared_prompt, refine_prompt (key, 3 AI credits).");
+  lines.push("- Prompt: new_project (idea → master build prompt; in Claude Code: /mcp__prompt-monster__new_project).");
+  lines.push("");
+  lines.push("## REST API");
+  lines.push(`- Base: ${SITE}/api/v1  • OpenAPI 3.1: ${SITE}/api/v1/openapi.json  • Docs: ${SITE}/developers (EN: ${SITE}/en/developers)`);
+  lines.push("- GET /types, GET /types/{id}, POST /generate {name, pitch, description, projectType, features, experts, format, lang, output: mega|experts|files}, POST /refine (key), GET /shared/{slug}.");
+  lines.push("- Limits: 10 requests/min without a key, 30/min with a key. Errors: { error: { code, message } }.");
+  lines.push("");
+  lines.push("## Languages");
+  lines.push(`- Turkish at the root, English under ${SITE}/en (studio, pricing, docs, prompt pages, developers).`);
+  lines.push("- Contact: hello@prompter.monster");
   return lines.join("\n") + "\n";
 }

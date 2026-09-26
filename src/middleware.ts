@@ -4,6 +4,9 @@ import { ATTR_CODE_COOKIE, ATTR_SOURCE_COOKIE, CODE_MAX_AGE, SOURCE_MAX_AGE, san
 import { updateSession } from "@/lib/supabase/middleware";
 
 export async function middleware(request: NextRequest) {
+  // Public API + MCP authenticate with API keys, never cookies: skip the session refresh entirely.
+  const p = request.nextUrl.pathname;
+  if (p.startsWith("/api/v1/") || p === "/api/mcp" || p === "/llms.txt") return NextResponse.next();
   const langRedirect = preferredLanguageRedirect(request);
   if (langRedirect) {
     applyAttribution(request, langRedirect);

@@ -38,7 +38,7 @@ export function stripLocale(pathname: string): { locale: Locale; path: string } 
  * English routes that exist (besides the home page "/"): each prefix has an /en wrapper route.
  * Links to anything else (admin, auth callbacks, shared /p pages) stay on the Turkish path.
  */
-export const EN_READY_PREFIXES = ["/studio", "/pricing", "/docs", "/prompt", "/login", "/library", "/account", "/legal"];
+export const EN_READY_PREFIXES = ["/studio", "/pricing", "/docs", "/prompt", "/login", "/library", "/account", "/legal", "/developers"];
 
 /** True when the English version of this (locale-free) path exists. */
 export function enReady(path: string): boolean {
