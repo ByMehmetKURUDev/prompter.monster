@@ -1,5 +1,6 @@
 import type { MetadataRoute } from "next";
 import { createClient } from "@supabase/supabase-js";
+import { TYPE_PAGES } from "@/lib/seo-types";
 
 // Served on demand: the Workers deployment has no incremental cache, so ISR would freeze the list at build time.
 export const dynamic = "force-dynamic";
@@ -11,6 +12,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${site}/`, lastModified: now, changeFrequency: "weekly", priority: 1 },
     { url: `${site}/studio`, lastModified: now, changeFrequency: "weekly", priority: 0.9 },
     { url: `${site}/pricing`, lastModified: now, changeFrequency: "monthly", priority: 0.8 },
+    { url: `${site}/prompt`, lastModified: now, changeFrequency: "weekly", priority: 0.8 },
+    ...TYPE_PAGES.map((p) => ({ url: `${site}/prompt/${p.slug}`, lastModified: now, changeFrequency: "monthly" as const, priority: 0.7 })),
   ];
 
   // Public shared prompts (shared_links is readable with the anon key).

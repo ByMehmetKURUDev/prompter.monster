@@ -6,7 +6,8 @@ import { EXPERTS } from "@/lib/data";
 import type { MeResponse } from "@/lib/db";
 import { ApiError, enhanceDescription, refinePrompt, suggestStack } from "@/lib/client";
 import { type PlanId, UPGRADE_HINT, limitsFor } from "@/lib/plans";
-import { buildExpertPrompt, estimateTokens, qualityScore } from "@/lib/prompt";
+import { buildExpertPrompt, estimateTokens, projectTypeName, qualityScore } from "@/lib/prompt";
+import { quickStartState } from "@/lib/type-presets";
 import type { StudioState } from "@/lib/types";
 import { Footer } from "./Footer";
 import { Nav } from "./Nav";
@@ -79,6 +80,9 @@ export function Studio({ dailyLimit }: { dailyLimit: number }) {
   const plan: PlanId = me?.plan === "pro" ? "pro" : "free";
   const limits = useMemo(() => limitsFor(plan), [plan]);
 
+  // A type quick start (?type=) has just shown its own toast: trim quietly instead of stacking a second one.
+  const quietTrimUntil = useRef(0);
+
   // Once we know the plan, bring a loaded/forked/default state within the Free limits.
   useEffect(() => {
     if (!hydrated || !me) return; // wait for /api/me so a Pro user is never trimmed
@@ -88,7 +92,7 @@ export function Studio({ dailyLimit }: { dailyLimit: number }) {
     if (!limits.formats.includes(s.format)) fixes.format = "Claude XML";
     if (Object.keys(fixes).length) {
       patch(fixes);
-      say(`Free plan: en fazla ${limits.experts} uzman ve ${limits.formats.length} format. ${UPGRADE_HINT}`, 5000);
+      if (Date.now() > quietTrimUntil.current) say(`Free plan: en fazla ${limits.experts} uzman ve ${limits.formats.length} format. ${UPGRADE_HINT}`, 5000);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [hydrated, me, plan, s.experts.length, s.format]);
@@ -181,16 +185,31 @@ export function Studio({ dailyLimit }: { dailyLimit: number }) {
     [load, say],
   );
 
-  // ?project=<id>&version=<n>  |  ?new=1  |  ?fork=<slug>
+  // ?project=<id>&version=<n>  |  ?new=1  |  ?fork=<slug>  |  ?type=<projectType> (from /prompt/[slug])
   useEffect(() => {
     if (!hydrated) return;
     const sp = new URLSearchParams(window.location.search);
     const id = sp.get("project");
     const v = Number(sp.get("version"));
     const fork = sp.get("fork");
+    const type = sp.get("type");
+    const preset = type ? quickStartState(type) : null;
     if (id) loadProject(id, Number.isFinite(v) && v > 0 ? v : null);
     else if (fork) forkShared(fork);
-    else if (sp.get("new") === "1") {
+    else if (preset) {
+      load(preset);
+      setProjectId(null);
+      setVersions([]);
+      setActiveVersion(null);
+      setReleased(false);
+      setRefined({});
+      lastSaved.current = "";
+      const url = new URL(window.location.href);
+      url.searchParams.delete("type");
+      window.history.replaceState(null, "", url.toString());
+      quietTrimUntil.current = Date.now() + 8000;
+      say(`${projectTypeName(preset.projectType)} şablonu yüklendi: uzmanlar, stack ve özellikler hazır — adını ve fikrini yaz.`, 5000);
+    } else if (sp.get("new") === "1") {
       reset(true);
       setProjectId(null);
       setVersions([]);

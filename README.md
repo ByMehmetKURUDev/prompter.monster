@@ -21,6 +21,8 @@ Mimari, özellik matrisi, ödeme akışı (Stripe, Iyzico, PayTR…), kısıtlar
 - **Export:** `.md`, `.json`, `.cursorrules`, `CLAUDE.md`, `.txt` indir; "Export to Builders" ile araç formatında kopyala
 - **Hesap ve kütüphane (Faz 2):** e-posta/şifre veya sihirli bağlantı ile giriş (Supabase Auth), "Kaydet" ile proje kütüphanesi, her üretim bir versiyon olarak saklanır, versiyonlar arasında geçiş, hesaba bağlı günlük AI hakkı (free 3, pro 200)
 - **Paylaşılabilir prompt sayfası (Faz 3.1):** her versiyon "Paylaş" ile herkese açık `/p/<slug>` sayfası olur (kopyala / indir / "Studio'da çatalla"), Open Graph etiketleri ve sitemap ile arama motorlarına açık
+- **Monster Pro (Faz 3.2):** Lemon Squeezy (Merchant of Record) ile $29/ay veya $290/yıl abonelik; `/pricing`, hosted checkout, webhook ile `profiles.plan` güncellemesi, müşteri portalı. Free: 3 uzman, 2 format, günde 3 AI çağrısı; Pro: 12 uzman, Mega Chain, 5 format, Export to Builders, günde 200 AI çağrısı (`src/lib/plans.ts`)
+- **Programmatic SEO (Faz 3.2):** 22 proje tipi için statik landing sayfası `/prompt/<slug>` (önerilen uzmanlar, stack, özellikler, kısaltılmış örnek prompt, SSS + FAQPage/Breadcrumb JSON-LD) ve `/prompt` hub'ı; her sayfa Studio'yu `?type=<id>` ile o tipin ön ayarlarıyla açar
 - Kayıt gerektirmez; ziyaretçi projesi tarayıcıda saklanır, günlük ücretsiz AI hakkı IP bazlı (varsayılan 3)
 - SEO: landing sayfası, `sitemap.xml`, `robots.txt`, Open Graph
 
@@ -78,6 +80,10 @@ src/
     api/projects/         # proje kaydet/listele/aç/sil (RLS ile kullanıcıya özel)
     login/, library/      # giriş sayfası, Projelerim
     p/[slug]/page.tsx     # herkese açık paylaşılan prompt sayfası
+    pricing/page.tsx      # Free vs Pro, Lemon Squeezy checkout (ProCta)
+    prompt/, prompt/[slug]/ # programmatic SEO: proje tipi başına statik landing sayfaları
+    api/billing/          # checkout, webhook (X-Signature), portal, status, interest
+    account/password      # şifre belirleme/sıfırlama
     api/share/            # paylaşım bağlantısı oluştur/sil, herkese açık okuma (çatallama)
     auth/callback, auth/signout
     sitemap.ts, robots.ts, layout.tsx, globals.css
@@ -86,6 +92,10 @@ src/
   lib/
     supabase/             # browser/server/middleware istemcileri
     data.ts               # proje tipleri, stack, özellikler, ödeme, 12 uzman, varsayılan proje
+    plans.ts              # Free/Pro yetkileri (uzman sayısı, formatlar, Mega Chain, builders)
+    type-presets.ts       # proje tipi başına önerilen uzman/özellik/ödeme/stack (Studio ?type=)
+    seo-types.ts, seo.ts  # /prompt/[slug] sayfa içerikleri ve yardımcıları
+    billing/lemonsqueezy.ts # checkout, abonelik, webhook imzası, variant keşfi
     prompt.ts             # prompt üretici (uzman promptu, mega chain, export'lar)
     ai.ts                 # Anthropic SDK sarmalayıcı + guard (sunucu)
     ratelimit.ts          # günlük IP bazlı kota (Cloudflare KV; yerelde bellek içi)
@@ -103,7 +113,8 @@ open-next.config.ts       # OpenNext adaptör ayarları
 | 1 | Studio taşıma + gerçek Claude API + export'lar + Cloudflare Workers yayını | ✅ |
 | 2 | Supabase Auth, proje kütüphanesi, versiyon geçmişi, hesaba bağlı kredi, özel SMTP (Resend) | ✅ |
 | 3.1 | Paylaşılabilir prompt sayfası `/p/[slug]` + çatallama + sitemap | ✅ |
-| 3.2 | Ödeme (Paddle/Lemon Squeezy global + Iyzico TR), Pro planı, programmatic SEO, lansman | 🔜 |
+| 3.2 | Lemon Squeezy ile Monster Pro, Free/Pro ayrımı üründe, programmatic SEO (`/prompt/[slug]`) | ✅ |
+| 3.3 | Lemon Squeezy mağaza aktivasyonu + canlı mod, Anthropic anahtarı, lansman (Product Hunt / X) | 🔜 |
 
 ## Katkı ve lisans
 
@@ -121,4 +132,4 @@ Without a key the app still works in template mode.
 
 **Deploy:** `npx wrangler login`, `npx wrangler secret put ANTHROPIC_API_KEY`, then `npm run deploy` (Cloudflare Workers via OpenNext; custom domain wired from `wrangler.jsonc`). Vercel also works: import the repo and set the env vars from `.env.example`.
 
-Roadmap: Phase 2 (accounts, project library, versions, custom SMTP) and Phase 3.1 (public shareable prompt pages at `/p/[slug]` with one-click fork) are live; Phase 3.2 adds payments (Paddle/Lemon Squeezy + Iyzico) and a Pro plan.
+Roadmap: Phase 2 (accounts, project library, versions, custom SMTP), Phase 3.1 (public shareable prompt pages at `/p/[slug]` with one-click fork) and Phase 3.2 (Monster Pro via Lemon Squeezy, Free/Pro entitlements, programmatic SEO pages at `/prompt/[slug]`) are live; Phase 3.3 is store activation (live mode) and launch.

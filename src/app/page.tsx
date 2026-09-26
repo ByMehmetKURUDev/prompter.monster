@@ -1,6 +1,7 @@
 import { ArrowRight, Check, Layers, Sparkles, Users, Zap } from "lucide-react";
 import Link from "next/link";
 import { EXPERTS, FORMATS, MEGA_CHAIN_STEPS } from "@/lib/data";
+import { pagesByCategory } from "@/lib/seo";
 
 const FREE = ["Günde 3 AI çağrısı", "3 uzman persona", "Markdown + Claude XML", "Tarayıcıda kayıt"];
 const PRO = ["Sınırsız AI iyileştirme", "12 uzman + Mega Chain", "5 çıktı formatı + .cursorrules / CLAUDE.md", "Proje kütüphanesi ve versiyon geçmişi", "Paylaşılabilir prompt sayfası", "Öncelikli destek"];
@@ -17,10 +18,13 @@ export default function Landing() {
           <a href="#how" className="hidden sm:block px-3 py-1.5 text-zinc-400 hover:text-white">
             Nasıl çalışır
           </a>
+          <Link href="/prompt" className="hidden sm:block px-3 py-1.5 text-zinc-400 hover:text-white">
+            Build prompt&apos;lar
+          </Link>
           <Link href="/pricing" className="hidden sm:block px-3 py-1.5 text-zinc-400 hover:text-white">
             Fiyat
           </Link>
-          <a href="https://github.com/ByMehmetKURUDev/prompter.monster" className="hidden sm:block px-3 py-1.5 text-zinc-400 hover:text-white" target="_blank" rel="noopener noreferrer">
+          <a href="https://github.com/ByMehmetKURUDev/prompter.monster" className="hidden md:block px-3 py-1.5 text-zinc-400 hover:text-white" target="_blank" rel="noopener noreferrer">
             GitHub
           </a>
           <Link href="/studio" className="h-9 px-4 rounded-lg bg-lime text-black font-bold flex items-center gap-1.5">
@@ -86,6 +90,26 @@ export default function Landing() {
               </div>
               <div className="mt-4 text-[14px] font-bold">{x.t}</div>
               <div className="mt-1 text-[12px] text-zinc-500 leading-relaxed">{x.d}</div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* Project types → programmatic SEO pages */}
+      <section className="max-w-[1100px] mx-auto px-4 lg:px-8 py-8">
+        <h2 className="text-2xl md:text-3xl font-bold tracking-tight text-center">Proje tipine göre başla</h2>
+        <p className="mt-3 text-center text-[13px] text-zinc-500">Her tip için önerilen uzmanlar, stack ve özellikler hazır. Tıkla, örnek prompt&apos;u gör, Studio o ayarlarla açılsın.</p>
+        <div className="mt-8 space-y-6">
+          {pagesByCategory().map((g) => (
+            <div key={g.cat}>
+              <div className="text-[11px] font-bold tracking-widest text-zinc-500">{g.cat}</div>
+              <div className="mt-2 flex flex-wrap gap-2">
+                {g.pages.map((p) => (
+                  <Link key={p.slug} href={`/prompt/${p.slug}`} className="px-3 h-9 rounded-xl bg-ink-800 border border-ink-600 hover:border-lime/50 hover:text-lime text-[13px] flex items-center gap-1.5 transition">
+                    {p.name} <ArrowRight className="w-3 h-3 opacity-50" aria-hidden />
+                  </Link>
+                ))}
+              </div>
             </div>
           ))}
         </div>
@@ -188,6 +212,14 @@ export default function Landing() {
         <a href="https://github.com/ByMehmetKURUDev/prompter.monster" className="hover:text-zinc-300" target="_blank" rel="noopener noreferrer">
           Açık kaynak
         </a>
+        <span>•</span>
+        <Link href="/prompt" className="hover:text-zinc-300">
+          Build prompt&apos;lar
+        </Link>
+        <span>•</span>
+        <Link href="/pricing" className="hover:text-zinc-300">
+          Fiyat
+        </Link>
         <Link href="/studio" className="ml-auto text-zinc-400 hover:text-white">
           Studio →
         </Link>
