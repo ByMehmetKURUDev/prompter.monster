@@ -86,7 +86,7 @@ export function Step1Idea({
               </button>
             ))}
           </div>
-          <p className="text-[11px] text-zinc-600 mt-3">{t.allTypes}</p>
+          <p className="text-[11px] text-zinc-600 mt-3">{t.allTypes(ALL_PROJECT_TYPES.length)}</p>
         </Card>
 
         <div className="grid md:grid-cols-3 gap-4">
