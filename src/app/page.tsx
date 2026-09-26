@@ -24,9 +24,9 @@ export default function Landing() {
           <Link href="/pricing" className="hidden sm:block px-3 py-1.5 text-zinc-400 hover:text-white">
             Fiyat
           </Link>
-          <a href="https://github.com/ByMehmetKURUDev/prompter.monster" className="hidden md:block px-3 py-1.5 text-zinc-400 hover:text-white" target="_blank" rel="noopener noreferrer">
-            GitHub
-          </a>
+          <Link href="/docs" className="hidden md:block px-3 py-1.5 text-zinc-400 hover:text-white">
+            Rehber
+          </Link>
           <Link href="/studio" className="h-9 px-4 rounded-lg bg-lime text-black font-bold flex items-center gap-1.5">
             Studio&apos;yu aç <ArrowRight className="w-4 h-4" aria-hidden />
           </Link>
@@ -209,9 +209,9 @@ export default function Landing() {
       <footer className="border-t border-ink-600 px-4 lg:px-8 py-6 text-[12px] text-zinc-600 flex flex-wrap items-center gap-3">
         <span>Prompt.Monster © {new Date().getFullYear()}</span>
         <span>•</span>
-        <a href="https://github.com/ByMehmetKURUDev/prompter.monster" className="hover:text-zinc-300" target="_blank" rel="noopener noreferrer">
-          Açık kaynak
-        </a>
+        <Link href="/docs" className="hover:text-zinc-300">
+          Rehber
+        </Link>
         <span>•</span>
         <Link href="/prompt" className="hover:text-zinc-300">
           Build prompt&apos;lar

@@ -1,11 +1,13 @@
 import Anthropic from "@anthropic-ai/sdk";
 import { NextResponse } from "next/server";
 import { clientKey, consume } from "./ratelimit";
+import { readPublicSettings, resolveModel } from "./settings-server";
 import { createClient, supabaseConfigured } from "./supabase/server";
 
 /** Server-only. Never import from a client component. */
 
-export const MODEL = process.env.ANTHROPIC_MODEL || "claude-sonnet-4-5";
+/** Fallback model when neither the admin setting nor ANTHROPIC_MODEL is set. */
+export const MODEL = process.env.ANTHROPIC_MODEL || "claude-sonnet-5";
 
 export function hasApiKey(): boolean {
   return Boolean(process.env.ANTHROPIC_API_KEY);
@@ -38,6 +40,10 @@ export async function guard(req: Request, endpoint = "ai"): Promise<{ remaining:
       "AI özellikleri henüz açık değil: sunucuda ANTHROPIC_API_KEY tanımlı değil (Cloudflare'da `wrangler secret put ANTHROPIC_API_KEY`, yerelde .env.local).",
     );
   }
+  // Admin kill switches (settings panel): maintenance mode / AI disabled.
+  const flags = await readPublicSettings();
+  if (flags.maintenance_mode) throw new AiRouteError(503, "maintenance", "Bakım modundayız; AI özellikleri kısa süreliğine kapalı.");
+  if (!flags.ai_enabled) throw new AiRouteError(503, "ai_disabled", "AI özellikleri geçici olarak kapalı. Şablon üretimi çalışmaya devam eder.");
 
   if (supabaseConfigured()) {
     try {
@@ -48,14 +54,16 @@ export async function guard(req: Request, endpoint = "ai"): Promise<{ remaining:
       if (user) {
         const { data, error } = await supabase.rpc("consume_ai_call", { p_endpoint: endpoint }).single<{ ok: boolean; remaining: number; plan: string }>();
         if (!error && data) {
-          const limit = data.plan === "pro" ? 200 : 3;
+          const limit = data.plan === "pro" ? flags.pro_ai_per_day : flags.free_ai_per_day;
+          if (data.plan === "banned") throw new AiRouteError(403, "banned", "Bu hesap askıya alınmış. Destek: hello@prompter.monster");
+          if (data.plan === "disabled") throw new AiRouteError(503, "ai_disabled", "AI özellikleri geçici olarak kapalı.");
           if (!data.ok) {
             throw new AiRouteError(
               429,
               "rate_limited",
               data.plan === "pro"
-                ? `Günlük adil kullanım sınırına (${limit}) ulaştınız. Yarın devam edebilirsiniz.`
-                : `Günlük ücretsiz AI hakkınız (${limit}) doldu. Yarın tekrar deneyin — Pro planda günde ${200}.`,
+                ? `Günlük adil kullanım sınırına (${limit}) ya da aylık tavana ulaştınız. Yarın devam edebilirsiniz.`
+                : `Günlük ücretsiz AI hakkınız (${limit}) doldu. Yarın tekrar deneyin — Pro planda günde ${flags.pro_ai_per_day}.`,
             );
           }
           return { remaining: data.remaining, limit };
@@ -89,7 +97,7 @@ export function errorResponse(e: unknown): NextResponse {
 /** One-shot text completion. */
 export async function complete(system: string, user: string, maxTokens = 1024): Promise<string> {
   const res = await anthropic().messages.create({
-    model: MODEL,
+    model: await resolveModel(),
     max_tokens: maxTokens,
     system,
     messages: [{ role: "user", content: user }],
@@ -109,7 +117,7 @@ export function streamText(system: string, user: string, maxTokens = 4096): Read
     async start(controller) {
       try {
         const stream = client.messages.stream({
-          model: MODEL,
+          model: await resolveModel(),
           max_tokens: maxTokens,
           system,
           messages: [{ role: "user", content: user }],

@@ -7,6 +7,7 @@ import type { MeResponse } from "@/lib/db";
 import { ApiError, enhanceDescription, refinePrompt, suggestStack } from "@/lib/client";
 import { type PlanId, UPGRADE_HINT, limitsFor } from "@/lib/plans";
 import { buildExpertPrompt, estimateTokens, projectTypeName, qualityScore } from "@/lib/prompt";
+import { track } from "@/lib/track";
 import { quickStartState } from "@/lib/type-presets";
 import type { StudioState } from "@/lib/types";
 import { Footer } from "./Footer";
@@ -208,6 +209,7 @@ export function Studio({ dailyLimit }: { dailyLimit: number }) {
       url.searchParams.delete("type");
       window.history.replaceState(null, "", url.toString());
       quietTrimUntil.current = Date.now() + 8000;
+      track("quick_start", { project_type: preset.projectType });
       say(`${projectTypeName(preset.projectType)} şablonu yüklendi: uzmanlar, stack ve özellikler hazır — adını ve fikrini yaz.`, 5000);
     } else if (sp.get("new") === "1") {
       reset(true);
@@ -216,8 +218,11 @@ export function Studio({ dailyLimit }: { dailyLimit: number }) {
     }
     // Back from checkout: the webhook flips the plan within seconds — poll until it lands.
     if (sp.get("upgraded") === "1") {
+      const boughtPlan = sp.get("plan") === "yearly" ? "yearly" : "monthly";
+      track("purchase", { value: boughtPlan === "yearly" ? 290 : 29, currency: "USD", plan: boughtPlan, transaction_id: `${Date.now()}` });
       const url = new URL(window.location.href);
       url.searchParams.delete("upgraded");
+      url.searchParams.delete("plan");
       window.history.replaceState(null, "", url.toString());
       say("Ödeme alındı 🎉 Pro birkaç saniye içinde aktif olur…", 6000);
       let tries = 0;
@@ -404,6 +409,7 @@ export function Studio({ dailyLimit }: { dailyLimit: number }) {
       setGenerating(false);
       setReleased(true);
       setOutTab(s.experts[0] ?? "cto");
+      track("generate", { project_type: s.projectType, experts: s.experts.length, format: s.format, plan });
       if (me?.user) await save(true); // her üretim bir versiyon olarak saklanır
     }, 1400);
   };

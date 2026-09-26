@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { slugify } from "@/lib/prompt";
+import { readPublicSettings } from "@/lib/settings-server";
 import { createClient, supabaseConfigured } from "@/lib/supabase/server";
 
 export const runtime = "nodejs";
@@ -34,6 +35,8 @@ async function requireUser() {
  * Body: { project_id, version } → { slug, url, created }
  */
 export async function POST(req: Request) {
+  const flags = await readPublicSettings();
+  if (!flags.share_enabled) return NextResponse.json({ error: "Paylaşım geçici olarak kapalı.", code: "share_disabled" }, { status: 503 });
   const ctx = await requireUser();
   if ("error" in ctx) return ctx.error;
   const { supabase, user } = ctx;

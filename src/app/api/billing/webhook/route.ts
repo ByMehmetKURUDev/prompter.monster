@@ -97,6 +97,9 @@ export async function POST(req: Request) {
   // A user could in theory hold several subscriptions; Pro if any of them is live.
   const { data: live } = await admin.from("subscriptions").select("status").eq("owner_id", ownerId).eq("provider", "lemonsqueezy");
   const pro = (live ?? []).some((s) => isProStatus(s.status));
+  // Admin-locked plans (manual Pro / comps) are never overwritten by billing events.
+  const { data: prof } = await admin.from("profiles").select("plan_locked").eq("id", ownerId).maybeSingle<{ plan_locked: boolean }>();
+  if (prof?.plan_locked) return NextResponse.json({ ok: true, event: name, plan: "locked" });
   const { error: profErr } = await admin.from("profiles").update({ plan: pro ? "pro" : "free" }).eq("id", ownerId);
   if (profErr) return NextResponse.json({ error: profErr.message }, { status: 500 });
 

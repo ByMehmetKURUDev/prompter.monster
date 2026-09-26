@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { readPublicSettings } from "@/lib/settings-server";
 import { z } from "zod";
 import { billingConfigured, createCheckout } from "@/lib/billing/lemonsqueezy";
 import { createClient, supabaseConfigured } from "@/lib/supabase/server";
@@ -12,6 +13,8 @@ const SITE = process.env.NEXT_PUBLIC_SITE_URL || "https://prompter.monster";
 export async function POST(req: Request) {
   if (!supabaseConfigured()) return NextResponse.json({ error: "Hesap sistemi yapılandırılmamış.", code: "no_supabase" }, { status: 503 });
   if (!billingConfigured()) return NextResponse.json({ error: "Ödeme sistemi henüz açık değil.", code: "billing_not_configured" }, { status: 503 });
+  const flags = await readPublicSettings();
+  if (flags.maintenance_mode || !flags.checkout_enabled) return NextResponse.json({ error: "Pro satın alma şu anda geçici olarak kapalı. Kısa süre sonra tekrar deneyin.", code: "checkout_disabled" }, { status: 503 });
 
   const supabase = await createClient();
   const {
@@ -26,7 +29,7 @@ export async function POST(req: Request) {
   if (profile?.plan === "pro") return NextResponse.json({ error: "Zaten Pro plandasın.", code: "already_pro" }, { status: 409 });
 
   try {
-    const url = await createCheckout({ plan: parsed.data.plan, email: user.email, userId: user.id, redirectUrl: `${SITE}/studio?upgraded=1` });
+    const url = await createCheckout({ plan: parsed.data.plan, email: user.email, userId: user.id, redirectUrl: `${SITE}/studio?upgraded=1&plan=${parsed.data.plan}` });
     return NextResponse.json({ url });
   } catch (e) {
     console.error("checkout", e);

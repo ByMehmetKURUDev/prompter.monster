@@ -1,6 +1,7 @@
 "use client";
 
 import { Bell, Check, Crown, ExternalLink } from "lucide-react";
+import { track } from "@/lib/track";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import type { MeResponse } from "@/lib/db";
@@ -68,6 +69,7 @@ export function ProCta({ className, next = "/pricing" }: { className?: string; n
       const r = await fetch("/api/billing/checkout", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ plan }) });
       const j = (await r.json().catch(() => ({}))) as { url?: string; error?: string };
       if (!r.ok || !j.url) throw new Error(j.error ?? "Ödeme sayfası açılamadı.");
+      track("begin_checkout", { plan, value: plan === "yearly" ? 290 : 29, currency: "USD" });
       window.location.assign(j.url);
     } catch (e) {
       setErr((e as Error).message);

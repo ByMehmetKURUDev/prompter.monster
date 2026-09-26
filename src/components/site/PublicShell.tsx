@@ -15,6 +15,9 @@ export function PublicShell({ children, cta = { href: "/studio?new=1", label: "S
           <Link href="/prompt" className="hidden sm:block px-3 py-1.5 text-zinc-400 hover:text-white">
             Build prompt&apos;lar
           </Link>
+          <Link href="/docs" className="hidden md:block px-3 py-1.5 text-zinc-400 hover:text-white">
+            Rehber
+          </Link>
           <Link href="/pricing" className="hidden sm:block px-3 py-1.5 text-zinc-400 hover:text-white">
             Fiyat
           </Link>
@@ -33,9 +36,9 @@ export function PublicShell({ children, cta = { href: "/studio?new=1", label: "S
           Proje tipine göre build prompt&apos;lar
         </Link>
         <span>•</span>
-        <a href="https://github.com/ByMehmetKURUDev/prompter.monster" className="hover:text-zinc-300" target="_blank" rel="noopener noreferrer">
-          Açık kaynak
-        </a>
+        <Link href="/docs" className="hover:text-zinc-300">
+          Rehber
+        </Link>
         <Link href="/studio" className="ml-auto text-zinc-400 hover:text-white">
           Studio →
         </Link>

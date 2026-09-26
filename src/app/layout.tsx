@@ -1,5 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
+import { Analytics } from "@/components/site/Analytics";
+import { SiteNotice } from "@/components/site/SiteNotice";
 
 const SITE = process.env.NEXT_PUBLIC_SITE_URL || "https://prompter.monster";
 
@@ -33,7 +35,11 @@ export const viewport: Viewport = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="tr">
-      <body className="min-h-screen bg-ink-950 text-zinc-100 antialiased">{children}</body>
+      <body className="min-h-screen bg-ink-950 text-zinc-100 antialiased">
+        <SiteNotice />
+        {children}
+        <Analytics />
+      </body>
     </html>
   );
 }

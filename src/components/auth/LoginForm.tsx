@@ -1,6 +1,7 @@
 "use client";
 
 import { Mail, Sparkles } from "lucide-react";
+import { track } from "@/lib/track";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { createClient, supabaseConfigured } from "@/lib/supabase/client";
@@ -60,12 +61,14 @@ export function LoginForm({ next, initialError, initialMessage }: { next: string
       if (mode === "signin") {
         const { error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) throw error;
+        track("login", { method: "password" });
         window.location.assign(next);
         return;
       }
       if (mode === "signup") {
         const { error, data } = await supabase.auth.signUp({ email, password, options: { emailRedirectTo: redirectTo() } });
         if (error) throw error;
+        track("sign_up", { method: "password" });
         if (data.session) {
           window.location.assign(next);
           return;

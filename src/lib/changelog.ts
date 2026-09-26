@@ -1,0 +1,51 @@
+/**
+ * Product changelog — shown in /admin/system so every deploy's changes are visible in the panel.
+ * Add an entry at the top with each release (newest first).
+ */
+export interface ChangelogEntry {
+  version: string;
+  date: string; // ISO
+  title: string;
+  items: string[];
+  /** Setting keys introduced with this release (rendered as quick links in the panel). */
+  settings?: string[];
+}
+
+export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: "4.0",
+    date: "2026-09-26",
+    title: "Admin paneli, çalışma zamanı ayarları, dokümantasyon",
+    items: [
+      "/admin: genel bakış KPI'ları, kullanıcılar (plan/rol/ban), abonelikler, kullanım grafikleri, paylaşım moderasyonu, ayarlar, sistem.",
+      "Ayarlar veritabanından okunur: AI kill switch, model, günlük/aylık kotalar, bakım modu, duyuru şeridi, lansman kuponu.",
+      "Kota fonksiyonları (consume_ai_call) artık admin ayarlarını kullanır; Pro için aylık tavan eklendi.",
+      "/docs: Studio'ya içerik girme rehberi + /llms.txt (AI ajanları için).",
+      "Analitik: GA4 / Google Ads / Meta Pixel etiketleri ortam değişkeniyle açılır; dönüşüm olayları (sign_up, generate, begin_checkout, purchase).",
+      "Siteden GitHub bağlantıları kaldırıldı.",
+    ],
+    settings: ["maintenance_mode", "ai_enabled", "ai_model", "pro_ai_per_month", "announcement", "launch_coupon"],
+  },
+  {
+    version: "3.2",
+    date: "2026-09-26",
+    title: "Monster Pro, Free/Pro ayrımı, programmatic SEO",
+    items: [
+      "Lemon Squeezy ile $29/ay – $290/yıl abonelik; webhook ile plan güncellemesi; müşteri portalı.",
+      "Free: 3 uzman + 2 format; Pro: 12 uzman, Mega Chain, 5 format, Export to Builders.",
+      "22 proje tipi için /prompt/<slug> landing sayfaları ve /prompt hub'ı; Studio ?type= hızlı başlangıç.",
+    ],
+  },
+  {
+    version: "3.1",
+    date: "2026-09-25",
+    title: "Paylaşılabilir prompt sayfaları",
+    items: ["/p/<slug> herkese açık sayfa, çatallama, sitemap, Open Graph.", "Şifre sıfırlama ve hesap sayfası."],
+  },
+  {
+    version: "2.0",
+    date: "2026-09-24",
+    title: "Hesaplar ve kütüphane",
+    items: ["Supabase Auth, proje kütüphanesi, versiyon geçmişi, hesaba bağlı günlük AI hakkı, Resend SMTP."],
+  },
+];
