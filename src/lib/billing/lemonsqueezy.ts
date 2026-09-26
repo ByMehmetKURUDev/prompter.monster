@@ -28,7 +28,8 @@ export async function variantFor(plan: Plan): Promise<string | undefined> {
   if (fromEnv) return fromEnv;
 
   if (!variantCache || Date.now() - variantCache.at > 10 * 60 * 1000) {
-    const json = await ls<{ data: LsVariant[] }>(`/variants?filter[store_id]=${process.env.LEMONSQUEEZY_STORE_ID}&page[size]=100`);
+    // API keys are store-scoped, so this lists only our store's variants (store_id is not a valid filter here).
+    const json = await ls<{ data: LsVariant[] }>(`/variants?page[size]=100`);
     variantCache = { at: Date.now(), list: json.data };
   }
   const wanted = plan === "yearly" ? "year" : "month";
