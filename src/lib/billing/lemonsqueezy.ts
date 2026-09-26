@@ -9,14 +9,33 @@ const API = "https://api.lemonsqueezy.com/v1";
 export type Plan = "monthly" | "yearly";
 
 export function billingConfigured(): boolean {
-  return (
-    process.env.BILLING_PROVIDER === "lemonsqueezy" &&
-    Boolean(process.env.LEMONSQUEEZY_API_KEY && process.env.LEMONSQUEEZY_STORE_ID && process.env.LEMONSQUEEZY_VARIANT_PRO_MONTHLY)
-  );
+  return process.env.BILLING_PROVIDER === "lemonsqueezy" && Boolean(process.env.LEMONSQUEEZY_API_KEY && process.env.LEMONSQUEEZY_STORE_ID);
 }
 
-export function variantFor(plan: Plan): string | undefined {
-  return plan === "yearly" ? process.env.LEMONSQUEEZY_VARIANT_PRO_YEARLY || process.env.LEMONSQUEEZY_VARIANT_PRO_MONTHLY : process.env.LEMONSQUEEZY_VARIANT_PRO_MONTHLY;
+interface LsVariant {
+  id: string;
+  attributes: { name: string; is_subscription: boolean; interval: "day" | "week" | "month" | "year" | null; price: number; status: string; product_id: number };
+}
+
+let variantCache: { at: number; list: LsVariant[] } | null = null;
+
+/**
+ * Variant id for a plan: explicit env var if set, otherwise discovered from the store
+ * (published subscription variants, monthly vs yearly interval) and cached for 10 minutes.
+ */
+export async function variantFor(plan: Plan): Promise<string | undefined> {
+  const fromEnv = plan === "yearly" ? process.env.LEMONSQUEEZY_VARIANT_PRO_YEARLY : process.env.LEMONSQUEEZY_VARIANT_PRO_MONTHLY;
+  if (fromEnv) return fromEnv;
+
+  if (!variantCache || Date.now() - variantCache.at > 10 * 60 * 1000) {
+    const json = await ls<{ data: LsVariant[] }>(`/variants?filter[store_id]=${process.env.LEMONSQUEEZY_STORE_ID}&page[size]=100`);
+    variantCache = { at: Date.now(), list: json.data };
+  }
+  const wanted = plan === "yearly" ? "year" : "month";
+  const candidates = variantCache.list.filter((v) => v.attributes.is_subscription && v.attributes.interval === wanted && v.attributes.status !== "draft");
+  // Prefer the cheapest matching variant (the Pro plan) if several exist.
+  candidates.sort((a, b) => a.attributes.price - b.attributes.price);
+  return candidates[0]?.id ?? (plan === "yearly" ? variantFor("monthly") : undefined);
 }
 
 async function ls<T>(path: string, init?: RequestInit): Promise<T> {
@@ -38,8 +57,8 @@ async function ls<T>(path: string, init?: RequestInit): Promise<T> {
 
 /** Hosted checkout URL for the Pro plan; the user id travels in custom data and comes back in webhooks. */
 export async function createCheckout(args: { plan: Plan; email: string; userId: string; redirectUrl: string }): Promise<string> {
-  const variant = variantFor(args.plan);
-  if (!variant) throw new Error("Variant not configured");
+  const variant = await variantFor(args.plan);
+  if (!variant) throw new Error("No published subscription variant found in the store");
   const body = {
     data: {
       type: "checkouts",

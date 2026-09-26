@@ -26,7 +26,7 @@
     "FREE_AI_CALLS_PER_DAY": "3",
     "NEXT_PUBLIC_SITE_URL": "https://prompter.monster",
     // Faz 3.2c — Lemon Squeezy store #467786; set BILLING_PROVIDER to "lemonsqueezy" once the secrets exist.
-    "BILLING_PROVIDER": "none",
+    "BILLING_PROVIDER": "lemonsqueezy",
     "LEMONSQUEEZY_STORE_ID": "467786",
     "LEMONSQUEEZY_VARIANT_PRO_MONTHLY": "",
     "LEMONSQUEEZY_VARIANT_PRO_YEARLY": ""
