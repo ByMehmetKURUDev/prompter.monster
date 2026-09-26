@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Ban, Crown, Lock, MoreHorizontal, ShieldCheck, StickyNote, Unlock } from "lucide-react";
 import type { AdminUserRow } from "@/app/admin/users/page";
-import { cx } from "@/components/studio/ui";
+import { cx } from "@/lib/cx";
 
 type Patch = Partial<{ plan: "free" | "pro"; role: "user" | "admin"; plan_locked: boolean; banned: boolean; note: string }>;
 

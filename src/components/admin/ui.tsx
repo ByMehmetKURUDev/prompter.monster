@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import { cx } from "@/components/studio/ui";
+import { cx } from "@/lib/cx";
 
 export function PageTitle({ title, subtitle, actions }: { title: string; subtitle?: string; actions?: ReactNode }) {
   return (

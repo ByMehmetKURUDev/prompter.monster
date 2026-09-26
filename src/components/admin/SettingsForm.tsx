@@ -4,7 +4,7 @@ import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { RotateCcw, Save } from "lucide-react";
 import type { SettingDef, SettingsMap } from "@/lib/settings";
-import { cx } from "@/components/studio/ui";
+import { cx } from "@/lib/cx";
 
 type Def = SettingDef & { isNew: boolean; overridden: boolean; updated_at: string | null };
 

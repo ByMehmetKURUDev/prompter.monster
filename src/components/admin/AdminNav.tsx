@@ -3,7 +3,7 @@
 import { Activity, BarChart3, CreditCard, LayoutDashboard, Link2, Settings, Users } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { cx } from "@/components/studio/ui";
+import { cx } from "@/lib/cx";
 
 const ITEMS = [
   { href: "/admin", label: "Genel bakış", Icon: LayoutDashboard },
