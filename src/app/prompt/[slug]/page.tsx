@@ -5,14 +5,11 @@ import { ArrowRight, Check, ChevronRight, Layers, ShieldCheck, Sparkles, Users, 
 import { PublicShell } from "@/components/site/PublicShell";
 import { MEGA_CHAIN_STEPS } from "@/lib/data";
 import { SITE, categoryOf, expertsFor, paymentsFor, promptExcerpt, relatedPages, stackFor } from "@/lib/seo";
-import { TYPE_PAGES, TYPE_PAGE_BY_SLUG } from "@/lib/seo-types";
+import { TYPE_PAGE_BY_SLUG } from "@/lib/seo-types";
 
-// 22 type pages, fully static: content lives in seo-types.ts.
-export const dynamicParams = false;
-
-export function generateStaticParams() {
-  return TYPE_PAGES.map((p) => ({ slug: p.slug }));
-}
+// Rendered on demand: the Workers deployment has no incremental cache, so prerendered dynamic
+// routes (generateStaticParams) would 404 there. Content is in code, so rendering is instant.
+export const dynamic = "force-dynamic";
 
 type Props = { params: Promise<{ slug: string }> };
 
