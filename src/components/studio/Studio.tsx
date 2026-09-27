@@ -212,7 +212,7 @@ export function Studio({ dailyLimit }: { dailyLimit: number }) {
     const v = Number(sp.get("version"));
     const fork = sp.get("fork");
     const type = sp.get("type");
-    const preset = type ? quickStartState(type) : null;
+    const preset = type ? quickStartState(type, locale === "en" ? "EN" : "TR") : null;
     if (id) loadProject(id, Number.isFinite(v) && v > 0 ? v : null);
     else if (fork) forkShared(fork);
     else if (preset) {

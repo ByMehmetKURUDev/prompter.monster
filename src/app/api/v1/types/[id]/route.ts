@@ -8,7 +8,8 @@ export async function GET(req: Request, { params }: { params: Promise<{ id: stri
   const g = await gate(req, "types.preset");
   if (!g.ok) return g.response;
   const { id } = await params;
-  const preset = typePreset(id);
+  const lang = new URL(req.url).searchParams.get("lang")?.toUpperCase() === "TR" ? "TR" : "EN";
+  const preset = typePreset(id, lang);
   if (!preset) return apiError("not_found", `Unknown project type "${id}".`, 404, g.headers);
   return apiJson({ data: preset }, 200, g.headers);
 }

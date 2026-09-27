@@ -53,8 +53,11 @@ export async function GET() {
         get: {
           operationId: "getTypePreset",
           summary: "Get a project type's preset",
-          description: "Recommended experts, stack, v1 features, payments, monetization and compliance for a project type.",
-          parameters: [{ name: "id", in: "path", required: true, schema: { type: "string" } }],
+          description: "Recommended experts, stack, v1 features, payments, monetization and compliance for a project type. EN (default) leaves out Turkey-only providers (Iyzico, PayTR) and e-Fatura; TR keeps them.",
+          parameters: [
+            { name: "id", in: "path", required: true, schema: { type: "string" } },
+            { name: "lang", in: "query", required: false, schema: { type: "string", enum: ["EN", "TR"], default: "EN" } },
+          ],
           responses: {
             "200": { description: "Preset", content: { "application/json": { schema: { type: "object", properties: { data: { $ref: "#/components/schemas/TypePreset" } } } } } },
             ...errors(404, 429, 503),

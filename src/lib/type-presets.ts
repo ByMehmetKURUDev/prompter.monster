@@ -1,4 +1,4 @@
-import { EMPTY_STATE, STACK, STACK_SUGGESTIONS } from "./data";
+import { EMPTY_STATE, EMPTY_STATE_EN, STACK, STACK_SUGGESTIONS } from "./data";
 import type { StudioState } from "./types";
 
 /**
@@ -206,10 +206,26 @@ export const TYPE_PRESETS: Record<string, TypePreset> = {
   },
 };
 
+/**
+ * Turkey-only payment rails and paperwork. English quick starts drop them (as DEFAULT_STATE_EN swaps Iyzico out)
+ * and keep Stripe as the global default, so an English user never starts with Iyzico, PayTR or e-Fatura selected.
+ */
+const TR_ONLY_PAYMENTS = new Set(["iyzico", "paytr"]);
+const TR_ONLY_COMPLIANCE = new Set(["E-Fatura"]);
+
+export function localizePreset<T extends { payments?: string[]; compliance?: string[] }>(p: T, lang: "TR" | "EN"): T {
+  if (lang !== "EN") return p;
+  const had = p.payments ?? [];
+  let payments = had.filter((id) => !TR_ONLY_PAYMENTS.has(id));
+  if (had.length && !payments.includes("stripe")) payments = ["stripe", ...payments];
+  return { ...p, payments, compliance: (p.compliance ?? []).filter((c) => !TR_ONLY_COMPLIANCE.has(c)) };
+}
+
 /** Fields of a StudioState that a preset fills in. */
-export function presetPatch(id: string): Partial<StudioState> {
-  const p = TYPE_PRESETS[id];
-  if (!p) return {};
+export function presetPatch(id: string, lang: "TR" | "EN" = "TR"): Partial<StudioState> {
+  const p0 = TYPE_PRESETS[id];
+  if (!p0) return {};
+  const p = localizePreset(p0, lang);
   return { projectType: id, experts: p.experts, features: p.features, payments: p.payments ?? [], monetization: p.monetization, compliance: p.compliance ?? [] };
 }
 
@@ -234,7 +250,7 @@ export function stackPatch(typeId: string): Partial<StudioState> {
 }
 
 /** Blank project pre-filled with a type's experts, features, payments and stack (Studio `?type=<id>`). */
-export function quickStartState(typeId: string): StudioState | null {
+export function quickStartState(typeId: string, lang: "TR" | "EN" = "TR"): StudioState | null {
   if (!TYPE_PRESETS[typeId]) return null;
-  return { ...EMPTY_STATE, ...presetPatch(typeId), ...stackPatch(typeId), step: 1 };
+  return { ...(lang === "EN" ? EMPTY_STATE_EN : EMPTY_STATE), ...presetPatch(typeId, lang), ...stackPatch(typeId), step: 1 };
 }

@@ -6,7 +6,7 @@
 
 import type { Locale } from "./i18n";
 import { COPY_EN } from "./seo-types-en";
-import { TYPE_PRESETS, type TypePreset } from "./type-presets";
+import { TYPE_PRESETS, localizePreset, type TypePreset } from "./type-presets";
 
 export interface TypePageCopy {
   id: string;
@@ -576,7 +576,7 @@ export const TYPE_PAGE_BY_SLUG = new Map(TYPE_PAGES.map((p) => [p.slug, p]));
 export const TYPE_PAGE_BY_ID = new Map(TYPE_PAGES.map((p) => [p.id, p]));
 
 /* English pages (/en/prompt/[slug]) — same ids/slugs, English copy, same presets. */
-export const TYPE_PAGES_EN: TypePage[] = COPY_EN.map((p) => ({ ...p, ...TYPE_PRESETS[p.id] }));
+export const TYPE_PAGES_EN: TypePage[] = COPY_EN.map((p) => ({ ...p, ...localizePreset(TYPE_PRESETS[p.id] ?? ({} as TypePreset), "EN") }));
 const BY_SLUG_EN = new Map(TYPE_PAGES_EN.map((p) => [p.slug, p]));
 
 export function typePages(locale: Locale = "tr"): TypePage[] {

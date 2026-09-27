@@ -13,6 +13,15 @@ export interface ChangelogEntry {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: "4.6",
+    date: "2026-09-27",
+    title: "İngilizce hızlı başlangıçta Türkiye'ye özel ödeme seçenekleri kapalı",
+    items: [
+      "İngilizce Studio'da proje tipiyle hızlı başlangıç (?type=), /en/prompt sayfaları, API ve MCP artık Iyzico, PayTR ve e-Fatura'yı önceden seçmiyor; Stripe varsayılan kalıyor. Türkçe tarafta değişiklik yok.",
+      "GET /api/v1/types/{id} için yeni ?lang=TR|EN parametresi (varsayılan EN); MCP get_type_preset İngilizce hazır ayarı döner.",
+    ],
+  },
+  {
     version: "4.5",
     date: "2026-09-26",
     title: "18 uzman, 28 proje tipi, ajan dosyaları, kendini doğrula, admin kataloğu",

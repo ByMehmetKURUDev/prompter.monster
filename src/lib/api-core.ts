@@ -9,7 +9,7 @@ import { CUSTOM_TYPE_DESCRIPTIONS } from "./catalog";
 import { buildProjectFiles } from "./exports";
 import { buildExpertPrompt, buildMegaHeader, buildMegaPrompt, projectTypeName } from "./prompt";
 import { typePages } from "./seo-types";
-import { TYPE_PRESETS, quickStartState, stackFor } from "./type-presets";
+import { TYPE_PRESETS, localizePreset, quickStartState, stackFor } from "./type-presets";
 import type { OutputFormat, StudioState } from "./types";
 
 export const SITE = (process.env.NEXT_PUBLIC_SITE_URL || "https://prompter.monster").replace(/\/$/, "");
@@ -56,7 +56,7 @@ export function stateFromInput(input: GenerateInputT, plan: PlanId): { state: St
   const base0 = input.lang === "EN" ? EMPTY_STATE_EN : EMPTY_STATE;
   let base: StudioState = { ...base0 };
   if (input.projectType) {
-    const preset = quickStartState(input.projectType);
+    const preset = quickStartState(input.projectType, input.lang === "TR" ? "TR" : "EN");
     if (!preset) throw new ApiInputError("unknown_type", `Unknown projectType "${input.projectType}". Call list_project_types / GET /api/v1/types.`);
     base = { ...preset };
   }
@@ -168,9 +168,9 @@ export function listTypes(lang: "TR" | "EN" = "EN") {
 }
 
 /** Preset for get_type_preset / GET /api/v1/types/{id}. */
-export function typePreset(id: string) {
+export function typePreset(id: string, lang: "TR" | "EN" = "EN") {
   const type = ALL_PROJECT_TYPES.find((t) => t.id === id);
-  const preset = TYPE_PRESETS[id];
+  const preset = TYPE_PRESETS[id] ? localizePreset(TYPE_PRESETS[id], lang) : undefined;
   if (!type || !preset) return null;
   return {
     id,

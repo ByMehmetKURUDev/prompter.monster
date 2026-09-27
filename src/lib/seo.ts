@@ -11,7 +11,7 @@ export { stackFor } from "./type-presets";
 
 /** A complete Studio state seeded from a type page, with the sample idea filled in. */
 export function sampleStateFor(page: TypePage, locale: Locale = "tr"): StudioState {
-  const base = quickStartState(page.id) ?? EMPTY_STATE;
+  const base = quickStartState(page.id, locale === "en" ? "EN" : "TR") ?? EMPTY_STATE;
   return {
     ...base,
     name: page.name,
