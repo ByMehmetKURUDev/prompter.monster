@@ -138,7 +138,7 @@ export function enDoc(slug: LegalSlug, i: LegalInfo): LegalDoc {
             id: "termination",
             h: "11. Termination",
             blocks: [
-              { p: `You can close your account at any time by writing to ${mail(i)}. If you breach these terms we may suspend or close your account; except for serious breaches we will try to warn you first. On termination, prepaid fees are not refunded except as described in the [Refund Policy](/legal/refund).` },
+              { p: `You can close your account at any time: instantly with "Delete my account" on the [My account](/account) page, or by writing to ${mail(i)}. If you breach these terms we may suspend or close your account; except for serious breaches we will try to warn you first. On termination, prepaid fees are not refunded except as described in the [Refund Policy](/legal/refund).` },
             ],
           },
           {
@@ -263,7 +263,7 @@ export function enDoc(slug: LegalSlug, i: LegalInfo): LegalDoc {
             blocks: [
               {
                 ul: [
-                  "Account and content data: while your account is open. When you close it, the data is deleted or anonymised within 30 days; removal from backups can take up to 30 more days.",
+                  "Account and content data: while your account is open. When you delete your account on the [My account](/account) page it is removed from the live database immediately; after a closure request by email it is deleted or anonymised within 30 days. Removal from backups can take up to 30 more days.",
                   "Share pages: until you remove them or your account is deleted.",
                   "AI usage records: linked to your account while it is open; after closure they are kept only as anonymous statistics.",
                   "IP address: up to 48 hours for rate limiting and security; in usage statistics only as an irreversible hash, for up to 12 months.",
@@ -296,6 +296,7 @@ export function enDoc(slug: LegalSlug, i: LegalInfo): LegalDoc {
                   "claim compensation if you suffer damage from unlawful processing",
                 ],
               },
+              { p: "You can download a copy of your data as JSON with \"Download my data\" on the [My account](/account) page, and delete your account permanently from the same page." },
               { p: "If you are in the EU/EEA, the GDPR also gives you the rights to data portability, restriction of processing, objection, and to lodge a complaint with the supervisory authority in your country. Where processing is based on consent you can withdraw it at any time; you can change your cookie choices on the [Cookie Policy](/legal/cookies) page." },
             ],
           },

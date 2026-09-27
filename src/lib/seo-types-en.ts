@@ -26,7 +26,7 @@ export const COPY_EN: TypePageCopy[] = [
     slug: "ai-saas-wrapper",
     name: "AI SaaS Wrapper",
     title: "Master build prompt for an AI SaaS wrapper",
-    description: "A build prompt for an LLM-powered SaaS (chat, RAG, agents) with credit quotas, streaming and cost control. Claude, GPT-4o, Groq and vector DB picks included.",
+    description: "A build prompt for an LLM-powered SaaS (chat, RAG, agents) with credit quotas, streaming and cost control. Claude, GPT, Gemini, Groq and vector DB picks included.",
     intro: [
       "With AI wrappers, the edge isn't the model, it's the product around it: quotas and credits, a streaming UI, RAG quality, margins over inference cost and abuse protection. Leave these out of your prompt and your AI coding tool will ship nothing more than a chat box.",
       "The prompt template on this page puts the AI Engineer and Monetization Strategist up front: model choice, vector database, token budget, credit-based pricing and an evaluation (evals) plan, all in one document.",
@@ -35,7 +35,7 @@ export const COPY_EN: TypePageCopy[] = [
     samplePitch: "Upload your docs, ask in plain English: a RAG-powered knowledge assistant for small businesses",
     sampleDescription: "Users upload PDF and Word files; the system chunks them, writes them to a vector DB and answers with Claude, citing its sources. Credit-based quotas, team sharing, streaming responses and answer-quality scoring.",
     faq: [
-      { q: "Which model should I start with?", a: "The prompt recommends Claude 3.5 Sonnet for quality and Llama 3 on Groq for speed and cost, and asks for a provider layer that abstracts both, so switching models later is a one-file change." },
+      { q: "Which model should I start with?", a: "The prompt recommends Claude Sonnet 5 for quality and open models on Groq for speed and cost, and asks for a provider layer that abstracts both (for example the Vercel AI SDK), so switching models later is a one-file change." },
       { q: "Do I need a vector database for RAG?", a: "For small datasets, Postgres + pgvector is enough; the prompt makes it the default and marks the point in the architecture where you'd move to Qdrant or Pinecone." },
     ],
     keywords: ["ai saas build prompt", "rag app prompt", "chatgpt wrapper saas", "claude api saas prompt", "ai wrapper app cursor"],

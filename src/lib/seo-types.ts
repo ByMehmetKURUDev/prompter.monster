@@ -56,7 +56,7 @@ const COPY: TypePageCopy[] = [
     slug: "ai-saas-wrapper",
     name: "AI SaaS Wrapper",
     title: "AI SaaS Wrapper için master build prompt",
-    description: "LLM tabanlı bir SaaS'ı (chat, RAG, ajan) kredili kota, streaming ve maliyet kontrolüyle kurduran build prompt. Claude, GPT-4o, Groq ve vektör DB seçimleri dahil.",
+    description: "LLM tabanlı bir SaaS'ı (chat, RAG, ajan) kredili kota, streaming ve maliyet kontrolüyle kurduran build prompt. Claude, GPT, Gemini, Groq ve vektör DB seçimleri dahil.",
     intro: [
       "AI wrapper ürünlerde fark, modelde değil çevresindeki üründe: kota ve kredi sistemi, streaming arayüz, RAG kalitesi, maliyet başına marj ve kötüye kullanım koruması. Bunları prompt'a yazmazsan AI kodlama aracı sadece bir chat kutusu üretir.",
       "Bu sayfadaki prompt şablonu AI Engineer ve Monetization uzmanlarını öne çıkarır: model seçimi, vektör veritabanı, token bütçesi, kredi tabanlı fiyatlandırma ve değerlendirme (eval) planı tek metinde.",
@@ -65,7 +65,7 @@ const COPY: TypePageCopy[] = [
     samplePitch: "Belgelerini yükle, Türkçe soru sor: KOBİ'ler için RAG tabanlı bilgi asistanı",
     sampleDescription: "Kullanıcı PDF ve Word yükler; sistem parçalara böler, vektör DB'ye yazar ve Claude ile kaynak göstererek yanıtlar. Kredi bazlı kota, takım paylaşımı, streaming yanıt ve yanıt kalitesi puanlama.",
     faq: [
-      { q: "Hangi modelle başlamalıyım?", a: "Prompt, kalite için Claude 3.5 Sonnet'i, hız/maliyet için Groq Llama 3'ü önerir ve ikisini soyutlayan bir sağlayıcı katmanı ister; böylece sonradan model değiştirmek tek dosya işidir." },
+      { q: "Hangi modelle başlamalıyım?", a: "Prompt, kalite için Claude Sonnet 5'i, hız/maliyet için Groq üzerindeki açık modelleri önerir ve ikisini soyutlayan bir sağlayıcı katmanı (ör. Vercel AI SDK) ister; böylece sonradan model değiştirmek tek dosya işidir." },
       { q: "RAG için vektör veritabanı şart mı?", a: "Küçük veri için Postgres + pgvector yeterlidir; prompt bunu varsayılan yapar ve Qdrant/Pinecone'a geçiş noktasını mimaride işaretler." },
     ],
     keywords: ["ai saas prompt", "rag uygulaması build prompt", "chatgpt wrapper saas", "claude api saas"],

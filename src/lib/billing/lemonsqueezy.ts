@@ -108,6 +108,17 @@ export async function getSubscription(id: string): Promise<LsSubscription> {
   return { id: json.data.id, ...json.data.attributes };
 }
 
+/**
+ * Cancels a subscription (account deletion). Lemon Squeezy keeps it until the end of the paid period and stops renewals;
+ * already cancelled/expired subscriptions are left alone.
+ */
+export async function cancelSubscription(id: string): Promise<LsSubscription> {
+  const current = await getSubscription(id);
+  if (current.status === "cancelled" || current.status === "expired") return current;
+  const json = await ls<{ data: { id: string; attributes: Omit<LsSubscription, "id"> } }>(`/subscriptions/${id}`, { method: "DELETE" });
+  return { id: json.data.id, ...json.data.attributes };
+}
+
 /** Constant-time HMAC-SHA256 check of the `X-Signature` header over the raw body. */
 export async function verifySignature(rawBody: string, signature: string | null): Promise<boolean> {
   const secret = process.env.LEMONSQUEEZY_WEBHOOK_SECRET;

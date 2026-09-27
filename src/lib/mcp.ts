@@ -78,7 +78,7 @@ const STACK_SCHEMA = {
   type: "object",
   description: "Tech stack per layer (omit to use the project type's suggestion).",
   properties: {
-    frontend: strArr("e.g. Next.js 15, Tailwind, shadcn/ui", 4),
+    frontend: strArr("e.g. Next.js 16, Tailwind, shadcn/ui", 4),
     backend: strArr("e.g. Next.js Route Handlers, Hono", 4),
     database: strArr("e.g. Supabase Postgres", 4),
     auth: strArr("e.g. Supabase Auth, Clerk", 3),

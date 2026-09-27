@@ -230,7 +230,7 @@ export function presetPatch(id: string, lang: "TR" | "EN" = "TR"): Partial<Studi
 }
 
 /** Sensible default stack when a type has no curated suggestion. */
-const FALLBACK_STACK = ["Next.js 15 (App Router)", "Hono + CF Workers", "Supabase", "Supabase Auth", "Resend"];
+const FALLBACK_STACK = ["Next.js 16 (App Router)", "Hono + CF Workers", "Supabase", "Supabase Auth", "Resend"];
 
 const STACK_KEYS = ["frontend", "backend", "database", "auth", "ai", "realtime", "search"] as const;
 

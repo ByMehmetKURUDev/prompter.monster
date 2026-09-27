@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useReducer, useRef, useState } from "react";
 import { useLocale } from "@/components/site/LocaleProvider";
-import { DEFAULT_STATE, DEFAULT_STATE_EN, EMPTY_STATE, EMPTY_STATE_EN } from "@/lib/data";
+import { DEFAULT_STATE, DEFAULT_STATE_EN, EMPTY_STATE, EMPTY_STATE_EN, normalizeStackState } from "@/lib/data";
 import type { StudioState } from "@/lib/types";
 
 const STORAGE_KEY = "prompt-monster:studio:v1";
@@ -39,7 +39,7 @@ function loadSaved(base: StudioState): StudioState | null {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (!raw) return null;
     const parsed = JSON.parse(raw) as Partial<StudioState>;
-    return { ...base, ...parsed, step: 1 };
+    return normalizeStackState<StudioState>({ ...base, ...parsed, step: 1 });
   } catch {
     return null;
   }
@@ -79,7 +79,7 @@ export function useStudio() {
   const setArray = useCallback((key: ArrayKey, value: string[]) => dispatch({ type: "setArray", key, value }), []);
   const reset = useCallback((toBlank = false) => dispatch({ type: "replace", state: toBlank ? blank : base }), [base, blank]);
   /** Replace the whole state (e.g. a project loaded from the library). */
-  const load = useCallback((next: StudioState) => dispatch({ type: "replace", state: { ...base, ...next } }), [base]);
+  const load = useCallback((next: StudioState) => dispatch({ type: "replace", state: normalizeStackState({ ...base, ...next }) }), [base]);
 
   return { state, patch, toggle, setArray, reset, load, hydrated };
 }

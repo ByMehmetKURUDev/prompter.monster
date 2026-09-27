@@ -138,7 +138,7 @@ export function trDoc(slug: LegalSlug, i: LegalInfo): LegalDoc {
             id: "fesih",
             h: "11. Fesih",
             blocks: [
-              { p: `Hesabını istediğin zaman kapatabilirsin; bunun için ${mail(i)} adresine yazman yeterli. Bu koşulları ihlal etmen hâlinde hesabını askıya alabilir veya kapatabiliriz; ciddi ihlaller dışında önce seni bilgilendirmeye çalışırız. Fesih hâlinde, [İade Politikası](/legal/refund)'nda belirtilen durumlar dışında peşin ödenmiş ücretler iade edilmez.` },
+              { p: `Hesabını istediğin zaman kapatabilirsin: [Hesabım](/account) sayfasındaki "Hesabımı sil" düğmesiyle hemen ya da ${mail(i)} adresine yazarak. Bu koşulları ihlal etmen hâlinde hesabını askıya alabilir veya kapatabiliriz; ciddi ihlaller dışında önce seni bilgilendirmeye çalışırız. Fesih hâlinde, [İade Politikası](/legal/refund)'nda belirtilen durumlar dışında peşin ödenmiş ücretler iade edilmez.` },
             ],
           },
           {
@@ -263,7 +263,7 @@ export function trDoc(slug: LegalSlug, i: LegalInfo): LegalDoc {
             blocks: [
               {
                 ul: [
-                  "Hesap ve içerik verileri: hesabın açık olduğu sürece. Hesabını kapattığında 30 gün içinde silinir veya anonim hâle getirilir; yedeklerden silinmesi 30 gün daha sürebilir.",
+                  "Hesap ve içerik verileri: hesabın açık olduğu sürece. Hesabını [Hesabım](/account) sayfasından sildiğinde canlı veritabanından hemen, e-postayla kapatma talebinde 30 gün içinde silinir veya anonim hâle getirilir; yedeklerden silinmesi 30 gün daha sürebilir.",
                   "Paylaşım sayfaları: sen kaldırana veya hesabın silinene kadar.",
                   "Yapay zekâ kullanım kayıtları: hesabınla ilişkilendirilmiş hâliyle hesabın açık olduğu sürece; hesap kapatıldığında kimliğinden ayrılarak yalnızca anonim istatistik olarak tutulur.",
                   "IP adresi: oran sınırlama ve güvenlik için en fazla 48 saat; kullanım istatistiklerinde yalnızca geri döndürülemez şekilde özetlenmiş (hash) hâliyle en fazla 12 ay.",
@@ -296,6 +296,7 @@ export function trDoc(slug: LegalSlug, i: LegalInfo): LegalDoc {
                   "Kanuna aykırı işleme nedeniyle zarara uğraman hâlinde zararın giderilmesini talep etme",
                 ],
               },
+              { p: "Verilerinin bir kopyasını [Hesabım](/account) sayfasındaki \"Verilerimi indir\" düğmesiyle JSON olarak alabilir, hesabını aynı sayfadan kalıcı olarak silebilirsin." },
               { p: "AB/AEA'da bulunuyorsan GDPR kapsamında ayrıca veri taşınabilirliği, işlemenin kısıtlanması, itiraz ve bulunduğun ülkedeki denetim makamına şikâyet hakların vardır. Açık rızaya dayanan işlemler için rızanı dilediğin zaman geri alabilirsin; çerez tercihlerini [Çerez Politikası](/legal/cookies) sayfasından değiştirebilirsin." },
             ],
           },

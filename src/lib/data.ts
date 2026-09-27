@@ -93,14 +93,74 @@ export const TEMPLATES = [
 ];
 
 export const STACK = {
-  frontend: ["Next.js 15 (App Router)", "Remix v2", "Astro 4", "SvelteKit 2", "Nuxt 3", "React Native Expo", "Vite + TanStack", "Qwik City", "WordPress + Elementor"],
-  backend: ["NestJS", "Hono + CF Workers", "Elysia (Bun)", "Go Fiber", "Laravel 11", "Django 5 + FastAPI", "Rust Axum", "tRPC + Next", "WordPress (PHP 8)"],
+  frontend: ["Next.js 16 (App Router)", "React Router v7", "Astro 6", "SvelteKit", "Nuxt 4", "TanStack Start", "React Native + Expo", "Vite + TanStack Router", "Qwik City", "WordPress + Elementor"],
+  backend: ["NestJS", "Hono + CF Workers", "Elysia (Bun)", "Go Fiber", "Laravel 13", "Django + FastAPI", "Rust Axum", "tRPC + Next", "Convex", "WordPress (PHP 8)"],
   database: ["PostgreSQL + pgvector", "Neon Serverless", "PlanetScale", "Supabase", "Turso Edge", "MongoDB Atlas", "ClickHouse", "Upstash Redis", "Qdrant Vector DB", "MySQL / MariaDB"],
-  auth: ["Clerk", "Auth.js v5", "Supabase Auth", "Lucia + Oslo", "Custom JWT", "WorkOS SSO"],
-  ai: ["Claude Sonnet 5", "Claude Agent SDK", "MCP Servers", "OpenAI GPT-4o", "Claude 3.5 Sonnet", "Groq Llama 3 70B", "Perplexity API", "Replicate SDXL", "Fal.ai Flux", "ElevenLabs", "Pinecone"],
+  auth: ["Clerk", "Better Auth", "Auth.js v5", "Supabase Auth", "WorkOS SSO", "Custom JWT"],
+  ai: [
+    "Claude Opus 5.5",
+    "Claude Sonnet 5",
+    "Claude Haiku 4.5",
+    "Claude Agent SDK",
+    "MCP Servers",
+    "OpenAI GPT-6",
+    "Gemini 3.1 Pro",
+    "Vercel AI SDK",
+    "Groq (open models)",
+    "Perplexity API",
+    "Replicate",
+    "fal.ai (image & video)",
+    "ElevenLabs",
+    "Pinecone",
+  ],
   realtime: ["PartyKit", "Liveblocks", "Pusher", "Cloudflare R2", "UploadThing", "Resend", "Trigger.dev", "Inngest", "n8n (self-hosted)", "Expo EAS + Push"],
   search: ["Algolia", "Typesense", "Meilisearch"],
 } as const;
+
+/**
+ * Stack labels renamed when the list was refreshed (September 2026). Saved projects, forks, API input and admin
+ * catalog entries still carry the old names; `normalizeStackLabel` maps them to today's option.
+ */
+export const LEGACY_STACK_LABELS: Record<string, string> = {
+  "Next.js 15 (App Router)": "Next.js 16 (App Router)",
+  "Remix v2": "React Router v7",
+  "Astro 4": "Astro 6",
+  "SvelteKit 2": "SvelteKit",
+  "Nuxt 3": "Nuxt 4",
+  "React Native Expo": "React Native + Expo",
+  "Vite + TanStack": "Vite + TanStack Router",
+  "Laravel 11": "Laravel 13",
+  "Django 5 + FastAPI": "Django + FastAPI",
+  "Lucia + Oslo": "Better Auth",
+  "OpenAI GPT-4o": "OpenAI GPT-6",
+  "Claude 3.5 Sonnet": "Claude Sonnet 5",
+  "Groq Llama 3 70B": "Groq (open models)",
+  "Replicate SDXL": "Replicate",
+  "Fal.ai Flux": "fal.ai (image & video)",
+};
+
+export function normalizeStackLabel(label: string): string {
+  return LEGACY_STACK_LABELS[label] ?? label;
+}
+
+/** Old stack labels → current ones, without duplicates (order kept). */
+export function normalizeStackList(list: readonly string[] | undefined | null): string[] {
+  const out: string[] = [];
+  for (const v of list ?? []) {
+    const n = normalizeStackLabel(v);
+    if (!out.includes(n)) out.push(n);
+  }
+  return out;
+}
+
+/** A state with every stack bucket normalized (other fields untouched). */
+export function normalizeStackState<T extends Partial<Record<"frontend" | "backend" | "database" | "auth" | "ai" | "realtime" | "search", string[]>>>(s: T): T {
+  const next = { ...s };
+  for (const k of ["frontend", "backend", "database", "auth", "ai", "realtime", "search"] as const) {
+    if (Array.isArray(next[k])) (next as Record<string, string[]>)[k] = normalizeStackList(next[k]);
+  }
+  return next;
+}
 
 export type StackKey = keyof typeof STACK;
 
@@ -116,19 +176,19 @@ export const STACK_LABELS: Record<StackKey, string> = {
 
 /** Default AI suggestion per project type (used when no API key is configured). */
 export const STACK_SUGGESTIONS: Record<string, string[]> = {
-  "saas-dash": ["Next.js 15 (App Router)", "Hono + CF Workers", "Neon Serverless", "Clerk", "Typesense"],
-  "ai-wrapper": ["Next.js 15 (App Router)", "Elysia (Bun)", "Qdrant Vector DB", "Claude 3.5 Sonnet", "Groq Llama 3 70B"],
-  headless: ["Next.js 15 (App Router)", "Go Fiber", "PlanetScale", "Algolia"],
-  marketplace: ["Next.js 15 (App Router)", "NestJS", "PostgreSQL + pgvector", "Auth.js v5", "Meilisearch"],
-  neobank: ["Next.js 15 (App Router)", "Go Fiber", "PostgreSQL + pgvector", "WorkOS SSO"],
-  social: ["Next.js 15 (App Router)", "tRPC + Next", "Supabase", "Supabase Auth", "Liveblocks"],
-  edtech: ["Next.js 15 (App Router)", "NestJS", "Supabase", "Supabase Auth", "UploadThing"],
-  "ai-agents": ["Next.js 15 (App Router)", "Hono + CF Workers", "Supabase", "Supabase Auth", "Claude Sonnet 5", "Claude Agent SDK", "MCP Servers", "Trigger.dev"],
+  "saas-dash": ["Next.js 16 (App Router)", "Hono + CF Workers", "Neon Serverless", "Clerk", "Typesense"],
+  "ai-wrapper": ["Next.js 16 (App Router)", "Elysia (Bun)", "Qdrant Vector DB", "Claude Sonnet 5", "Vercel AI SDK", "Groq (open models)"],
+  headless: ["Next.js 16 (App Router)", "Go Fiber", "PlanetScale", "Algolia"],
+  marketplace: ["Next.js 16 (App Router)", "NestJS", "PostgreSQL + pgvector", "Better Auth", "Meilisearch"],
+  neobank: ["Next.js 16 (App Router)", "Go Fiber", "PostgreSQL + pgvector", "WorkOS SSO"],
+  social: ["Next.js 16 (App Router)", "tRPC + Next", "Supabase", "Supabase Auth", "Liveblocks"],
+  edtech: ["Next.js 16 (App Router)", "NestJS", "Supabase", "Supabase Auth", "UploadThing"],
+  "ai-agents": ["Next.js 16 (App Router)", "Hono + CF Workers", "Supabase", "Supabase Auth", "Claude Opus 5.5", "Claude Agent SDK", "MCP Servers", "Trigger.dev"],
   automation: ["Hono + CF Workers", "Supabase", "n8n (self-hosted)", "Claude Sonnet 5", "Resend"],
   wordpress: ["WordPress + Elementor", "WordPress (PHP 8)", "MySQL / MariaDB", "Cloudflare R2"],
-  landing: ["Astro 4", "Hono + CF Workers", "Resend"],
-  mobile: ["React Native Expo", "Hono + CF Workers", "Supabase", "Supabase Auth", "Expo EAS + Push"],
-  "internal-tool": ["Next.js 15 (App Router)", "tRPC + Next", "PostgreSQL + pgvector", "WorkOS SSO", "Meilisearch"],
+  landing: ["Astro 6", "Hono + CF Workers", "Resend"],
+  mobile: ["React Native + Expo", "Hono + CF Workers", "Supabase", "Supabase Auth", "Expo EAS + Push"],
+  "internal-tool": ["Next.js 16 (App Router)", "tRPC + Next", "PostgreSQL + pgvector", "WorkOS SSO", "Meilisearch"],
 };
 
 export const FEATURE_GROUPS: FeatureGroup[] = [
@@ -436,11 +496,11 @@ export const DEFAULT_STATE: StudioState = {
   competitors: ["Linear + Notion + Slack", "Motion", "Sunsama"],
   usp: "Tek keyboard shortcut ile her şey: task -> doc -> meeting notes -> AI action. 100ms altında her etkileşim, offline-first.",
   monetization: ["Subscription (MRR)", "Freemium"],
-  frontend: ["Next.js 15 (App Router)"],
+  frontend: ["Next.js 16 (App Router)"],
   backend: ["Hono + CF Workers"],
   database: ["Neon Serverless", "Upstash Redis", "Qdrant Vector DB"],
   auth: ["Clerk"],
-  ai: ["Claude 3.5 Sonnet", "Groq Llama 3 70B"],
+  ai: ["Claude Sonnet 5", "Groq (open models)"],
   realtime: ["Liveblocks", "UploadThing", "Resend"],
   search: ["Typesense"],
   features: [

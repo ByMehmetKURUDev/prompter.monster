@@ -9,7 +9,7 @@
  * Client- and server-safe (no I/O here). Server: catalog-server.ts; browser: /api/catalog + useCatalog().
  */
 import { z } from "zod";
-import { EXPERTS, PAYMENTS, PROJECT_CATEGORIES, ALL_PROJECT_TYPES, STACK_SUGGESTIONS } from "./data";
+import { EXPERTS, PAYMENTS, PROJECT_CATEGORIES, ALL_PROJECT_TYPES, STACK_SUGGESTIONS, normalizeStackList } from "./data";
 import { TYPE_PRESETS, type TypePreset } from "./type-presets";
 import type { Badge, Expert, ProjectType } from "./types";
 
@@ -174,7 +174,7 @@ export function applyCatalog(rows: CatalogRow[]): boolean {
       compliance: d.compliance ?? base?.compliance ?? [],
     };
     TYPE_PRESETS[id] = preset;
-    if (d.stack?.length) STACK_SUGGESTIONS[id] = d.stack;
+    if (d.stack?.length) STACK_SUGGESTIONS[id] = normalizeStackList(d.stack);
   };
 
   for (const c of BUILTIN_CATEGORIES) {

@@ -3,7 +3,7 @@ export type LegalSlug = "terms" | "privacy" | "cookies" | "refund";
 export const LEGAL_SLUGS: LegalSlug[] = ["terms", "privacy", "cookies", "refund"];
 
 /** Last material change to any legal text (shown on every page). Bump when the wording changes. */
-export const LEGAL_UPDATED = "2026-09-26";
+export const LEGAL_UPDATED = "2026-09-27";
 
 /** Operator details — editable in /admin/settings (group "Yasal"). */
 export interface LegalInfo {

@@ -1,6 +1,6 @@
 "use client";
 
-import { Bell, Crown, FolderOpen, KeyRound, LogIn, LogOut, Plug, Save, Search } from "lucide-react";
+import { Bell, Crown, FolderOpen, KeyRound, LogIn, LogOut, Plug, Save, Search, UserRound } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 import { useLocale } from "@/components/site/LocaleProvider";
@@ -100,6 +100,9 @@ export function Nav({
             {menu && (
               <div role="menu" className="absolute right-0 mt-2 w-56 rounded-xl bg-ink-800 border border-ink-600 shadow-xl p-1.5 z-50">
                 <div className="px-3 py-2 text-[11px] text-zinc-500 truncate">{user.email}</div>
+                <Link href={lhref("/account", locale)} role="menuitem" className="flex items-center gap-2 px-3 py-2 rounded-lg text-[13px] hover:bg-ink-600">
+                  <UserRound className="w-4 h-4" aria-hidden /> {t.myAccount}
+                </Link>
                 <Link href={lhref("/library", locale)} role="menuitem" className="flex items-center gap-2 px-3 py-2 rounded-lg text-[13px] hover:bg-ink-600">
                   <FolderOpen className="w-4 h-4" aria-hidden /> {t.myProjects}
                 </Link>

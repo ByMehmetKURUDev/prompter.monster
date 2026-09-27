@@ -1,6 +1,7 @@
-import { BookOpen, Crown } from "lucide-react";
+import { BookOpen, Crown, FolderOpen, KeyRound, Plug, Sparkles } from "lucide-react";
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import { AccountDanger } from "@/components/account/AccountDanger";
 import { ApiKeysPanel, type KeyItem } from "@/components/account/ApiKeysPanel";
 import { LoginForm } from "@/components/auth/LoginForm";
 import { PasswordForm } from "@/components/auth/PasswordForm";
@@ -35,6 +36,22 @@ const COPY = {
     rate: (k: number, a: number) => `Dakikada ${k} istek (anahtarsız: ${a})`,
     upgrade: "Pro'ya geç",
     off: (what: string) => `${what} şu an bakım için kapalı; anahtarların saklanıyor.`,
+    accountTitle: "Hesabım",
+    accountText: "Planın, kullanımın ve verilerin tek yerde.",
+    email: "E-posta",
+    memberSince: "Üyelik",
+    manage: "Aboneliği yönet",
+    subStatus: (st: string, end: string | null) => `Abonelik: ${st}${end ? ` · ${end}` : ""}`,
+    usage: "Kullanım",
+    today: "Bugünkü AI kredisi",
+    month: "Bu ayki AI kredisi",
+    projects: "Proje",
+    versions: "Versiyon",
+    shares: "Paylaşım",
+    keys: "Aktif API anahtarı",
+    shortcuts: "Kısayollar",
+    password: "Şifre değiştir",
+    explore: "Keşfet galerisi",
   },
   en: {
     library: "My projects",
@@ -56,6 +73,22 @@ const COPY = {
     rate: (k: number, a: number) => `${k} requests a minute (without a key: ${a})`,
     upgrade: "Go Pro",
     off: (what: string) => `${what} is switched off for maintenance right now; your keys are kept.`,
+    accountTitle: "My account",
+    accountText: "Your plan, usage and data in one place.",
+    email: "Email",
+    memberSince: "Member since",
+    manage: "Manage subscription",
+    subStatus: (st: string, end: string | null) => `Subscription: ${st}${end ? ` · ${end}` : ""}`,
+    usage: "Usage",
+    today: "AI credits today",
+    month: "AI credits this month",
+    projects: "Projects",
+    versions: "Versions",
+    shares: "Shares",
+    keys: "Active API keys",
+    shortcuts: "Shortcuts",
+    password: "Change password",
+    explore: "Explore gallery",
   },
 } as const;
 
@@ -250,6 +283,134 @@ export async function ApiAccountView({ locale }: { locale: Locale }) {
         </section>
 
         <ApiKeysPanel locale={locale} initial={(keys ?? []) as KeyItem[]} max={MAX_ACTIVE_KEYS} />
+      </main>
+    </div>
+  );
+}
+
+/** /account — plan, usage, shortcuts, data export and account deletion. */
+export async function AccountPageView({ locale }: { locale: Locale }) {
+  const c = COPY[locale];
+  if (!supabaseConfigured()) redirect(lhref("/studio", locale));
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) redirect(`${lhref("/login", locale)}?next=${encodeURIComponent(lhref("/account", locale))}`);
+
+  const count = async (table: string) => (await supabase.from(table).select("*", { count: "exact", head: true }).eq("owner_id", user.id)).count ?? 0;
+  const [{ data: prof }, usage, { data: sub }, projects, versions, shares, keys] = await Promise.all([
+    supabase.from("profiles").select("plan,role,created_at").eq("id", user.id).maybeSingle<{ plan: string; role: string; created_at: string }>(),
+    supabase
+      .rpc("ai_usage_today")
+      .single<{ used: number; limit: number; plan: string; month_used: number | null; month_limit: number | null }>()
+      .then((r) => r.data),
+    supabase
+      .from("subscriptions")
+      .select("status,plan,current_period_end,updated_at")
+      .eq("owner_id", user.id)
+      .order("updated_at", { ascending: false })
+      .limit(1)
+      .maybeSingle<{ status: string; plan: string | null; current_period_end: string | null }>(),
+    count("projects"),
+    count("generations"),
+    count("shared_links"),
+    supabase
+      .from("api_keys")
+      .select("id", { count: "exact", head: true })
+      .eq("owner_id", user.id)
+      .is("revoked_at", null)
+      .then((r) => r.count ?? 0),
+  ]);
+  const plan = prof?.plan === "pro" ? "pro" : "free";
+  const fmt = (d: string | null | undefined) =>
+    d ? new Date(d).toLocaleDateString(locale === "en" ? "en-US" : "tr-TR", { day: "numeric", month: "long", year: "numeric" }) : "—";
+  const stat = (label: string, value: string | number) => (
+    <div className="rounded-xl bg-ink-950 border border-ink-600 p-3">
+      <div className="text-[11px] text-zinc-500">{label}</div>
+      <div className="mt-1 text-[18px] font-bold tabular-nums">{value}</div>
+    </div>
+  );
+  const link = (href: string, icon: React.ReactNode, label: string) => (
+    <Link href={href} className="h-10 px-3 rounded-lg bg-ink-950 border border-ink-600 hover:border-ink-400 text-[13px] flex items-center gap-2">
+      {icon} {label}
+    </Link>
+  );
+
+  return (
+    <div className="min-h-screen bg-ink-950 text-zinc-100">
+      <header className="h-[56px] border-b border-ink-600 bg-ink-950/80 backdrop-blur-xl sticky top-0 z-50 flex items-center px-4 lg:px-8 gap-4">
+        <Brand locale={locale} />
+        <nav className="ml-auto flex items-center gap-2 text-[13px]">
+          <LanguageSwitch />
+          <Link href={lhref("/studio", locale)} className="h-9 px-4 rounded-lg bg-lime text-black font-bold flex items-center">
+            Studio
+          </Link>
+          <form action="/auth/signout" method="post">
+            <button type="submit" className="h-9 px-3 rounded-lg bg-ink-800 border border-ink-600 text-zinc-300">
+              {c.signOut}
+            </button>
+          </form>
+        </nav>
+      </header>
+      <main className="max-w-[900px] mx-auto px-4 lg:px-8 py-10 space-y-6">
+        <div>
+          <h1 className="text-2xl font-bold tracking-tight">{c.accountTitle}</h1>
+          <p className="text-[13px] text-zinc-500 mt-1">{c.accountText}</p>
+        </div>
+
+        <section className="rounded-2xl bg-ink-800 border border-ink-600 p-5 flex flex-col md:flex-row md:items-center gap-4">
+          <div className="min-w-0 flex-1 grid sm:grid-cols-3 gap-4 text-[13px]">
+            <div className="min-w-0">
+              <div className="text-[11px] tracking-widest text-zinc-500 font-semibold">{c.email.toUpperCase()}</div>
+              <div className="mt-1 truncate">{user.email}</div>
+            </div>
+            <div>
+              <div className="text-[11px] tracking-widest text-zinc-500 font-semibold">{c.memberSince.toUpperCase()}</div>
+              <div className="mt-1">{fmt(prof?.created_at ?? user.created_at)}</div>
+            </div>
+            <div>
+              <div className="text-[11px] tracking-widest text-zinc-500 font-semibold">{c.plan.toUpperCase()}</div>
+              <div className="mt-1 flex items-center gap-1.5 font-bold">
+                <Crown className="w-4 h-4 text-lime" aria-hidden /> {plan === "pro" ? "Monster Pro" : "Free"}
+              </div>
+              {sub && <div className="mt-1 text-[11px] text-zinc-500">{c.subStatus(sub.status, sub.current_period_end ? fmt(sub.current_period_end) : null)}</div>}
+            </div>
+          </div>
+          {sub ? (
+            <a href="/api/billing/portal" className="h-10 px-4 rounded-lg bg-ink-950 border border-ink-600 text-[13px] font-semibold flex items-center justify-center shrink-0">
+              {c.manage}
+            </a>
+          ) : plan !== "pro" ? (
+            <Link href={lhref("/pricing", locale)} className="h-10 px-4 rounded-lg bg-white text-black text-[13px] font-bold flex items-center justify-center shrink-0">
+              {c.upgrade}
+            </Link>
+          ) : null}
+        </section>
+
+        <section className="rounded-2xl bg-ink-800 border border-ink-600 p-5">
+          <h2 className="text-[11px] tracking-widest text-zinc-500 font-semibold mb-3">{c.usage.toUpperCase()}</h2>
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+            {stat(c.today, usage ? `${usage.used}/${usage.limit}` : "—")}
+            {plan === "pro" && stat(c.month, usage?.month_limit ? `${usage.month_used ?? 0}/${usage.month_limit}` : "—")}
+            {stat(c.projects, projects)}
+            {stat(c.versions, versions)}
+            {stat(c.shares, shares)}
+            {stat(c.keys, keys)}
+          </div>
+        </section>
+
+        <section className="rounded-2xl bg-ink-800 border border-ink-600 p-5">
+          <h2 className="text-[11px] tracking-widest text-zinc-500 font-semibold mb-3">{c.shortcuts.toUpperCase()}</h2>
+          <div className="grid sm:grid-cols-2 md:grid-cols-4 gap-2">
+            {link(lhref("/library", locale), <FolderOpen className="w-4 h-4 text-zinc-400" aria-hidden />, c.library)}
+            {link(lhref("/account/api", locale), <Plug className="w-4 h-4 text-zinc-400" aria-hidden />, c.apiTitle)}
+            {link(lhref("/account/password", locale), <KeyRound className="w-4 h-4 text-zinc-400" aria-hidden />, c.password)}
+            {link(lhref("/explore", locale), <Sparkles className="w-4 h-4 text-zinc-400" aria-hidden />, c.explore)}
+          </div>
+        </section>
+
+        <AccountDanger locale={locale} isAdmin={prof?.role === "admin"} />
       </main>
     </div>
   );

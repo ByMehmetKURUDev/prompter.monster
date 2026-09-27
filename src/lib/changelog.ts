@@ -13,6 +13,18 @@ export interface ChangelogEntry {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: "4.7",
+    date: "2026-09-27",
+    title: "Hesabım sayfası (verilerimi indir, hesabımı sil) ve güncel stack listesi",
+    items: [
+      "Yeni /account (/en/account): plan ve abonelik, günlük/aylık AI kredisi, proje/versiyon/paylaşım/anahtar sayıları, kısayollar. Studio kullanıcı menüsünde 'Hesabım'.",
+      "Verilerimi indir: profil, projeler, tüm versiyonlar, paylaşımlar, abonelik, API anahtarı özetleri ve AI kullanım kayıtları tek JSON dosyasında (KVKK md. 11 / GDPR md. 15 ve 20).",
+      "Hesabımı sil: 'SİL' / 'DELETE' onayıyla kalıcı silme; aktif Lemon Squeezy aboneliği önce iptal edilir, AI kullanım kayıtları anonim kalır. Admin hesapları buradan silinemez. Silinmiş hesaba gelen abonelik webhook'u artık 200 ile yok sayılıyor.",
+      "Stack listesi Eylül 2026'ya göre yenilendi: Next.js 16, React Router v7, Astro 6, Nuxt 4, TanStack Start, Laravel 13, Convex, Better Auth, Claude Opus 5.5 / Sonnet 5 / Haiku 4.5, OpenAI GPT-6, Gemini 3.1 Pro, Vercel AI SDK. Eski adlar (Next.js 15, Claude 3.5 Sonnet, GPT-4o, Lucia…) kayıtlı projelerde, çatallarda, API girdisinde ve katalogda otomatik olarak yenisine çevrilir.",
+      "Kullanım koşulları ve gizlilik politikası: hesap kapatma ve veri indirme artık Hesabım sayfasından yapılabiliyor.",
+    ],
+  },
+  {
     version: "4.6",
     date: "2026-09-27",
     title: "İngilizce hızlı başlangıçta Türkiye'ye özel ödeme seçenekleri kapalı",

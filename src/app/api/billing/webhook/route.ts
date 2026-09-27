@@ -71,6 +71,9 @@ export async function POST(req: Request) {
     ownerId = existing?.owner_id;
   }
   if (!ownerId) return NextResponse.json({ error: "owner not found" }, { status: 202 });
+  // The account may have been deleted (the subscription was cancelled with it): acknowledge so LS stops retrying.
+  const { data: ownerRow } = await admin.from("profiles").select("id").eq("id", ownerId).maybeSingle();
+  if (!ownerRow) return NextResponse.json({ ok: true, ignored: "owner deleted" });
 
   const status = a.status ?? "unknown";
   const plan = /y[ıi]ll[ıi]k|year/i.test(a.variant_name ?? "") ? "yearly" : "monthly";

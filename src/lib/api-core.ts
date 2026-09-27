@@ -3,7 +3,7 @@
  * Pure functions (no I/O) so both transports stay in sync.
  */
 import { z } from "zod";
-import { ALL_PROJECT_TYPES, EMPTY_STATE, EMPTY_STATE_EN, EXPERTS, FORMATS, PAYMENTS, PROJECT_CATEGORIES } from "./data";
+import { ALL_PROJECT_TYPES, EMPTY_STATE, EMPTY_STATE_EN, EXPERTS, FORMATS, PAYMENTS, PROJECT_CATEGORIES, normalizeStackList } from "./data";
 import { limitsFor, type PlanId } from "./plans";
 import { CUSTOM_TYPE_DESCRIPTIONS } from "./catalog";
 import { buildProjectFiles } from "./exports";
@@ -83,13 +83,13 @@ export function stateFromInput(input: GenerateInputT, plan: PlanId): { state: St
     competitors: input.competitors ?? base.competitors,
     usp: input.usp ?? base.usp,
     monetization: input.monetization ?? base.monetization,
-    frontend: input.stack?.frontend ?? base.frontend,
-    backend: input.stack?.backend ?? base.backend,
-    database: input.stack?.database ?? base.database,
-    auth: input.stack?.auth ?? base.auth,
-    ai: input.stack?.ai ?? base.ai,
-    realtime: input.stack?.realtime ?? base.realtime,
-    search: input.stack?.search ?? base.search,
+    frontend: normalizeStackList(input.stack?.frontend ?? base.frontend),
+    backend: normalizeStackList(input.stack?.backend ?? base.backend),
+    database: normalizeStackList(input.stack?.database ?? base.database),
+    auth: normalizeStackList(input.stack?.auth ?? base.auth),
+    ai: normalizeStackList(input.stack?.ai ?? base.ai),
+    realtime: normalizeStackList(input.stack?.realtime ?? base.realtime),
+    search: normalizeStackList(input.stack?.search ?? base.search),
     features: input.features ?? base.features,
     payments: (input.payments ?? base.payments).filter((p) => validPayments.has(p)),
     compliance: input.compliance ?? base.compliance,

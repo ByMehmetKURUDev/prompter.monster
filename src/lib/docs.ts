@@ -77,7 +77,7 @@ export const FIELD_GUIDE: FieldGuide[] = [
     step: 2,
     what: "7 katman: frontend, backend, veritabanı, auth, AI, realtime/infra, arama.",
     how: "Proje tipine göre öneri hazır gelir ('AI öner' de var). Bildiğin yığında kal; AI aracının en iyi bildiği yığın Next.js + Postgres/Supabase'dir. Her katmanda 1 seçim yeter.",
-    good: "Next.js 15 • Hono + CF Workers • Supabase • Supabase Auth • Claude • Resend",
+    good: "Next.js 16 • Hono + CF Workers • Supabase • Supabase Auth • Claude • Resend",
     bad: "Her katmanda 3 seçenek (araç kararsız kalır)",
   },
   {

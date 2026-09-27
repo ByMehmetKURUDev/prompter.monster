@@ -68,7 +68,7 @@ export const FIELD_GUIDE_EN: FieldGuide[] = [
     step: 2,
     what: "7 layers: frontend, backend, database, auth, AI, realtime/infra, search.",
     how: "A suggestion for your project type comes pre-filled (or let AI suggest one). Stick to a stack you know; the stack AI coding tools know best is Next.js + Postgres/Supabase. One pick per layer is enough.",
-    good: "Next.js 15 • Hono + CF Workers • Supabase • Supabase Auth • Claude • Resend",
+    good: "Next.js 16 • Hono + CF Workers • Supabase • Supabase Auth • Claude • Resend",
     bad: "3 picks in every layer (the tool can't decide which to use)",
   },
   {
