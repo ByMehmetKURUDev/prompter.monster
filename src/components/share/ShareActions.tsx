@@ -1,14 +1,52 @@
 "use client";
 
-import { Check, Copy, Download, GitFork, Link2 } from "lucide-react";
+import { Check, Copy, Download, ExternalLink, GitFork, Link2 } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 import { copyText, downloadText } from "@/lib/client";
 import { cx } from "@/components/studio/ui";
+import { claudeCodeUrl, cursorPromptUrl } from "@/lib/handoff";
+import { lhref, type Locale } from "@/lib/i18n";
 
-/** Copy / download / fork controls on the public prompt page. */
-export function ShareActions({ slug, name, output, format }: { slug: string; name: string; output: string; format: string }) {
+const COPY = {
+  tr: {
+    prompt: "Promptu kopyala",
+    copied: "Kopyalandı",
+    download: (ext: string) => `İndir (.${ext})`,
+    link: "Bağlantıyı kopyala",
+    linkCopied: "Bağlantı kopyalandı",
+    fork: "Studio'da çatalla",
+    claudeCode: "Claude Code'da aç",
+    cursor: "Cursor'da aç",
+  },
+  en: {
+    prompt: "Copy prompt",
+    copied: "Copied",
+    download: (ext: string) => `Download (.${ext})`,
+    link: "Copy link",
+    linkCopied: "Link copied",
+    fork: "Fork in Studio",
+    claudeCode: "Open in Claude Code",
+    cursor: "Open in Cursor",
+  },
+} as const;
+
+/** Copy / download / fork / AI-tool handoff controls on the public prompt page. */
+export function ShareActions({
+  slug,
+  name,
+  output,
+  format,
+  locale = "tr",
+}: {
+  slug: string;
+  name: string;
+  output: string;
+  format: string;
+  locale?: Locale;
+}) {
   const [copied, setCopied] = useState<"prompt" | "link" | null>(null);
+  const c = COPY[locale];
 
   const flash = (k: "prompt" | "link") => {
     setCopied(k);
@@ -17,6 +55,9 @@ export function ShareActions({ slug, name, output, format }: { slug: string; nam
 
   const ext = format === "Claude XML" ? "xml" : format === "Cursor Rules" ? "cursorrules" : "md";
   const file = `${name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "") || "prompt"}.${ext}`;
+  const site = (process.env.NEXT_PUBLIC_SITE_URL || "https://prompter.monster").replace(/\/$/, "");
+  const ccUrl = claudeCodeUrl(`${site}/p/${slug}/raw`);
+  const cursorUrl = cursorPromptUrl(output);
 
   return (
     <div className="flex flex-wrap items-center gap-2">
@@ -31,14 +72,14 @@ export function ShareActions({ slug, name, output, format }: { slug: string; nam
         )}
       >
         {copied === "prompt" ? <Check className="w-4 h-4" aria-hidden /> : <Copy className="w-4 h-4" aria-hidden />}
-        {copied === "prompt" ? "Kopyalandı" : "Promptu kopyala"}
+        {copied === "prompt" ? c.copied : c.prompt}
       </button>
       <button
         type="button"
         onClick={() => downloadText(file, output)}
         className="h-10 px-4 rounded-xl bg-ink-800 border border-ink-600 text-[13px] text-zinc-200 hover:text-white flex items-center gap-2"
       >
-        <Download className="w-4 h-4" aria-hidden /> İndir (.{ext})
+        <Download className="w-4 h-4" aria-hidden /> {c.download(ext)}
       </button>
       <button
         type="button"
@@ -48,13 +89,31 @@ export function ShareActions({ slug, name, output, format }: { slug: string; nam
         className="h-10 px-4 rounded-xl bg-ink-800 border border-ink-600 text-[13px] text-zinc-200 hover:text-white flex items-center gap-2"
       >
         {copied === "link" ? <Check className="w-4 h-4" aria-hidden /> : <Link2 className="w-4 h-4" aria-hidden />}
-        {copied === "link" ? "Bağlantı kopyalandı" : "Bağlantıyı kopyala"}
+        {copied === "link" ? c.linkCopied : c.link}
       </button>
+      <a
+        href={ccUrl}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="h-10 px-4 rounded-xl bg-ink-800 border border-ink-600 text-[13px] text-zinc-200 hover:text-white flex items-center gap-2"
+      >
+        <ExternalLink className="w-4 h-4" aria-hidden /> {c.claudeCode}
+      </a>
+      {cursorUrl && (
+        <a
+          href={cursorUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="h-10 px-4 rounded-xl bg-ink-800 border border-ink-600 text-[13px] text-zinc-200 hover:text-white flex items-center gap-2"
+        >
+          <ExternalLink className="w-4 h-4" aria-hidden /> {c.cursor}
+        </a>
+      )}
       <Link
-        href={`/studio?fork=${encodeURIComponent(slug)}`}
+        href={lhref(`/studio?fork=${encodeURIComponent(slug)}`, locale)}
         className="h-10 px-4 rounded-xl bg-gradient-to-r from-lime to-violet text-black font-bold text-[13px] flex items-center gap-2"
       >
-        <GitFork className="w-4 h-4" aria-hidden /> Studio&apos;da çatalla
+        <GitFork className="w-4 h-4" aria-hidden /> {c.fork}
       </Link>
     </div>
   );

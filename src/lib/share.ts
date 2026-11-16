@@ -2,7 +2,7 @@ import { cache } from "react";
 import { createClient, supabaseConfigured } from "@/lib/supabase/server";
 import type { StudioState } from "@/lib/types";
 
-/** Row returned by the `get_shared` RPC (see supabase/migrations/0002_share.sql). */
+/** Row returned by the `get_shared` RPC (see supabase/migrations/0002_share.sql + 0010_explore_feedback.sql). */
 export interface SharedPrompt {
   slug: string;
   version: number;
@@ -16,6 +16,7 @@ export interface SharedPrompt {
   description: string;
   state: StudioState;
   views: number;
+  forks: number;
   created_at: string;
 }
 
@@ -42,5 +43,36 @@ export async function bumpViews(slug: string): Promise<void> {
     await supabase.rpc("bump_shared_views", { p_slug: slug });
   } catch {
     /* counter is best-effort */
+  }
+}
+
+/** Fork counter — bumped whenever a share's state is loaded into Studio ("Studio'da çatalla"). */
+export async function bumpForks(slug: string): Promise<void> {
+  try {
+    const supabase = await createClient();
+    await supabase.rpc("bump_shared_forks", { p_slug: slug });
+  } catch {
+    /* counter is best-effort */
+  }
+}
+
+/**
+ * Owner-only lookup for the page's "Galeride göster" bar: is the signed-in visitor the owner,
+ * and is this slug currently listed in Explore? RLS ("own shared links") already lets an owner
+ * select their own row, so a plain client call is enough — no extra RPC needed.
+ */
+export async function ownerInfo(slug: string): Promise<{ isOwner: true; listed: boolean } | null> {
+  if (!supabaseConfigured() || !SLUG_RE.test(slug)) return null;
+  try {
+    const supabase = await createClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    if (!user) return null;
+    const { data } = await supabase.from("shared_links").select("owner_id, listed").eq("slug", slug).maybeSingle<{ owner_id: string; listed: boolean }>();
+    if (!data || data.owner_id !== user.id) return null;
+    return { isOwner: true, listed: data.listed };
+  } catch {
+    return null;
   }
 }

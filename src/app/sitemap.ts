@@ -20,6 +20,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${site}/prompt`, lastModified: now, changeFrequency: "weekly", priority: 0.8 },
     { url: `${site}/docs`, lastModified: now, changeFrequency: "monthly", priority: 0.7 },
     { url: `${site}/developers`, lastModified: now, changeFrequency: "monthly", priority: 0.7 },
+    { url: `${site}/explore`, lastModified: now, changeFrequency: "daily", priority: 0.7 },
     ...TYPE_PAGES.filter((p) => visible.has(p.id)).map((p) => ({ url: `${site}/prompt/${p.slug}`, lastModified: now, changeFrequency: "monthly" as const, priority: 0.7 })),
     // English twins
     { url: `${site}/en`, lastModified: now, changeFrequency: "weekly", priority: 0.9 },
@@ -28,6 +29,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${site}/en/prompt`, lastModified: now, changeFrequency: "weekly", priority: 0.7 },
     { url: `${site}/en/docs`, lastModified: now, changeFrequency: "monthly", priority: 0.6 },
     { url: `${site}/en/developers`, lastModified: now, changeFrequency: "monthly", priority: 0.7 },
+    { url: `${site}/en/explore`, lastModified: now, changeFrequency: "daily", priority: 0.6 },
     ...TYPE_PAGES_EN.filter((p) => visible.has(p.id)).map((p) => ({ url: `${site}/en/prompt/${p.slug}`, lastModified: now, changeFrequency: "monthly" as const, priority: 0.6 })),
     ...LEGAL_SLUGS.flatMap((slug) => [
       { url: `${site}/legal/${slug}`, lastModified: new Date(LEGAL_UPDATED), changeFrequency: "yearly" as const, priority: 0.2 },
@@ -41,7 +43,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   if (url && key) {
     try {
       const supabase = createClient(url, key, { auth: { persistSession: false } });
-      const { data } = await supabase.from("shared_links").select("slug,created_at").order("created_at", { ascending: false }).limit(2000);
+      const { data } = await supabase.from("shared_links").select("slug,created_at").eq("hidden", false).order("created_at", { ascending: false }).limit(2000);
       for (const row of data ?? []) {
         entries.push({ url: `${site}/p/${row.slug}`, lastModified: new Date(row.created_at), changeFrequency: "monthly", priority: 0.6 });
       }

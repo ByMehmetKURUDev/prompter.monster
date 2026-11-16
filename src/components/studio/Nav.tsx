@@ -1,6 +1,6 @@
 "use client";
 
-import { Bell, Crown, FolderOpen, KeyRound, LogIn, LogOut, Plug, Save, Search, UserRound } from "lucide-react";
+import { Bell, Compass, Crown, FolderOpen, KeyRound, LogIn, LogOut, Plug, Save, Search, UserRound } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 import { useLocale } from "@/components/site/LocaleProvider";
@@ -105,6 +105,9 @@ export function Nav({
                 </Link>
                 <Link href={lhref("/library", locale)} role="menuitem" className="flex items-center gap-2 px-3 py-2 rounded-lg text-[13px] hover:bg-ink-600">
                   <FolderOpen className="w-4 h-4" aria-hidden /> {t.myProjects}
+                </Link>
+                <Link href={lhref("/explore", locale)} role="menuitem" className="flex items-center gap-2 px-3 py-2 rounded-lg text-[13px] hover:bg-ink-600">
+                  <Compass className="w-4 h-4" aria-hidden /> {t.explore}
                 </Link>
                 <Link href={lhref("/pricing", locale)} role="menuitem" className="flex items-center gap-2 px-3 py-2 rounded-lg text-[13px] hover:bg-ink-600">
                   <Crown className="w-4 h-4" aria-hidden /> {me?.plan === "pro" ? t.myPlanPro : t.goPro}

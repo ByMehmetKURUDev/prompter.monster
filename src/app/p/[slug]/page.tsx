@@ -1,18 +1,51 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowRight, Eye, Sparkles } from "lucide-react";
+import { ArrowRight, Eye, GitFork, Sparkles } from "lucide-react";
 import { ShareActions } from "@/components/share/ShareActions";
+import { ShareOwnerBar } from "@/components/share/ShareOwnerBar";
+import { ReportShare } from "@/components/share/ReportShare";
 import { EXPERTS, PROJECT_CATEGORIES } from "@/lib/data";
 import { loadCatalog } from "@/lib/catalog-server";
-import { bumpViews, getShared } from "@/lib/share";
+import { bumpViews, getShared, ownerInfo } from "@/lib/share";
 import { LegalLinks } from "@/components/site/LegalLinks";
+import type { Locale } from "@/lib/i18n";
 
 export const dynamic = "force-dynamic";
 
 type Props = { params: Promise<{ slug: string }> };
 
 const SITE = process.env.NEXT_PUBLIC_SITE_URL || "https://prompter.monster";
+
+/** The page's own language follows the shared generation's `lang` (TR/EN), not the visitor's locale — this route isn't split under /en. */
+const COPY = {
+  tr: {
+    badge: "Paylaşılan prompt",
+    cta: "Kendi canavarını üret",
+    unnamed: "Adsız canavar",
+    words: (n: string) => `~${n} kelime`,
+    masterPrompt: "MASTER BUILD PROMPT",
+    ctaTitle: "Bu prompt Prompt.Monster ile üretildi.",
+    ctaText:
+      "Kendi fikrini 4 adımda anlat; 18 uzman canavar (CTO, PM, Design, AI, SEO…) Claude Code, Cursor, v0, Lovable ve Bolt için kopyala-çalıştır kalitesinde build prompt'unu yazsın. Kayıt gerektirmez.",
+    tryFree: "Ücretsiz dene",
+    openInStudio: "Bu projeyi kendi Studio'mda aç",
+    footer: "Paylaşılan içerik, paylaşan kullanıcıya aittir.",
+  },
+  en: {
+    badge: "Shared prompt",
+    cta: "Generate your own monster",
+    unnamed: "Unnamed monster",
+    words: (n: string) => `~${n} words`,
+    masterPrompt: "MASTER BUILD PROMPT",
+    ctaTitle: "This prompt was generated with Prompt.Monster.",
+    ctaText:
+      "Describe your idea in 4 steps; 18 expert monsters (CTO, PM, Design, AI, SEO…) write a copy-paste-ready build prompt for Claude Code, Cursor, v0, Lovable and Bolt. No sign-up required.",
+    tryFree: "Try for free",
+    openInStudio: "Open this project in my own Studio",
+    footer: "Shared content belongs to the person who shared it.",
+  },
+} as const;
 
 function projectTypeOf(id: string) {
   for (const c of PROJECT_CATEGORIES) {
@@ -26,11 +59,14 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   const [shared] = await Promise.all([getShared(slug), loadCatalog()]);
   if (!shared) return { title: "Paylaşım bulunamadı", robots: { index: false } };
+  const locale: Locale = shared.lang === "EN" ? "en" : "tr";
   const type = projectTypeOf(shared.project_type);
-  const title = `${shared.name || "Adsız canavar"} — master build prompt`;
+  const title = `${shared.name || COPY[locale].unnamed} — master build prompt`;
   const description =
     (shared.pitch || shared.description || "").slice(0, 160) ||
-    `${type?.name ?? "Proje"} için ${shared.experts.length} uzman canavarla üretilmiş build prompt. Kopyala, Claude Code / Cursor / v0'a yapıştır.`;
+    (locale === "en"
+      ? `A build prompt generated with ${shared.experts.length} expert monsters for ${type?.name ?? "a project"}. Copy it into Claude Code / Cursor / v0.`
+      : `${type?.name ?? "Proje"} için ${shared.experts.length} uzman canavarla üretilmiş build prompt. Kopyala, Claude Code / Cursor / v0'a yapıştır.`);
   return {
     title,
     description,
@@ -43,13 +79,15 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function SharedPromptPage({ params }: Props) {
   const { slug } = await params;
-  const [shared] = await Promise.all([getShared(slug), loadCatalog()]);
+  const [shared, owner] = await Promise.all([getShared(slug), ownerInfo(slug)]);
   if (!shared) notFound();
-  await bumpViews(shared.slug);
+  await Promise.all([bumpViews(shared.slug), loadCatalog()]);
 
+  const locale: Locale = shared.lang === "EN" ? "en" : "tr";
+  const c = COPY[locale];
   const type = projectTypeOf(shared.project_type);
   const experts = shared.experts.map((id) => EXPERTS.find((e) => e.id === id)).filter(Boolean) as typeof EXPERTS;
-  const date = new Date(shared.created_at).toLocaleDateString("tr-TR", { day: "numeric", month: "long", year: "numeric" });
+  const date = new Date(shared.created_at).toLocaleDateString(locale === "en" ? "en-US" : "tr-TR", { day: "numeric", month: "long", year: "numeric" });
   const words = shared.output.split(/\s+/).filter(Boolean).length;
 
   return (
@@ -60,14 +98,16 @@ export default async function SharedPromptPage({ params }: Props) {
           <span className="font-bold tracking-tight text-[15px]">Prompt.Monster</span>
         </Link>
         <nav className="ml-auto flex items-center gap-2 text-[13px]">
-          <span className="hidden sm:block text-zinc-500 text-[12px]">Paylaşılan prompt</span>
+          <span className="hidden sm:block text-zinc-500 text-[12px]">{c.badge}</span>
           <Link href="/studio?new=1" className="h-9 px-4 rounded-lg bg-lime text-black font-bold flex items-center gap-1.5">
-            Kendi canavarını üret <ArrowRight className="w-4 h-4" aria-hidden />
+            {c.cta} <ArrowRight className="w-4 h-4" aria-hidden />
           </Link>
         </nav>
       </header>
 
       <main className="max-w-[1000px] mx-auto px-4 lg:px-8 py-10">
+        {owner && <ShareOwnerBar slug={shared.slug} listed={owner.listed} locale={locale} />}
+
         <div className="flex flex-wrap items-center gap-2 text-[11px] text-zinc-400 mb-4">
           {type && (
             <span className="inline-flex items-center gap-1.5 px-2.5 h-7 rounded-full bg-ink-800 border border-ink-600">
@@ -80,10 +120,15 @@ export default async function SharedPromptPage({ params }: Props) {
           <span className="inline-flex items-center gap-1 px-2.5 h-7 rounded-full bg-ink-800 border border-ink-600">
             <Eye className="w-3 h-3" aria-hidden /> {shared.views + 1}
           </span>
+          {shared.forks > 0 && (
+            <span className="inline-flex items-center gap-1 px-2.5 h-7 rounded-full bg-ink-800 border border-ink-600">
+              <GitFork className="w-3 h-3" aria-hidden /> {shared.forks}
+            </span>
+          )}
           <span className="text-zinc-600">{date}</span>
         </div>
 
-        <h1 className="text-3xl md:text-4xl font-black tracking-tight leading-tight">{shared.name || "Adsız canavar"}</h1>
+        <h1 className="text-3xl md:text-4xl font-black tracking-tight leading-tight">{shared.name || c.unnamed}</h1>
         {shared.pitch && <p className="mt-3 text-[15px] md:text-[17px] text-zinc-400 max-w-[720px] leading-relaxed">{shared.pitch}</p>}
 
         {experts.length > 0 && (
@@ -99,13 +144,13 @@ export default async function SharedPromptPage({ params }: Props) {
         )}
 
         <div className="mt-8">
-          <ShareActions slug={shared.slug} name={shared.name} output={shared.output} format={shared.format} />
+          <ShareActions slug={shared.slug} name={shared.name} output={shared.output} format={shared.format} locale={locale} />
         </div>
 
         <section className="mt-6 rounded-2xl bg-ink-900 border border-ink-600 overflow-hidden">
           <div className="flex items-center gap-2 px-4 h-11 border-b border-ink-600 text-[11px] font-semibold tracking-widest text-zinc-400">
-            <Sparkles className="w-3.5 h-3.5 text-lime" aria-hidden /> MASTER BUILD PROMPT
-            <span className="ml-auto font-normal tracking-normal text-zinc-600">~{words.toLocaleString("tr-TR")} kelime</span>
+            <Sparkles className="w-3.5 h-3.5 text-lime" aria-hidden /> {c.masterPrompt}
+            <span className="ml-auto font-normal tracking-normal text-zinc-600">{c.words(words.toLocaleString(locale === "en" ? "en-US" : "tr-TR"))}</span>
           </div>
           <pre className="mono text-[12px] leading-relaxed text-zinc-300 whitespace-pre-wrap break-words p-4 md:p-6 max-h-[70vh] overflow-y-auto scrollbar-thin">
             {shared.output}
@@ -113,26 +158,27 @@ export default async function SharedPromptPage({ params }: Props) {
         </section>
 
         <section className="mt-10 rounded-2xl border border-lime/30 bg-gradient-to-br from-lime/10 to-violet/10 p-6 md:p-8">
-          <h2 className="text-xl md:text-2xl font-bold tracking-tight">Bu prompt Prompt.Monster ile üretildi.</h2>
-          <p className="mt-2 text-[14px] text-zinc-400 max-w-[640px] leading-relaxed">
-            Kendi fikrini 4 adımda anlat; 18 uzman canavar (CTO, PM, Design, AI, SEO…) Claude Code, Cursor, v0, Lovable ve Bolt için
-            kopyala-çalıştır kalitesinde build prompt&apos;unu yazsın. Kayıt gerektirmez.
-          </p>
+          <h2 className="text-xl md:text-2xl font-bold tracking-tight">{c.ctaTitle}</h2>
+          <p className="mt-2 text-[14px] text-zinc-400 max-w-[640px] leading-relaxed">{c.ctaText}</p>
           <div className="mt-5 flex flex-wrap gap-3">
             <Link href="/studio?new=1" className="h-11 px-5 rounded-xl bg-lime text-black font-bold text-[14px] flex items-center gap-2">
-              Ücretsiz dene <ArrowRight className="w-4 h-4" aria-hidden />
+              {c.tryFree} <ArrowRight className="w-4 h-4" aria-hidden />
             </Link>
             <Link href={`/studio?fork=${encodeURIComponent(shared.slug)}`} className="h-11 px-5 rounded-xl bg-ink-800 border border-ink-600 text-[14px] flex items-center">
-              Bu projeyi kendi Studio&apos;mda aç
+              {c.openInStudio}
             </Link>
           </div>
         </section>
+
+        <div className="mt-6">
+          <ReportShare slug={shared.slug} locale={locale} />
+        </div>
       </main>
 
       <footer className="border-t border-ink-600 px-4 lg:px-8 py-4 text-[11px] text-zinc-600 flex flex-wrap gap-3">
         <span>Prompt.Monster © {new Date().getFullYear()}</span>
         <LegalLinks />
-        <span className="ml-auto">Paylaşılan içerik, paylaşan kullanıcıya aittir.</span>
+        <span className="ml-auto">{c.footer}</span>
       </footer>
     </div>
   );

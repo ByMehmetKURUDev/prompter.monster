@@ -13,6 +13,18 @@ export interface ChangelogEntry {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: "4.8",
+    date: "2026-11-16",
+    title: "Keşfet galerisi, AI araç bağlantıları, bildirim sistemi",
+    items: [
+      "/explore (/en/explore): topluluğun paylaştığı promptların herkese açık galerisi — dil/tip filtresi, yeni/popüler/çok çatallanan sıralaması, 'daha fazla yükle'. Paylaşım sayfasında sahibine 'Galeride göster' anahtarı (varsayılan kapalı, tamamen isteğe bağlı).",
+      "Paylaşım sayfasına Claude Code ve Cursor'da doğrudan aç bağlantıları eklendi (prompt_url / deeplink); /p/<slug>/raw düz metin uç noktası.",
+      "Çatal sayacı: 'Studio'da çatalla' her yüklendiğinde artar; paylaşım sayfası ve admin panelinde görünür.",
+      "Admin → Paylaşımlar: galeride öne çıkar / gizle / kaldır butonları, galeri durumu rozeti; kullanıcıların gönderdiği kısa bildirimler (uygunsuz içerik vb.) ayrı bir tabloda listelenir.",
+      "Paylaşım sayfasında 'Uygunsuz içerik mi? Bildir' bağlantısı — kayıt gerektirmez.",
+    ],
+  },
+  {
     version: "4.7",
     date: "2026-09-27",
     title: "Hesabım sayfası (verilerimi indir, hesabımı sil) ve güncel stack listesi",

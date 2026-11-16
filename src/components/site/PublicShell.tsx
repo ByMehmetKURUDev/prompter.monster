@@ -6,8 +6,8 @@ import { LanguageSwitch } from "./LanguageSwitch";
 import { LegalLinks } from "./LegalLinks";
 
 const NAV = {
-  tr: { prompts: "Build prompt'lar", guide: "Rehber", pricing: "Fiyat", studio: "Studio'yu aç", footerPrompts: "Proje tipine göre build prompt'lar", api: "API ve MCP" },
-  en: { prompts: "Build prompts", guide: "Guide", pricing: "Pricing", studio: "Open Studio", footerPrompts: "Build prompts by project type", api: "API & MCP" },
+  tr: { prompts: "Build prompt'lar", explore: "Keşfet", guide: "Rehber", pricing: "Fiyat", studio: "Studio'yu aç", footerPrompts: "Proje tipine göre build prompt'lar", api: "API ve MCP" },
+  en: { prompts: "Build prompts", explore: "Explore", guide: "Guide", pricing: "Pricing", studio: "Open Studio", footerPrompts: "Build prompts by project type", api: "API & MCP" },
 } as const;
 
 /** Header + footer used by the public marketing pages (/prompt, /docs, /legal …). */
@@ -24,6 +24,9 @@ export function PublicShell({ children, cta, locale = "tr", langSwitch = true }:
         <nav className="ml-auto flex items-center gap-1 text-[13px]">
           <Link href={lhref("/prompt", locale)} className="hidden sm:block px-3 py-1.5 text-zinc-400 hover:text-white">
             {n.prompts}
+          </Link>
+          <Link href={lhref("/explore", locale)} className="hidden sm:block px-3 py-1.5 text-zinc-400 hover:text-white">
+            {n.explore}
           </Link>
           <Link href={lhref("/docs", locale)} className="hidden md:block px-3 py-1.5 text-zinc-400 hover:text-white">
             {n.guide}
@@ -45,6 +48,10 @@ export function PublicShell({ children, cta, locale = "tr", langSwitch = true }:
         <span aria-hidden>•</span>
         <Link href={lhref("/prompt", locale)} className="hover:text-zinc-300">
           {n.footerPrompts}
+        </Link>
+        <span aria-hidden>•</span>
+        <Link href={lhref("/explore", locale)} className="hover:text-zinc-300">
+          {n.explore}
         </Link>
         <span aria-hidden>•</span>
         <Link href={lhref("/docs", locale)} className="hover:text-zinc-300">
