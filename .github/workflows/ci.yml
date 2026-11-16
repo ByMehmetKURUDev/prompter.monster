@@ -19,3 +19,21 @@ jobs:
       - run: npm run build
         env:
           NEXT_PUBLIC_SITE_URL: https://prompter.monster
+
+  # main'e her push'ta otomatik canlıya alır (Cloudflare Workers). build job'u geçmeden çalışmaz.
+  # Gereken tek secret: CLOUDFLARE_API_TOKEN (repo Settings → Secrets and variables → Actions).
+  # Worker adı, account_id, route'lar ve KV binding'i wrangler.jsonc'den gelir; NEXT_PUBLIC_* değerleri .env.production'dan.
+  deploy:
+    needs: build
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run deploy
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
