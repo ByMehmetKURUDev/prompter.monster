@@ -7,6 +7,7 @@ import { DEFAULT_PUBLIC } from "@/lib/settings";
 import { LanguageSwitch } from "./LanguageSwitch";
 import { LegalLinks } from "./LegalLinks";
 import { StarterKitsSection } from "./StarterKitsSection";
+import { UsageStatsSection } from "./UsageStatsSection";
 
 const D = DEFAULT_PUBLIC();
 
@@ -155,6 +156,11 @@ export function LandingView({ locale }: { locale: Locale }) {
           </div>
         </div>
       </section>
+
+      {/* Canlı kullanım sayaçları — ayrı istemci bileşeni, kendi API rotasından taze veri çeker.
+          Ana sayfayı statik tutmak için (bkz. UsageStatsSection.tsx ve src/app/api/stats/usage/route.ts).
+          Erken lansmanda sayılar küçükse bölüm bilerek hiç gösterilmez. */}
+      <UsageStatsSection locale={locale} />
 
       {/* How */}
       <section id="how" className="max-w-[1100px] mx-auto px-4 lg:px-8 py-16">
