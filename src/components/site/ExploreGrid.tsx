@@ -11,6 +11,7 @@ const LABELS = {
     all: "Tümü",
     lang: "Dil",
     type: "Tip",
+    expert: "Uzman",
     new: "Yeni",
     popular: "Popüler",
     forked: "Çok çatallanan",
@@ -23,6 +24,7 @@ const LABELS = {
     all: "All",
     lang: "Language",
     type: "Type",
+    expert: "Expert",
     new: "Newest",
     popular: "Popular",
     forked: "Most forked",
@@ -39,17 +41,24 @@ export function ExploreGrid({
   initialItems,
   locale,
   types,
+  experts = [],
+  initialType = "",
+  initialExpert = "",
   emptyText,
 }: {
   initialItems: ExploreItem[];
   locale: Locale;
   types: { id: string; name: string; icon: string }[];
+  experts?: { id: string; name: string; icon: string }[];
+  initialType?: string;
+  initialExpert?: string;
   emptyText: string;
 }) {
   const l = LABELS[locale];
   const [items, setItems] = useState(initialItems);
   const [lang, setLang] = useState<"" | "TR" | "EN">("");
-  const [type, setType] = useState("");
+  const [type, setType] = useState(initialType);
+  const [expert, setExpert] = useState(initialExpert);
   const [sort, setSort] = useState<ExploreSort>("new");
   const [pending, startTransition] = useTransition();
   const [done, setDone] = useState(initialItems.length < PAGE_SIZE);
@@ -73,9 +82,11 @@ export function ExploreGrid({
     const qs = new URLSearchParams();
     const nextLang = extra.lang ?? lang;
     const nextType = extra.type ?? type;
+    const nextExpert = extra.expert ?? expert;
     const nextSort = extra.sort ?? sort;
     if (nextLang) qs.set("lang", nextLang);
     if (nextType) qs.set("type", nextType);
+    if (nextExpert) qs.set("expert", nextExpert);
     qs.set("sort", nextSort);
     if (extra.offset) qs.set("offset", extra.offset);
     return qs;
@@ -179,6 +190,25 @@ export function ExploreGrid({
             </option>
           ))}
         </select>
+        {experts.length > 0 && (
+          <select
+            value={expert}
+            onChange={(e) => {
+              setExpert(e.target.value);
+              refetch({ expert: e.target.value });
+            }}
+            className="h-9 px-3 rounded-lg bg-ink-800 border border-ink-600 text-[13px] max-w-[220px]"
+          >
+            <option value="">
+              {l.expert}: {l.all}
+            </option>
+            {experts.map((ex) => (
+              <option key={ex.id} value={ex.id}>
+                {ex.icon} {ex.name}
+              </option>
+            ))}
+          </select>
+        )}
         <div className="flex gap-1 ml-auto">
           {(["new", "popular", "forked", "liked"] as const).map((s) => (
             <button

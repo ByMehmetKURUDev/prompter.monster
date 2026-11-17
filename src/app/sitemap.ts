@@ -1,7 +1,7 @@
 import type { MetadataRoute } from "next";
 import { createClient } from "@supabase/supabase-js";
 import { loadCatalog } from "@/lib/catalog-server";
-import { ALL_PROJECT_TYPES } from "@/lib/data";
+import { ALL_PROJECT_TYPES, EXPERTS } from "@/lib/data";
 import { TYPE_PAGES, TYPE_PAGES_EN } from "@/lib/seo-types";
 import { LEGAL_SLUGS, LEGAL_UPDATED } from "@/lib/legal/types";
 import { profileSitemapUsernames } from "@/lib/profile";
@@ -32,6 +32,15 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${site}/en/developers`, lastModified: now, changeFrequency: "monthly", priority: 0.7 },
     { url: `${site}/en/explore`, lastModified: now, changeFrequency: "daily", priority: 0.6 },
     ...TYPE_PAGES_EN.filter((p) => visible.has(p.id)).map((p) => ({ url: `${site}/en/prompt/${p.slug}`, lastModified: now, changeFrequency: "monthly" as const, priority: 0.6 })),
+    // Keşfet: tip/uzman filtre sayfaları (SEO) — ALL_PROJECT_TYPES ve EXPERTS loadCatalog() sonrası zaten güncel.
+    ...ALL_PROJECT_TYPES.flatMap((t) => [
+      { url: `${site}/explore/type/${t.id}`, lastModified: now, changeFrequency: "daily" as const, priority: 0.5 },
+      { url: `${site}/en/explore/type/${t.id}`, lastModified: now, changeFrequency: "daily" as const, priority: 0.4 },
+    ]),
+    ...EXPERTS.flatMap((ex) => [
+      { url: `${site}/explore/expert/${ex.id}`, lastModified: now, changeFrequency: "daily" as const, priority: 0.5 },
+      { url: `${site}/en/explore/expert/${ex.id}`, lastModified: now, changeFrequency: "daily" as const, priority: 0.4 },
+    ]),
     ...LEGAL_SLUGS.flatMap((slug) => [
       { url: `${site}/legal/${slug}`, lastModified: new Date(LEGAL_UPDATED), changeFrequency: "yearly" as const, priority: 0.2 },
       { url: `${site}/en/legal/${slug}`, lastModified: new Date(LEGAL_UPDATED), changeFrequency: "yearly" as const, priority: 0.2 },

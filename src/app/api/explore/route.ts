@@ -10,12 +10,14 @@ export async function GET(req: Request) {
   const u = new URL(req.url);
   const langParam = u.searchParams.get("lang");
   const type = u.searchParams.get("type") || undefined;
+  const expert = u.searchParams.get("expert") || undefined;
   const sortParam = u.searchParams.get("sort");
   const sort: ExploreSort = SORTS.includes(sortParam as ExploreSort) ? (sortParam as ExploreSort) : "new";
   const offset = Math.max(0, Number(u.searchParams.get("offset") ?? 0) || 0);
   const items = await exploreList({
     lang: langParam === "TR" || langParam === "EN" ? langParam : undefined,
     type,
+    expert,
     sort,
     limit: 24,
     offset,
