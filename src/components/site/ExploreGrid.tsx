@@ -1,14 +1,36 @@
 "use client";
 
 import Link from "next/link";
-import { useState, useTransition } from "react";
-import { Eye, GitFork, Loader2 } from "lucide-react";
-import type { Locale } from "@/lib/i18n";
+import { useEffect, useRef, useState, useTransition } from "react";
+import { Eye, GitFork, Heart, Loader2 } from "lucide-react";
+import { lhref, type Locale } from "@/lib/i18n";
 import type { ExploreItem, ExploreSort } from "@/lib/explore";
 
 const LABELS = {
-  tr: { all: "Tümü", lang: "Dil", type: "Tip", new: "Yeni", popular: "Popüler", forked: "Çok çatallanan", more: "Daha fazla yükle", loading: "Yükleniyor…", experts: (n: number) => `${n} uzman` },
-  en: { all: "All", lang: "Language", type: "Type", new: "Newest", popular: "Popular", forked: "Most forked", more: "Load more", loading: "Loading…", experts: (n: number) => `${n} experts` },
+  tr: {
+    all: "Tümü",
+    lang: "Dil",
+    type: "Tip",
+    new: "Yeni",
+    popular: "Popüler",
+    forked: "Çok çatallanan",
+    liked: "Beğenilen",
+    more: "Daha fazla yükle",
+    loading: "Yükleniyor…",
+    experts: (n: number) => `${n} uzman`,
+  },
+  en: {
+    all: "All",
+    lang: "Language",
+    type: "Type",
+    new: "Newest",
+    popular: "Popular",
+    forked: "Most forked",
+    liked: "Most liked",
+    more: "Load more",
+    loading: "Loading…",
+    experts: (n: number) => `${n} experts`,
+  },
 } as const;
 
 const PAGE_SIZE = 24;
@@ -31,6 +53,21 @@ export function ExploreGrid({
   const [sort, setSort] = useState<ExploreSort>("new");
   const [pending, startTransition] = useTransition();
   const [done, setDone] = useState(initialItems.length < PAGE_SIZE);
+  const [liked, setLiked] = useState<Set<string>>(new Set());
+  const checkedRef = useRef<Set<string>>(new Set());
+
+  // Which of the currently-shown items have I liked? Batched, logged-out users get an empty result silently.
+  useEffect(() => {
+    const unseen = items.map((it) => it.slug).filter((s) => !checkedRef.current.has(s));
+    if (unseen.length === 0) return;
+    unseen.forEach((s) => checkedRef.current.add(s));
+    fetch(`/api/explore/liked?slugs=${unseen.map(encodeURIComponent).join(",")}`)
+      .then((r) => r.json())
+      .then((slugs: string[]) => {
+        if (Array.isArray(slugs) && slugs.length) setLiked((prev) => new Set([...prev, ...slugs]));
+      })
+      .catch(() => {});
+  }, [items]);
 
   function query(extra: Record<string, string>) {
     const qs = new URLSearchParams();
@@ -60,6 +97,51 @@ export function ExploreGrid({
       setItems((prev) => [...prev, ...data]);
       setDone(data.length < PAGE_SIZE);
     });
+  }
+
+  function toggleLike(e: React.MouseEvent, slug: string) {
+    e.preventDefault();
+    e.stopPropagation();
+    const wasLiked = liked.has(slug);
+    setLiked((prev) => {
+      const next = new Set(prev);
+      if (wasLiked) next.delete(slug);
+      else next.add(slug);
+      return next;
+    });
+    setItems((prev) => prev.map((it) => (it.slug === slug ? { ...it, likes: Math.max(0, it.likes + (wasLiked ? -1 : 1)) } : it)));
+
+    fetch(`/api/explore/${encodeURIComponent(slug)}/like`, { method: "POST" })
+      .then(async (r) => {
+        if (r.status === 401) {
+          const next = encodeURIComponent(window.location.pathname + window.location.search);
+          window.location.href = `${lhref("/login", locale)}?next=${next}`;
+          return null;
+        }
+        if (!r.ok) return null;
+        return (await r.json()) as { liked: boolean; likes: number };
+      })
+      .then((res) => {
+        if (!res) {
+          // Revert on failure (401 redirect in flight, or owner/other error).
+          setLiked((prev) => {
+            const next = new Set(prev);
+            if (wasLiked) next.add(slug);
+            else next.delete(slug);
+            return next;
+          });
+          setItems((prev) => prev.map((it) => (it.slug === slug ? { ...it, likes: Math.max(0, it.likes + (wasLiked ? 1 : -1)) } : it)));
+          return;
+        }
+        setLiked((prev) => {
+          const next = new Set(prev);
+          if (res.liked) next.add(slug);
+          else next.delete(slug);
+          return next;
+        });
+        setItems((prev) => prev.map((it) => (it.slug === slug ? { ...it, likes: res.likes } : it)));
+      })
+      .catch(() => {});
   }
 
   return (
@@ -98,7 +180,7 @@ export function ExploreGrid({
           ))}
         </select>
         <div className="flex gap-1 ml-auto">
-          {(["new", "popular", "forked"] as const).map((s) => (
+          {(["new", "popular", "forked", "liked"] as const).map((s) => (
             <button
               key={s}
               type="button"
@@ -120,32 +202,43 @@ export function ExploreGrid({
         <p className="text-[14px] text-zinc-500 py-12 text-center max-w-[480px] mx-auto">{emptyText}</p>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {items.map((it) => (
-            <Link
-              key={it.slug}
-              href={`/p/${it.slug}`}
-              className="group rounded-2xl bg-ink-900 border border-ink-600 p-5 hover:border-lime/40 transition flex flex-col"
-            >
-              <div className="flex items-center gap-2 text-[11px] text-zinc-500 mb-2">
-                <span className="px-2 h-6 inline-flex items-center rounded-full bg-ink-800 border border-ink-600">{it.lang}</span>
-                <span className="px-2 h-6 inline-flex items-center rounded-full bg-ink-800 border border-ink-600">{it.format}</span>
-                {it.featured && (
-                  <span className="px-2 h-6 inline-flex items-center rounded-full bg-amber-500/15 text-amber-300 border border-amber-500/30">★</span>
-                )}
-              </div>
-              <h3 className="font-bold text-[15px] leading-snug group-hover:text-lime line-clamp-1">{it.name || "—"}</h3>
-              {it.pitch && <p className="mt-1.5 text-[13px] text-zinc-400 line-clamp-2 leading-relaxed">{it.pitch}</p>}
-              <div className="mt-auto pt-4 flex items-center gap-3 text-[11px] text-zinc-500">
-                <span className="inline-flex items-center gap-1">
-                  <Eye className="w-3 h-3" aria-hidden /> {it.views}
-                </span>
-                <span className="inline-flex items-center gap-1">
-                  <GitFork className="w-3 h-3" aria-hidden /> {it.forks}
-                </span>
-                <span className="ml-auto">{l.experts(it.experts.length)}</span>
-              </div>
-            </Link>
-          ))}
+          {items.map((it) => {
+            const isLiked = liked.has(it.slug);
+            return (
+              <Link
+                key={it.slug}
+                href={`/p/${it.slug}`}
+                className="group rounded-2xl bg-ink-900 border border-ink-600 p-5 hover:border-lime/40 transition flex flex-col"
+              >
+                <div className="flex items-center gap-2 text-[11px] text-zinc-500 mb-2">
+                  <span className="px-2 h-6 inline-flex items-center rounded-full bg-ink-800 border border-ink-600">{it.lang}</span>
+                  <span className="px-2 h-6 inline-flex items-center rounded-full bg-ink-800 border border-ink-600">{it.format}</span>
+                  {it.featured && (
+                    <span className="px-2 h-6 inline-flex items-center rounded-full bg-amber-500/15 text-amber-300 border border-amber-500/30">★</span>
+                  )}
+                </div>
+                <h3 className="font-bold text-[15px] leading-snug group-hover:text-lime line-clamp-1">{it.name || "—"}</h3>
+                {it.pitch && <p className="mt-1.5 text-[13px] text-zinc-400 line-clamp-2 leading-relaxed">{it.pitch}</p>}
+                <div className="mt-auto pt-4 flex items-center gap-3 text-[11px] text-zinc-500">
+                  <span className="inline-flex items-center gap-1">
+                    <Eye className="w-3 h-3" aria-hidden /> {it.views}
+                  </span>
+                  <span className="inline-flex items-center gap-1">
+                    <GitFork className="w-3 h-3" aria-hidden /> {it.forks}
+                  </span>
+                  <button
+                    type="button"
+                    onClick={(e) => toggleLike(e, it.slug)}
+                    className={`inline-flex items-center gap-1 transition ${isLiked ? "text-rose-400" : "hover:text-rose-300"}`}
+                    aria-pressed={isLiked}
+                  >
+                    <Heart className="w-3 h-3" fill={isLiked ? "currentColor" : "none"} aria-hidden /> {it.likes}
+                  </button>
+                  <span className="ml-auto">{l.experts(it.experts.length)}</span>
+                </div>
+              </Link>
+            );
+          })}
         </div>
       )}
 

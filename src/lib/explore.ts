@@ -1,7 +1,8 @@
 /**
  * Keşfet galerisi — herkese açık paylaşımların listesi (sahibi "Galeride göster"i açtıysa).
  * Anon anahtarla direkt Supabase istemcisi (RPC'ler security definer + kendi filtresiyle güvenli);
- * sunucu bileşenlerinde çağrılır — sitemap.ts'teki desenle aynı. supabase/migrations/0010_explore_feedback.sql.
+ * sunucu bileşenlerinde çağrılır — sitemap.ts'teki desenle aynı. supabase/migrations/0010_explore_feedback.sql,
+ * 0011_likes_leaderboard.sql (beğeniler + "Usta Canavarlar" lider tablosu).
  */
 import { createClient } from "@supabase/supabase-js";
 
@@ -15,6 +16,7 @@ export interface ExploreItem {
   experts: string[];
   views: number;
   forks: number;
+  likes: number;
   featured: boolean;
   created_at: string;
 }
@@ -24,11 +26,22 @@ export interface ExploreStats {
   tr: number;
   en: number;
   total_forks: number;
+  total_likes: number;
 }
 
-export type ExploreSort = "new" | "popular" | "forked";
+export type ExploreSort = "new" | "popular" | "forked" | "liked";
 
-const EMPTY_STATS: ExploreStats = { total: 0, tr: 0, en: 0, total_forks: 0 };
+const EMPTY_STATS: ExploreStats = { total: 0, tr: 0, en: 0, total_forks: 0, total_likes: 0 };
+
+export type LeaderboardWindow = "week" | "month" | "all";
+
+export interface LeaderboardEntry {
+  owner_id: string;
+  display_name: string;
+  window_likes: number;
+  total_forks: number;
+  share_count: number;
+}
 
 function anonClient() {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -49,7 +62,7 @@ export async function exploreList(opts: ExploreListOpts = {}): Promise<ExploreIt
   const supabase = anonClient();
   if (!supabase) return [];
   try {
-    const { data, error } = await supabase.rpc("explore_list", {
+    const { data, error } = await supabase.rpc("explore_list_v2", {
       p_lang: opts.lang ?? null,
       p_type: opts.type ?? null,
       p_sort: opts.sort ?? "new",
@@ -67,12 +80,25 @@ export async function exploreStats(): Promise<ExploreStats> {
   const supabase = anonClient();
   if (!supabase) return EMPTY_STATS;
   try {
-    const { data, error } = await supabase.rpc("explore_stats");
+    const { data, error } = await supabase.rpc("explore_stats_v2");
     if (error || !data) return EMPTY_STATS;
     const row = Array.isArray(data) ? data[0] : data;
     return (row as ExploreStats) ?? EMPTY_STATS;
   } catch {
     return EMPTY_STATS;
+  }
+}
+
+/** "Usta Canavarlar" lider tablosu: pencere içinde ALINAN beğeniye göre katkıcı sırası. */
+export async function leaderboardCreators(window: LeaderboardWindow = "all", limit = 20): Promise<LeaderboardEntry[]> {
+  const supabase = anonClient();
+  if (!supabase) return [];
+  try {
+    const { data, error } = await supabase.rpc("leaderboard_creators", { p_window: window, p_limit: limit });
+    if (error || !data) return [];
+    return data as LeaderboardEntry[];
+  } catch {
+    return [];
   }
 }
 

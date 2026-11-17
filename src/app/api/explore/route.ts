@@ -3,7 +3,7 @@ import { exploreList, type ExploreSort } from "@/lib/explore";
 
 export const runtime = "nodejs";
 
-const SORTS: ExploreSort[] = ["new", "popular", "forked"];
+const SORTS: ExploreSort[] = ["new", "popular", "forked", "liked"];
 
 /** Public: paginated Explore gallery list, consumed by ExploreGrid's filters/"load more". */
 export async function GET(req: Request) {
