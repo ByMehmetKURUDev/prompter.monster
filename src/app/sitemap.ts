@@ -4,6 +4,7 @@ import { loadCatalog } from "@/lib/catalog-server";
 import { ALL_PROJECT_TYPES } from "@/lib/data";
 import { TYPE_PAGES, TYPE_PAGES_EN } from "@/lib/seo-types";
 import { LEGAL_SLUGS, LEGAL_UPDATED } from "@/lib/legal/types";
+import { profileSitemapUsernames } from "@/lib/profile";
 
 // Served on demand: the Workers deployment has no incremental cache, so ISR would freeze the list at build time.
 export const dynamic = "force-dynamic";
@@ -51,5 +52,17 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       /* sitemap still works without the shared pages */
     }
   }
+
+  // Herkese açık canavar profilleri (en az bir galeri paylaşımı olanlar) — TR + EN.
+  try {
+    const usernames = await profileSitemapUsernames(2000);
+    for (const username of usernames) {
+      entries.push({ url: `${site}/u/${username}`, lastModified: now, changeFrequency: "weekly", priority: 0.5 });
+      entries.push({ url: `${site}/en/u/${username}`, lastModified: now, changeFrequency: "weekly", priority: 0.4 });
+    }
+  } catch {
+    /* sitemap still works without profile pages */
+  }
+
   return entries;
 }

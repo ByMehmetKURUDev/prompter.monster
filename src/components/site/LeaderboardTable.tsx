@@ -1,8 +1,9 @@
 "use client";
 
+import Link from "next/link";
 import { useState, useTransition } from "react";
 import { GitFork, Heart, Loader2, Share2, Trophy } from "lucide-react";
-import type { Locale } from "@/lib/i18n";
+import { lhref, type Locale } from "@/lib/i18n";
 import type { LeaderboardEntry, LeaderboardWindow } from "@/lib/explore";
 
 const LABELS = {
@@ -70,7 +71,9 @@ export function LeaderboardTable({ initialEntries, locale }: { initialEntries: L
             {entries.map((e, i) => (
               <li key={e.owner_id} className="flex items-center gap-4 px-5 py-4">
                 <span className="w-8 text-center text-[15px] font-bold text-zinc-500 shrink-0">{MEDALS[i] ?? `#${i + 1}`}</span>
-                <span className="font-bold text-[14px] truncate flex-1">{e.display_name}</span>
+                <Link href={lhref(`/u/${e.username}`, locale)} className="font-bold text-[14px] truncate flex-1 hover:text-lime">
+                  {e.display_name}
+                </Link>
                 <span className="text-[12px] text-zinc-500 inline-flex items-center gap-1 shrink-0">
                   <Share2 className="w-3 h-3" aria-hidden /> {l.shares(e.share_count)}
                 </span>

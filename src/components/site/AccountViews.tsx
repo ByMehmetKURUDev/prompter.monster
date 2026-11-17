@@ -3,6 +3,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { AccountDanger } from "@/components/account/AccountDanger";
 import { ApiKeysPanel, type KeyItem } from "@/components/account/ApiKeysPanel";
+import { UsernameEditor } from "@/components/account/UsernameEditor";
 import { LoginForm } from "@/components/auth/LoginForm";
 import { PasswordForm } from "@/components/auth/PasswordForm";
 import { LibraryList } from "@/components/library/LibraryList";
@@ -40,6 +41,7 @@ const COPY = {
     accountText: "Planın, kullanımın ve verilerin tek yerde.",
     email: "E-posta",
     memberSince: "Üyelik",
+    username: "Kullanıcı adı",
     manage: "Aboneliği yönet",
     subStatus: (st: string, end: string | null) => `Abonelik: ${st}${end ? ` · ${end}` : ""}`,
     usage: "Kullanım",
@@ -77,6 +79,7 @@ const COPY = {
     accountText: "Your plan, usage and data in one place.",
     email: "Email",
     memberSince: "Member since",
+    username: "Username",
     manage: "Manage subscription",
     subStatus: (st: string, end: string | null) => `Subscription: ${st}${end ? ` · ${end}` : ""}`,
     usage: "Usage",
@@ -300,7 +303,11 @@ export async function AccountPageView({ locale }: { locale: Locale }) {
 
   const count = async (table: string) => (await supabase.from(table).select("*", { count: "exact", head: true }).eq("owner_id", user.id)).count ?? 0;
   const [{ data: prof }, usage, { data: sub }, projects, versions, shares, keys] = await Promise.all([
-    supabase.from("profiles").select("plan,role,created_at").eq("id", user.id).maybeSingle<{ plan: string; role: string; created_at: string }>(),
+    supabase
+      .from("profiles")
+      .select("plan,role,created_at,username")
+      .eq("id", user.id)
+      .maybeSingle<{ plan: string; role: string; created_at: string; username: string | null }>(),
     supabase
       .rpc("ai_usage_today")
       .single<{ used: number; limit: number; plan: string; month_used: number | null; month_limit: number | null }>()
@@ -360,7 +367,7 @@ export async function AccountPageView({ locale }: { locale: Locale }) {
         </div>
 
         <section className="rounded-2xl bg-ink-800 border border-ink-600 p-5 flex flex-col md:flex-row md:items-center gap-4">
-          <div className="min-w-0 flex-1 grid sm:grid-cols-3 gap-4 text-[13px]">
+          <div className="min-w-0 flex-1 grid sm:grid-cols-2 md:grid-cols-4 gap-4 text-[13px]">
             <div className="min-w-0">
               <div className="text-[11px] tracking-widest text-zinc-500 font-semibold">{c.email.toUpperCase()}</div>
               <div className="mt-1 truncate">{user.email}</div>
@@ -375,6 +382,12 @@ export async function AccountPageView({ locale }: { locale: Locale }) {
                 <Crown className="w-4 h-4 text-lime" aria-hidden /> {plan === "pro" ? "Monster Pro" : "Free"}
               </div>
               {sub && <div className="mt-1 text-[11px] text-zinc-500">{c.subStatus(sub.status, sub.current_period_end ? fmt(sub.current_period_end) : null)}</div>}
+            </div>
+            <div className="min-w-0">
+              <div className="text-[11px] tracking-widest text-zinc-500 font-semibold">{c.username.toUpperCase()}</div>
+              <div className="mt-1">
+                <UsernameEditor initialUsername={prof?.username ?? null} locale={locale} />
+              </div>
             </div>
           </div>
           {sub ? (

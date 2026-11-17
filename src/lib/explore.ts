@@ -2,7 +2,7 @@
  * Keşfet galerisi — herkese açık paylaşımların listesi (sahibi "Galeride göster"i açtıysa).
  * Anon anahtarla direkt Supabase istemcisi (RPC'ler security definer + kendi filtresiyle güvenli);
  * sunucu bileşenlerinde çağrılır — sitemap.ts'teki desenle aynı. supabase/migrations/0010_explore_feedback.sql,
- * 0011_likes_leaderboard.sql (beğeniler + "Usta Canavarlar" lider tablosu).
+ * 0011_likes_leaderboard.sql (beğeniler + "Usta Canavarlar" lider tablosu), 0012_public_profiles.sql (profil linki için username).
  */
 import { createClient } from "@supabase/supabase-js";
 
@@ -37,6 +37,7 @@ export type LeaderboardWindow = "week" | "month" | "all";
 
 export interface LeaderboardEntry {
   owner_id: string;
+  username: string;
   display_name: string;
   window_likes: number;
   total_forks: number;
@@ -94,7 +95,7 @@ export async function leaderboardCreators(window: LeaderboardWindow = "all", lim
   const supabase = anonClient();
   if (!supabase) return [];
   try {
-    const { data, error } = await supabase.rpc("leaderboard_creators", { p_window: window, p_limit: limit });
+    const { data, error } = await supabase.rpc("leaderboard_creators_v2", { p_window: window, p_limit: limit });
     if (error || !data) return [];
     return data as LeaderboardEntry[];
   } catch {
