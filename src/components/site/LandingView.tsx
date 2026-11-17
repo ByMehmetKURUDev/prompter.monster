@@ -6,6 +6,7 @@ import { pagesByCategory } from "@/lib/seo";
 import { DEFAULT_PUBLIC } from "@/lib/settings";
 import { LanguageSwitch } from "./LanguageSwitch";
 import { LegalLinks } from "./LegalLinks";
+import { StarterKitsSection } from "./StarterKitsSection";
 
 const D = DEFAULT_PUBLIC();
 
@@ -210,6 +211,12 @@ export function LandingView({ locale }: { locale: Locale }) {
           ))}
         </div>
       </section>
+
+      {/* Canlı başlangıç kitleri — ayrı istemci bileşeni, kendi API rotasından taze veri çeker.
+          Ana sayfayı statik tutmak için (bkz. src/app/api/explore/starter-kits/route.ts ve
+          StarterKitsSection.tsx) — Cloudflare/OpenNext tarafında ISR incremental-cache yapılandırılı
+          olmadığından server-side revalidate burada gerçek tazelik sağlamazdı. */}
+      <StarterKitsSection locale={locale} />
 
       {/* Mega chain */}
       <section className="max-w-[1100px] mx-auto px-4 lg:px-8 py-16">
