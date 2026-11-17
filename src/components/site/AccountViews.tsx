@@ -3,6 +3,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { AccountDanger } from "@/components/account/AccountDanger";
 import { ApiKeysPanel, type KeyItem } from "@/components/account/ApiKeysPanel";
+import { ReferralPanel } from "@/components/account/ReferralPanel";
 import { UsernameEditor } from "@/components/account/UsernameEditor";
 import { LoginForm } from "@/components/auth/LoginForm";
 import { PasswordForm } from "@/components/auth/PasswordForm";
@@ -302,7 +303,7 @@ export async function AccountPageView({ locale }: { locale: Locale }) {
   if (!user) redirect(`${lhref("/login", locale)}?next=${encodeURIComponent(lhref("/account", locale))}`);
 
   const count = async (table: string) => (await supabase.from(table).select("*", { count: "exact", head: true }).eq("owner_id", user.id)).count ?? 0;
-  const [{ data: prof }, usage, { data: sub }, projects, versions, shares, keys] = await Promise.all([
+  const [{ data: prof }, usage, referral, { data: sub }, projects, versions, shares, keys] = await Promise.all([
     supabase
       .from("profiles")
       .select("plan,role,created_at,username")
@@ -311,6 +312,10 @@ export async function AccountPageView({ locale }: { locale: Locale }) {
     supabase
       .rpc("ai_usage_today")
       .single<{ used: number; limit: number; plan: string; month_used: number | null; month_limit: number | null }>()
+      .then((r) => r.data),
+    supabase
+      .rpc("my_referral_stats")
+      .maybeSingle<{ username: string; invited_signups: number; invited_confirmed: number; bonus_ai_credits: number; bonus_per_referral: number }>()
       .then((r) => r.data),
     supabase
       .from("subscriptions")
@@ -412,6 +417,17 @@ export async function AccountPageView({ locale }: { locale: Locale }) {
             {stat(c.keys, keys)}
           </div>
         </section>
+
+        {referral?.username && (
+          <ReferralPanel
+            locale={locale}
+            username={referral.username}
+            invitedSignups={referral.invited_signups ?? 0}
+            invitedConfirmed={referral.invited_confirmed ?? 0}
+            bonusCredits={referral.bonus_ai_credits ?? 0}
+            bonusPerReferral={referral.bonus_per_referral ?? 5}
+          />
+        )}
 
         <section className="rounded-2xl bg-ink-800 border border-ink-600 p-5">
           <h2 className="text-[11px] tracking-widest text-zinc-500 font-semibold mb-3">{c.shortcuts.toUpperCase()}</h2>

@@ -1,16 +1,23 @@
 /**
  * Channel attribution (server + client safe, no Node APIs).
  *
- * - pm_code : discount code from a link like prompter.monster/?code=PH40 (30 days) → applied at checkout.
- * - pm_src  : first-touch campaign source (utm_source/ref/via, medium, campaign, external referrer host,
- *             landing path, date) — 90 days, no personal data. Stored on the profile at sign-up so the
- *             admin "Kanallar" page can show sign-ups and Pro conversions per channel.
+ * - pm_code   : discount code from a link like prompter.monster/?code=PH40 (30 days) → applied at checkout.
+ * - pm_src    : first-touch campaign source (utm_source/ref/via, medium, campaign, external referrer host,
+ *               landing path, date) — 90 days, no personal data. Stored on the profile at sign-up so the
+ *               admin "Kanallar" page can show sign-ups and Pro conversions per channel.
+ * - pm_invite : referring user's @username from a link like prompter.monster/?invite=alice (30 days,
+ *               first-touch). Deliberately a separate param from ref/via/code — those already fold into
+ *               the generic channel field (see sourceFromRequest below) and would swallow a personal
+ *               referral into "channel: alice" instead of a resolvable profile. Resolved server-side
+ *               (handle_new_user trigger) into profiles.referred_by — see migration 0016_referral.sql.
  */
 
 export const ATTR_CODE_COOKIE = "pm_code";
 export const ATTR_SOURCE_COOKIE = "pm_src";
+export const ATTR_INVITE_COOKIE = "pm_invite";
 export const CODE_MAX_AGE = 60 * 60 * 24 * 30;
 export const SOURCE_MAX_AGE = 60 * 60 * 24 * 90;
+export const INVITE_MAX_AGE = 60 * 60 * 24 * 30;
 
 export interface SignupSource {
   /** utm_source / ref / via (e.g. producthunt, youtube-selma) */
@@ -27,12 +34,26 @@ export interface SignupSource {
   t?: string;
   /** discount code, when one was used */
   code?: string;
+  /** referring user's @username, from ?invite=<username> (see pm_invite above) */
+  inv?: string;
 }
 
 export function sanitizeCode(v: string | null | undefined): string | null {
   if (!v) return null;
   const t = v.trim();
   return /^[A-Za-z0-9_-]{2,32}$/.test(t) ? t.toUpperCase() : null;
+}
+
+/** Slugifies a raw ?invite= value the same way the DB's _slugify() does, for a clean username match. */
+export function sanitizeInvite(v: string | null | undefined): string | null {
+  if (!v) return null;
+  const t = v
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/(^-+)|(-+$)/g, "")
+    .slice(0, 40);
+  return t || null;
 }
 
 function token(v: string | null | undefined, max = 60): string | undefined {
@@ -121,10 +142,11 @@ export function readClientCookie(name: string): string | null {
   return hit ? decodeURIComponent(hit.slice(name.length + 1)) : null;
 }
 
-/** Source + code for the sign-up metadata (client side). */
+/** Source + code + referral invite for the sign-up metadata (client side). */
 export function clientSignupSource(): SignupSource | null {
   const src = parseSourceCookie(readClientCookie(ATTR_SOURCE_COOKIE));
   const code = sanitizeCode(readClientCookie(ATTR_CODE_COOKIE));
-  if (!src && !code) return null;
-  return { ...(src ?? {}), ...(code ? { code } : {}) };
+  const inv = sanitizeInvite(readClientCookie(ATTR_INVITE_COOKIE));
+  if (!src && !code && !inv) return null;
+  return { ...(src ?? {}), ...(code ? { code } : {}), ...(inv ? { inv } : {}) };
 }

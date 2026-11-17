@@ -1,6 +1,17 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { LOCALE_COOKIE, enReady, localePath, stripLocale } from "@/lib/i18n";
-import { ATTR_CODE_COOKIE, ATTR_SOURCE_COOKIE, CODE_MAX_AGE, SOURCE_MAX_AGE, sanitizeCode, serializeSource, sourceFromRequest } from "@/lib/attribution";
+import {
+  ATTR_CODE_COOKIE,
+  ATTR_INVITE_COOKIE,
+  ATTR_SOURCE_COOKIE,
+  CODE_MAX_AGE,
+  INVITE_MAX_AGE,
+  SOURCE_MAX_AGE,
+  sanitizeCode,
+  sanitizeInvite,
+  serializeSource,
+  sourceFromRequest,
+} from "@/lib/attribution";
 import { updateSession } from "@/lib/supabase/middleware";
 
 export async function middleware(request: NextRequest) {
@@ -49,6 +60,12 @@ function applyAttribution(request: NextRequest, response: NextResponse) {
   const secure = request.nextUrl.protocol === "https:";
   const code = sanitizeCode(request.nextUrl.searchParams.get("code") || request.nextUrl.searchParams.get("promo"));
   if (code) response.cookies.set(ATTR_CODE_COOKIE, code, { path: "/", maxAge: CODE_MAX_AGE, sameSite: "lax", secure });
+
+  // Arkadaşını getir: ?invite=<username> — ilk görülen davet linki kalıcı olur (sonraki gezinmeler ezmez).
+  if (!request.cookies.has(ATTR_INVITE_COOKIE)) {
+    const inv = sanitizeInvite(request.nextUrl.searchParams.get("invite"));
+    if (inv) response.cookies.set(ATTR_INVITE_COOKIE, inv, { path: "/", maxAge: INVITE_MAX_AGE, sameSite: "lax", secure });
+  }
 
   if (!request.cookies.has(ATTR_SOURCE_COOKIE)) {
     const src = sourceFromRequest(request.nextUrl, request.headers.get("referer"));
