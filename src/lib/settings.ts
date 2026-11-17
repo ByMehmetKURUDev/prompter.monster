@@ -48,12 +48,17 @@ export const SETTINGS_REGISTRY: SettingDef[] = [
   { key: "credit_cost_enhance", label: "Kredi — açıklamayı güçlendir", description: "Enhance işleminin kredi maliyeti.", type: "number", default: 1, group: "Krediler", isPublic: true, since: "2026-09-26", min: 1, max: 50 },
   { key: "credit_cost_suggest", label: "Kredi — stack öner", description: "Stack önerisinin kredi maliyeti.", type: "number", default: 1, group: "Krediler", isPublic: true, since: "2026-09-26", min: 1, max: 50 },
   { key: "credit_cost_refine", label: "Kredi — promptu iyileştir", description: "İyileştir işleminin kredi maliyeti (en uzun yanıt; en pahalı işlem).", type: "number", default: 3, group: "Krediler", isPublic: true, since: "2026-09-26", min: 1, max: 50 },
+  { key: "referral_bonus_credits", label: "Arkadaşını getir — bonus kredi", description: "Davetle gelen kullanıcı ilk AI eylemini yaptığında hem ona hem davet edene bir kez verilen bonus kredi. Bonus, normal günlük/aylık kota bitince harcanır ve süresi dolmaz; başarısız çağrıda iade edilir. 0 = ödül kapalı.", type: "number", default: 5, group: "Krediler", since: "2026-11-17", min: 0, max: 1000 },
+  { key: "referral_max_rewards", label: "Arkadaşını getir — davet eden için en fazla ödül", description: "Bir kullanıcının davetlerinden en fazla kaç kez bonus kazanabileceği (sahte hesap çiftliklerine karşı tavan). Davet edilen kişi her durumda kendi bonusunu alır.", type: "number", default: 25, group: "Krediler", since: "2026-11-17", min: 0, max: 10000 },
 
   // Entegrasyon (public API + MCP sunucusu)
   { key: "api_enabled", label: "Public API (/api/v1)", description: "Kapalıyken /api/v1 uçları 503 döner. Anahtar yönetimi açık kalır.", type: "boolean", default: true, group: "Entegrasyon", isPublic: true, since: "2026-09-26" },
   { key: "mcp_enabled", label: "MCP sunucusu (/api/mcp)", description: "Claude Code, Cursor, Claude Desktop gibi MCP istemcileri için uzak sunucu. Kapalıyken 503 döner.", type: "boolean", default: true, group: "Entegrasyon", isPublic: true, since: "2026-09-26" },
   { key: "api_rate_per_minute", label: "API anahtarı — dakikalık istek", description: "Anahtar başına dakikada izin verilen istek (API + MCP toplam).", type: "number", default: 30, group: "Entegrasyon", since: "2026-09-26", min: 1, max: 1000 },
   { key: "api_anon_rate_per_minute", label: "Anahtarsız — dakikalık istek", description: "Anahtarsız (IP başına) dakikalık istek; yalnız ücretsiz araçlar (tip listesi, prompt üretimi Free sınırlarıyla).", type: "number", default: 10, group: "Entegrasyon", since: "2026-09-26", min: 0, max: 1000 },
+
+  // Planlar
+  { key: "team_default_seats", label: "Takım — varsayılan koltuk", description: "Yeni kurulan takımların koltuk sayısı (üyeler + bekleyen davetler). Takım başına koltuk Admin → Takımlar'dan değiştirilir.", type: "number", default: 5, group: "Planlar", since: "2026-11-17", min: 1, max: 1000 },
 
   // Ödeme
   { key: "checkout_enabled", label: "Pro satın alma", description: "Kapalıyken /pricing'de 'Pro'ya geç' yerine 'yakında' görünür (mağaza bakımı, canlı moda geçiş anı).", type: "boolean", default: true, group: "Ödeme", isPublic: true, since: "2026-09-26" },

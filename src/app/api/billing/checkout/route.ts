@@ -29,6 +29,9 @@ export async function POST(req: Request) {
 
   const { data: profile } = await supabase.from("profiles").select("plan").eq("id", user.id).maybeSingle();
   if (profile?.plan === "pro") return NextResponse.json({ error: "Zaten Pro plandasın.", code: "already_pro" }, { status: 409 });
+  // Pro through an active team (effective_plan, migration 0017) — don't let a team member pay twice.
+  const { data: usage } = await supabase.rpc("ai_usage_today").maybeSingle<{ plan: string }>();
+  if (usage?.plan === "pro") return NextResponse.json({ error: "Takımın üzerinden zaten Pro'sun.", code: "already_pro" }, { status: 409 });
 
   // Discount code: explicit request body > ?code= link cookie > admin launch coupon.
   const jar = await cookies();

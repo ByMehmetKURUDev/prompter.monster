@@ -1,6 +1,6 @@
 import { cookies } from "next/headers";
 import Link from "next/link";
-import { BadgePercent, Check, Minus } from "lucide-react";
+import { BadgePercent, Check, Minus, Users } from "lucide-react";
 import { ProCta } from "@/components/billing/ProCta";
 import { ATTR_CODE_COOKIE, sanitizeCode } from "@/lib/attribution";
 import { lhref, type Locale } from "@/lib/i18n";
@@ -43,6 +43,7 @@ export async function PricingView({ locale }: { locale: Locale }) {
   const proModel = modelLabel(String(s.ai_model_pro || "claude-sonnet-5"));
   const freeModel = modelLabel(String(s.ai_model_free || "claude-haiku-4-5"));
   const refinesPerMonth = Math.floor(month / Math.max(1, cost.refine));
+  const contact = String(s.legal_email || "hello@prompter.monster");
   const tr = locale === "tr";
 
   const c = tr
@@ -60,6 +61,11 @@ export async function PricingView({ locale }: { locale: Locale }) {
         secure: "Güvenli ödeme: Lemon Squeezy (Merchant of Record, KDV dahil fatura)",
         refund: "14 gün koşulsuz iade",
         coupon: (k: string) => `${k} kodu ödeme sayfasında otomatik uygulanır`,
+        teamTitle: "Takımlar için",
+        teamText: "Ekibinin her üyesine Monster Pro: koltuklar ve davetler tek yerden yönetilir. Kurumsal/faturalı ödeme desteklenir.",
+        teamList: ["Her üyeye Pro özellikleri (18 uzman, Mega Chain, 5 format)", "Davet linkiyle saniyeler içinde üye ekle", "Sahip ve yönetici rolleri, sahiplik devri", "Üye başına aylık AI kredisi kullanımı"],
+        teamCta: "Takımını kur",
+        teamNote: (mail: string) => `Takımını şimdi kurup üyelerini davet edebilirsin; koltuk fiyatı ve aktivasyon için ${mail} adresine yaz.`,
         creditsTitle: "Krediler nasıl çalışır?",
         creditsIntro: "Prompt üretimi (şablon motoru) her planda sınırsız ve ücretsizdir. Kredi yalnızca Claude'a giden düğmelerde harcanır:",
         actions: [
@@ -107,6 +113,11 @@ export async function PricingView({ locale }: { locale: Locale }) {
         secure: "Secure checkout: Lemon Squeezy (merchant of record, VAT invoice)",
         refund: "14-day no-questions-asked refund",
         coupon: (k: string) => `Code ${k} is applied automatically at checkout`,
+        teamTitle: "For teams",
+        teamText: "Monster Pro for everyone on your team: seats and invites managed in one place. Invoiced/company billing supported.",
+        teamList: ["Pro features for every member (18 experts, Mega Chain, 5 formats)", "Add members in seconds with an invite link", "Owner and admin roles, ownership transfer", "Monthly AI credit usage per member"],
+        teamCta: "Set up your team",
+        teamNote: (mail: string) => `Create your team and invite members now; for seat pricing and activation, email ${mail}.`,
         creditsTitle: "How credits work",
         creditsIntro: "Prompt generation (the template engine) is unlimited and free on every plan. Credits are only spent on buttons that call Claude:",
         actions: [
@@ -206,6 +217,26 @@ export async function PricingView({ locale }: { locale: Locale }) {
             </div>
           </div>
         </div>
+
+        <section id="team" className="mt-4 max-w-[820px] mx-auto rounded-2xl bg-ink-800 border border-ink-600 p-6 flex flex-col md:flex-row md:items-center gap-5 scroll-mt-20">
+          <div className="min-w-0 flex-1">
+            <div className="text-[12px] font-bold tracking-widest text-violet flex items-center gap-1.5">
+              <Users className="w-4 h-4" aria-hidden /> {c.teamTitle.toUpperCase()}
+            </div>
+            <p className="mt-2 text-[13px] text-zinc-300 leading-relaxed">{c.teamText}</p>
+            <ul className="mt-3 grid sm:grid-cols-2 gap-x-4 gap-y-1.5 text-[12.5px]">
+              {c.teamList.map((f) => (
+                <li key={f} className="flex items-center gap-2 text-zinc-400">
+                  <Check className="w-3.5 h-3.5 text-violet shrink-0" aria-hidden /> {f}
+                </li>
+              ))}
+            </ul>
+            <p className="mt-3 text-[11.5px] text-zinc-500">{c.teamNote(contact)}</p>
+          </div>
+          <Link href={`${lhref("/account", locale)}#team`} className="h-11 px-5 rounded-xl bg-ink-950 border border-violet/50 text-[13px] font-semibold flex items-center justify-center shrink-0">
+            {c.teamCta}
+          </Link>
+        </section>
 
         <section className="mt-16 max-w-[820px] mx-auto rounded-2xl bg-ink-900 border border-ink-600 p-6">
           <h2 className="text-xl font-bold tracking-tight">{c.creditsTitle}</h2>

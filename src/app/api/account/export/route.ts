@@ -18,7 +18,7 @@ export async function GET() {
   if (!user) return NextResponse.json({ error: "unauthenticated" }, { status: 401 });
 
   const uid = user.id;
-  const [profile, projects, generations, shares, subscriptions, keys, usage, feedback] = await Promise.all([
+  const [profile, projects, generations, shares, subscriptions, keys, usage, feedback, team] = await Promise.all([
     supabase.from("profiles").select("email,plan,created_at,signup_source,pro_interest_at").eq("id", uid).maybeSingle(),
     supabase.from("projects").select("id,name,project_type,state,created_at,updated_at").eq("owner_id", uid).order("created_at"),
     supabase.from("generations").select("id,project_id,version,format,lang,experts,output,refined,token_estimate,created_at").eq("owner_id", uid).order("created_at"),
@@ -27,12 +27,13 @@ export async function GET() {
     supabase.from("api_keys").select(KEY_COLUMNS).eq("owner_id", uid).order("created_at"),
     supabase.from("ai_usage").select("endpoint,credits,model,plan,status,source,input_tokens,output_tokens,created_at").eq("owner_id", uid).order("created_at").limit(20000),
     supabase.from("feedback").select("kind,rating,note,project_type,format,lang,created_at").eq("owner_id", uid).order("created_at"),
+    supabase.rpc("my_team").maybeSingle<{ name: string; status: string; my_role: string; seats: number; created_at: string }>(),
   ]);
 
   const body = {
     exported_at: new Date().toISOString(),
     service: "Prompt.Monster (https://prompter.monster)",
-    note: "Your account data: profile, projects (Studio state), every generated version, share links, subscriptions, API keys (metadata only, never the secret) and AI usage records.",
+    note: "Your account data: profile, projects (Studio state), every generated version, share links, subscriptions, API keys (metadata only, never the secret), AI usage records and your team membership.",
     account: { id: uid, email: user.email ?? null, created_at: user.created_at, last_sign_in_at: user.last_sign_in_at ?? null, ...(profile.data ?? {}) },
     projects: projects.data ?? [],
     generations: generations.data ?? [],
@@ -41,6 +42,7 @@ export async function GET() {
     api_keys: keys.data ?? [],
     ai_usage: usage.data ?? [],
     feedback: feedback.error ? [] : (feedback.data ?? []),
+    team: team.error || !team.data ? null : { name: team.data.name, status: team.data.status, role: team.data.my_role, seats: team.data.seats, created_at: team.data.created_at },
   };
 
   const day = new Date().toISOString().slice(0, 10);

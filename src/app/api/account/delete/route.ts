@@ -20,12 +20,17 @@ const MSG: Record<string, Record<Lang, string>> = {
     en: "We couldn't cancel your active subscription. Cancel it from the Plan page first, then try again.",
   },
   failed: { tr: "Hesap silinemedi, tekrar dene.", en: "The account couldn't be deleted, please try again." },
+  team_owner: {
+    tr: "Başka üyeleri olan bir takımın sahibisin. Önce Hesabım → Takım bölümünden sahipliği bir üyeye devret (ya da üyeleri çıkar), sonra tekrar dene.",
+    en: "You own a team that has other members. Transfer ownership to a member (or remove the members) under My account → Team first, then try again.",
+  },
 };
 
 /**
  * POST /api/account/delete { confirm: "SİL" | "DELETE" } — permanently deletes the signed-in account.
  * Cancels an active Lemon Squeezy subscription first, then deletes the auth user; profiles, projects, versions,
- * share links, subscriptions and API keys cascade, AI usage rows are kept without the owner (anonymous statistics).
+ * share links, subscriptions, API keys and team memberships cascade (a team the user owns alone goes with it;
+ * owners of a team with other members must transfer it first), AI usage rows are kept without the owner.
  */
 export async function POST(req: Request) {
   const lang: Lang = req.headers.get("x-pm-locale") === "en" ? "en" : "tr";
@@ -44,6 +49,13 @@ export async function POST(req: Request) {
   const admin = createAdminClient();
   const { data: prof } = await admin.from("profiles").select("role").eq("id", user.id).maybeSingle<{ role: string }>();
   if (prof?.role === "admin") return fail("admin", 403);
+
+  // Deleting a team owner cascades the whole team (0017_teams.sql): don't pull it from under other members.
+  const { data: owned } = await admin.from("teams").select("id").eq("owner_id", user.id);
+  for (const t of (owned ?? []) as { id: string }[]) {
+    const { count } = await admin.from("team_members").select("user_id", { count: "exact", head: true }).eq("team_id", t.id);
+    if ((count ?? 0) > 1) return fail("team_owner", 409);
+  }
 
   // Stop renewals before the rows (and our link to the subscription) disappear.
   const { data: subs } = await admin.from("subscriptions").select("provider,provider_ref,status").eq("owner_id", user.id);

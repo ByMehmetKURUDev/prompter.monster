@@ -7,7 +7,8 @@ import type { Locale } from "@/lib/i18n";
 const COPY = {
   tr: {
     title: "Arkadaşını getir",
-    desc: (n: number) => `Arkadaşın linkle gelip ilk AI eylemini (iyileştir/öner) kullandığında ikiniz de +${n} bonus AI kredisi kazanır.`,
+    desc: (n: number) =>
+      `Arkadaşın linkle gelip ilk AI eylemini (iyileştir/öner) kullandığında ikiniz de +${n} bonus AI kredisi kazanır. Bonus krediler normal kotan bitince harcanır ve süresi dolmaz.`,
     copy: "Kopyala",
     copied: "Kopyalandı",
     invited: (n: number) => `${n} kayıt`,
@@ -16,7 +17,8 @@ const COPY = {
   },
   en: {
     title: "Refer a friend",
-    desc: (n: number) => `When a friend follows your link and uses their first AI action (refine/suggest), you both get +${n} bonus AI credits.`,
+    desc: (n: number) =>
+      `When a friend follows your link and uses their first AI action (refine/suggest), you both get +${n} bonus AI credits. Bonus credits are spent after your regular allowance runs out and never expire.`,
     copy: "Copy",
     copied: "Copied",
     invited: (n: number) => `${n} signed up`,

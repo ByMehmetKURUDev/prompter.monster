@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import { AccountDanger } from "@/components/account/AccountDanger";
 import { ApiKeysPanel, type KeyItem } from "@/components/account/ApiKeysPanel";
 import { ReferralPanel } from "@/components/account/ReferralPanel";
+import { TeamPanel } from "@/components/account/TeamPanel";
 import { UsernameEditor } from "@/components/account/UsernameEditor";
 import { LoginForm } from "@/components/auth/LoginForm";
 import { PasswordForm } from "@/components/auth/PasswordForm";
@@ -14,6 +15,7 @@ import type { ProjectSummary } from "@/lib/db";
 import { limitsFor } from "@/lib/plans";
 import { readServerSettings } from "@/lib/settings-server";
 import { lhref, type Locale } from "@/lib/i18n";
+import type { MyTeam, TeamInvite, TeamMember } from "@/lib/team";
 import { createClient, supabaseConfigured } from "@/lib/supabase/server";
 import { LanguageSwitch } from "./LanguageSwitch";
 
@@ -45,6 +47,7 @@ const COPY = {
     username: "Kullanıcı adı",
     manage: "Aboneliği yönet",
     subStatus: (st: string, end: string | null) => `Abonelik: ${st}${end ? ` · ${end}` : ""}`,
+    viaTeam: (team: string) => `Takım üzerinden: ${team}`,
     usage: "Kullanım",
     today: "Bugünkü AI kredisi",
     month: "Bu ayki AI kredisi",
@@ -83,6 +86,7 @@ const COPY = {
     username: "Username",
     manage: "Manage subscription",
     subStatus: (st: string, end: string | null) => `Subscription: ${st}${end ? ` · ${end}` : ""}`,
+    viaTeam: (team: string) => `Through your team: ${team}`,
     usage: "Usage",
     today: "AI credits today",
     month: "AI credits this month",
@@ -227,12 +231,13 @@ export async function ApiAccountView({ locale }: { locale: Locale }) {
   } = await supabase.auth.getUser();
   if (!user) redirect(`${lhref("/login", locale)}?next=${encodeURIComponent(lhref("/account/api", locale))}`);
 
-  const [{ data: keys }, { data: prof }, s] = await Promise.all([
+  // Effective plan (personal Pro OR an active team) — the same source the API/MCP key resolution uses.
+  const [{ data: keys }, { data: usage }, s] = await Promise.all([
     supabase.from("api_keys").select(KEY_COLUMNS).eq("owner_id", user.id).order("created_at", { ascending: false }).limit(50),
-    supabase.from("profiles").select("plan").eq("id", user.id).maybeSingle<{ plan: string }>(),
+    supabase.rpc("ai_usage_today").maybeSingle<{ plan: string }>(),
     readServerSettings(),
   ]);
-  const plan = prof?.plan === "pro" ? "pro" : "free";
+  const plan = usage?.plan === "pro" ? "pro" : "free";
   const limits = limitsFor(plan);
   const perDay = Number(plan === "pro" ? s.pro_credits_per_day : s.free_credits_per_day);
   const perMonth = plan === "pro" ? Number(s.pro_credits_per_month) : null;
@@ -303,6 +308,16 @@ export async function AccountPageView({ locale }: { locale: Locale }) {
   if (!user) redirect(`${lhref("/login", locale)}?next=${encodeURIComponent(lhref("/account", locale))}`);
 
   const count = async (table: string) => (await supabase.from(table).select("*", { count: "exact", head: true }).eq("owner_id", user.id)).count ?? 0;
+  // Team RPCs return no rows for users outside a team (and fail softly until migration 0017 is applied).
+  const [team, members, invites, s] = await Promise.all([
+    supabase
+      .rpc("my_team")
+      .maybeSingle<MyTeam>()
+      .then((r) => r.data ?? null),
+    supabase.rpc("my_team_members").then((r) => (r.data ?? []) as TeamMember[]),
+    supabase.rpc("my_team_invites").then((r) => (r.data ?? []) as TeamInvite[]),
+    readServerSettings(),
+  ]);
   const [{ data: prof }, usage, referral, { data: sub }, projects, versions, shares, keys] = await Promise.all([
     supabase
       .from("profiles")
@@ -334,7 +349,9 @@ export async function AccountPageView({ locale }: { locale: Locale }) {
       .is("revoked_at", null)
       .then((r) => r.count ?? 0),
   ]);
-  const plan = prof?.plan === "pro" ? "pro" : "free";
+  // Effective plan: personal Pro OR membership of an active team (ai_usage_today reads effective_plan()).
+  const plan = usage?.plan === "pro" || prof?.plan === "pro" ? "pro" : "free";
+  const viaTeam = plan === "pro" && prof?.plan !== "pro" && team?.status === "active";
   const fmt = (d: string | null | undefined) =>
     d ? new Date(d).toLocaleDateString(locale === "en" ? "en-US" : "tr-TR", { day: "numeric", month: "long", year: "numeric" }) : "—";
   const stat = (label: string, value: string | number) => (
@@ -387,6 +404,7 @@ export async function AccountPageView({ locale }: { locale: Locale }) {
                 <Crown className="w-4 h-4 text-lime" aria-hidden /> {plan === "pro" ? "Monster Pro" : "Free"}
               </div>
               {sub && <div className="mt-1 text-[11px] text-zinc-500">{c.subStatus(sub.status, sub.current_period_end ? fmt(sub.current_period_end) : null)}</div>}
+              {viaTeam && team && <div className="mt-1 text-[11px] text-zinc-500">{c.viaTeam(team.name)}</div>}
             </div>
             <div className="min-w-0">
               <div className="text-[11px] tracking-widest text-zinc-500 font-semibold">{c.username.toUpperCase()}</div>
@@ -417,6 +435,8 @@ export async function AccountPageView({ locale }: { locale: Locale }) {
             {stat(c.keys, keys)}
           </div>
         </section>
+
+        <TeamPanel locale={locale} team={team} members={members} invites={invites} contactEmail={String(s.legal_email || "hello@prompter.monster")} />
 
         {referral?.username && (
           <ReferralPanel

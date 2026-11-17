@@ -13,6 +13,19 @@ export interface ChangelogEntry {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: "4.9",
+    date: "2026-11-17",
+    title: "Takım planı, Arkadaşını getir, Keşfet büyümesi (beğeni, profiller, filtreler) ve canlı sayaçlar",
+    items: [
+      "Takım planı: Hesabım → Takım bölümünden takım kur, davet linkiyle üye ekle (tek kullanımlık, 14 gün; /join/<token>), sahip/yönetici rolleri, sahiplik devri, üye başına aylık kredi. Takım aktif olunca tüm üyeler Pro (Studio, kota, API, MCP aynı kaynaktan: effective_plan). Admin → Takımlar: aktifleştir / beklemeye al / iptal / koltuk / not. Koltuk bazlı Lemon Squeezy ödemesi LS aktivasyonuna bırakıldı.",
+      "Arkadaşını getir: herkesin davet linki ?invite=<kullanıcı adı>; davet edilen ilk AI eylemini yapınca iki tarafa bonus kredi. Bonus artık normal kota bitince harcanan bir bakiye (süresi dolmaz, başarısız çağrıda iade edilir); davet eden için ödül tavanı var.",
+      "Keşfet: beğeni + haftalık/aylık 'Usta Canavarlar' lider tablosu, herkese açık profil sayfaları (/u/<kullanıcı adı>), proje tipi / uzman SEO sayfaları, çıktı formatı filtresi.",
+      "Ana sayfa: topluluktan canlı başlangıç kitleri ve canlı kullanım sayaçları (sayaçlar 50 üretimin altında gizli kalır).",
+      "Repo'da ayrıca: tarayıcı eklentisi (extension/) ve Raycast eklentisi (raycast-extension/) — site deploy'undan bağımsız.",
+    ],
+    settings: ["team_default_seats", "referral_bonus_credits", "referral_max_rewards"],
+  },
+  {
     version: "4.8",
     date: "2026-11-16",
     title: "Keşfet galerisi, AI araç bağlantıları, bildirim sistemi",
