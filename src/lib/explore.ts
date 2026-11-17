@@ -3,7 +3,8 @@
  * Anon anahtarla direkt Supabase istemcisi (RPC'ler security definer + kendi filtresiyle güvenli);
  * sunucu bileşenlerinde çağrılır — sitemap.ts'teki desenle aynı. supabase/migrations/0010_explore_feedback.sql,
  * 0011_likes_leaderboard.sql (beğeniler + "Usta Canavarlar" lider tablosu), 0012_public_profiles.sql (profil linki için username),
- * 0013_explore_filter_pages.sql (uzman filtresi + filtreli sayaç — /explore/type/[type], /explore/expert/[expert] SEO sayfaları için).
+ * 0013_explore_filter_pages.sql (uzman filtresi + filtreli sayaç — /explore/type/[type], /explore/expert/[expert] SEO sayfaları için),
+ * 0014_explore_format_filter.sql (çıktı formatına göre filtre — ExploreGrid'deki format rozeti zaten vardı, bu sadece sunucu filtresini ekledi).
  */
 import { createClient } from "@supabase/supabase-js";
 
@@ -56,6 +57,7 @@ export interface ExploreListOpts {
   lang?: "TR" | "EN";
   type?: string;
   expert?: string;
+  format?: string;
   sort?: ExploreSort;
   limit?: number;
   offset?: number;
@@ -65,10 +67,11 @@ export async function exploreList(opts: ExploreListOpts = {}): Promise<ExploreIt
   const supabase = anonClient();
   if (!supabase) return [];
   try {
-    const { data, error } = await supabase.rpc("explore_list_v3", {
+    const { data, error } = await supabase.rpc("explore_list_v4", {
       p_lang: opts.lang ?? null,
       p_type: opts.type ?? null,
       p_expert: opts.expert ?? null,
+      p_format: opts.format ?? null,
       p_sort: opts.sort ?? "new",
       p_limit: opts.limit ?? 24,
       p_offset: opts.offset ?? 0,
@@ -83,16 +86,18 @@ export async function exploreList(opts: ExploreListOpts = {}): Promise<ExploreIt
 export interface ExploreStatsOpts {
   type?: string;
   expert?: string;
+  format?: string;
 }
 
-/** Genel sayaçlar (varsayılan) veya tek bir tip/uzmana filtrelenmiş sayaç — filtre sayfası başlığı için. */
+/** Genel sayaçlar (varsayılan) veya tek bir tip/uzman/formata filtrelenmiş sayaç — filtre sayfası başlığı için. */
 export async function exploreStats(opts: ExploreStatsOpts = {}): Promise<ExploreStats> {
   const supabase = anonClient();
   if (!supabase) return EMPTY_STATS;
   try {
-    const { data, error } = await supabase.rpc("explore_stats_v3", {
+    const { data, error } = await supabase.rpc("explore_stats_v4", {
       p_type: opts.type ?? null,
       p_expert: opts.expert ?? null,
+      p_format: opts.format ?? null,
     });
     if (error || !data) return EMPTY_STATS;
     const row = Array.isArray(data) ? data[0] : data;

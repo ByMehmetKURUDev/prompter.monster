@@ -5,6 +5,7 @@ import { useEffect, useRef, useState, useTransition } from "react";
 import { Eye, GitFork, Heart, Loader2 } from "lucide-react";
 import { lhref, type Locale } from "@/lib/i18n";
 import type { ExploreItem, ExploreSort } from "@/lib/explore";
+import { FORMATS } from "@/lib/data";
 
 const LABELS = {
   tr: {
@@ -12,6 +13,7 @@ const LABELS = {
     lang: "Dil",
     type: "Tip",
     expert: "Uzman",
+    format: "Format",
     new: "Yeni",
     popular: "Popüler",
     forked: "Çok çatallanan",
@@ -25,6 +27,7 @@ const LABELS = {
     lang: "Language",
     type: "Type",
     expert: "Expert",
+    format: "Format",
     new: "Newest",
     popular: "Popular",
     forked: "Most forked",
@@ -59,6 +62,7 @@ export function ExploreGrid({
   const [lang, setLang] = useState<"" | "TR" | "EN">("");
   const [type, setType] = useState(initialType);
   const [expert, setExpert] = useState(initialExpert);
+  const [format, setFormat] = useState("");
   const [sort, setSort] = useState<ExploreSort>("new");
   const [pending, startTransition] = useTransition();
   const [done, setDone] = useState(initialItems.length < PAGE_SIZE);
@@ -83,10 +87,12 @@ export function ExploreGrid({
     const nextLang = extra.lang ?? lang;
     const nextType = extra.type ?? type;
     const nextExpert = extra.expert ?? expert;
+    const nextFormat = extra.format ?? format;
     const nextSort = extra.sort ?? sort;
     if (nextLang) qs.set("lang", nextLang);
     if (nextType) qs.set("type", nextType);
     if (nextExpert) qs.set("expert", nextExpert);
+    if (nextFormat) qs.set("format", nextFormat);
     qs.set("sort", nextSort);
     if (extra.offset) qs.set("offset", extra.offset);
     return qs;
@@ -209,6 +215,23 @@ export function ExploreGrid({
             ))}
           </select>
         )}
+        <select
+          value={format}
+          onChange={(e) => {
+            setFormat(e.target.value);
+            refetch({ format: e.target.value });
+          }}
+          className="h-9 px-3 rounded-lg bg-ink-800 border border-ink-600 text-[13px] max-w-[220px]"
+        >
+          <option value="">
+            {l.format}: {l.all}
+          </option>
+          {FORMATS.map((f) => (
+            <option key={f} value={f}>
+              {f}
+            </option>
+          ))}
+        </select>
         <div className="flex gap-1 ml-auto">
           {(["new", "popular", "forked", "liked"] as const).map((s) => (
             <button
