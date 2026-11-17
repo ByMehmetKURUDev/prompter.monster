@@ -1,0 +1,159 @@
+:root {
+  --ink-950: #0a0a0b;
+  --ink-900: #0e0e10;
+  --ink-800: #15151a;
+  --ink-600: #1e1e24;
+  --ink-400: #2a2a32;
+  --lime: #a3ff12;
+  --violet: #8b5cf6;
+  --zinc-200: #e4e4e7;
+  --zinc-400: #a1a1aa;
+  --zinc-500: #71717a;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  width: 300px;
+  background: var(--ink-950);
+  color: var(--zinc-200);
+  font-family: Inter, -apple-system, "Segoe UI", Roboto, sans-serif;
+  font-size: 13px;
+}
+
+.wrap {
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+header img {
+  border-radius: 6px;
+}
+
+.brand {
+  font-weight: 700;
+  font-size: 13px;
+  letter-spacing: 0.01em;
+}
+
+.site-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--ink-800);
+  border: 1px solid var(--ink-600);
+  border-radius: 10px;
+  padding: 7px 10px;
+  color: var(--zinc-400);
+  font-size: 11.5px;
+}
+
+.dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--zinc-500);
+  flex-shrink: 0;
+}
+
+.dot.ok {
+  background: var(--lime);
+}
+
+.dot.warn {
+  background: #f59e0b;
+}
+
+.primary {
+  height: 42px;
+  border: none;
+  border-radius: 12px;
+  background: linear-gradient(135deg, var(--lime), #8ee60f);
+  color: #0a0a0b;
+  font-weight: 700;
+  font-size: 13px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  cursor: pointer;
+}
+
+.primary:disabled {
+  background: var(--ink-600);
+  color: var(--zinc-500);
+  cursor: not-allowed;
+}
+
+.primary:not(:disabled):active {
+  transform: scale(0.98);
+}
+
+.status {
+  margin: 0;
+  padding: 7px 10px;
+  border-radius: 8px;
+  font-size: 11.5px;
+  background: var(--ink-800);
+  border: 1px solid var(--ink-600);
+  color: var(--zinc-200);
+}
+
+.status.ok {
+  border-color: rgba(163, 255, 18, 0.35);
+  color: var(--lime);
+}
+
+.status.err {
+  border-color: rgba(239, 68, 68, 0.35);
+  color: #f87171;
+}
+
+.toggle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  font-size: 11.5px;
+  color: var(--zinc-400);
+  margin-top: 2px;
+}
+
+.toggle input {
+  accent-color: var(--violet);
+  width: 14px;
+  height: 14px;
+}
+
+.hint {
+  margin: -4px 0 0 22px;
+  font-size: 10.5px;
+  color: var(--zinc-500);
+}
+
+footer {
+  border-top: 1px solid var(--ink-600);
+  padding-top: 8px;
+  margin-top: 2px;
+}
+
+footer a {
+  color: var(--zinc-400);
+  text-decoration: none;
+  font-size: 11px;
+}
+
+footer a:hover {
+  color: var(--lime);
+}
