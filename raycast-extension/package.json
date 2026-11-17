@@ -1,0 +1,69 @@
+{
+  "$schema": "https://www.raycast.com/schemas/extension.json",
+  "name": "prompt-monster",
+  "title": "Prompt.Monster",
+  "description": "Turn a product idea into a master build prompt for Claude, Cursor, v0, Lovable and more — right from Raycast.",
+  "icon": "icon.png",
+  "author": "mehmetkuru_dev",
+  "categories": [
+    "Developer Tools",
+    "Productivity"
+  ],
+  "license": "MIT",
+  "commands": [
+    {
+      "name": "generate-prompt",
+      "title": "Generate Build Prompt",
+      "subtitle": "Prompt.Monster",
+      "description": "Turn a one-line idea into a full master build prompt (ChatGPT, Claude XML, Cursor Rules, v0, Lovable/Bolt).",
+      "mode": "view"
+    },
+    {
+      "name": "browse-types",
+      "title": "Browse Project Types",
+      "subtitle": "Prompt.Monster",
+      "description": "Search Prompt.Monster's project-type presets and copy an id to use in Generate Build Prompt.",
+      "mode": "view"
+    }
+  ],
+  "preferences": [
+    {
+      "name": "apiKey",
+      "title": "API Key",
+      "description": "Optional. A pm_live_… key from prompter.monster/account/api unlocks Monster Pro limits (all 18 experts, every format, file exports). Leave empty to use the Free plan.",
+      "type": "password",
+      "required": false
+    },
+    {
+      "name": "lang",
+      "title": "Language",
+      "description": "Language for project types and the generated prompt.",
+      "type": "dropdown",
+      "data": [
+        { "title": "English", "value": "EN" },
+        { "title": "Türkçe", "value": "TR" }
+      ],
+      "default": "EN",
+      "required": false
+    }
+  ],
+  "dependencies": {
+    "@raycast/api": "^1.82.0",
+    "@raycast/utils": "^1.17.0"
+  },
+  "devDependencies": {
+    "@raycast/eslint-config": "^1.0.11",
+    "@types/node": "22.19.17",
+    "@types/react": "19.0.10",
+    "eslint": "^8.57.0",
+    "react": "19.0.0",
+    "typescript": "^5.4.5"
+  },
+  "scripts": {
+    "build": "ray build -e dist",
+    "dev": "ray develop",
+    "fix-lint": "ray lint --fix",
+    "lint": "ray lint",
+    "publish": "npx @raycast/api@latest publish"
+  }
+}
