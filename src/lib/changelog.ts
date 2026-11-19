@@ -22,6 +22,16 @@ export interface ChangelogEntry {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: "4.20.1",
+    date: "2026-11-20",
+    title: "SEO: başlıklar arama sonucuna sığıyor, boş filtre ve profil sayfaları indekslenmiyor",
+    items: [
+      "Canlı tarama (175 sayfa): 152 başlık 60 karakteri aşıyordu (en uzun 86), 102'si 70'i. Yeni pageTitle(): \" · Prompter.Monster\" eki yalnız başlık 60 karaktere sığıyorsa ekleniyor, sığmıyorsa sayfanın kendi başlığı tek başına (Google site adını zaten ayrıca gösteriyor). Proje tipi sayfalarında uzun 9 başlığa kısa metaTitle (H1 aynı kaldı); Keşfet tip/uzman başlıkları kısaldı; geliştirici sayfasının başlığı marka adıyla başlıyor.",
+      "Keşfet tip/uzman filtre sayfaları galeride paylaşım yokken noindex (takip açık) ve site haritasında değil; ilk paylaşımla kendiliğinden indekslenir ve haritaya girer. Galeride paylaşımı olmayan profil sayfaları da noindex (harita onları zaten almıyordu). Filtre sayfasının sayacı istek başına tek RPC (React cache).",
+      "160 karakteri aşan son 6 açıklama kısaldı: TR kılavuz, AI SaaS Wrapper (TR/EN), 3 uzun uzman adlı filtre sayfası.",
+    ],
+  },
+  {
     version: "4.20",
     date: "2026-11-20",
     title: "Marka adı her yerde Prompter.Monster",

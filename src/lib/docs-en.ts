@@ -208,7 +208,7 @@ export interface DocsUi {
 export const DOCS_UI_TR: DocsUi = {
   title: "Studio rehberi: iyi bir build prompt için ne yazmalı?",
   description:
-    "Prompter.Monster'da her alana ne yazmalı, hangi uzmanları seçmeli, çıktıyı Claude Code / Cursor / v0 / Lovable'a nasıl vermeli — örneklerle. AI ajanları için /llms.txt.",
+    "Her alana ne yazmalı, hangi uzmanları seçmeli, çıktıyı Claude Code / Cursor / v0 / Lovable'a nasıl vermeli — örneklerle. AI ajanları için /llms.txt.",
   ogLocale: "tr_TR",
   badge: "Rehber",
   introBeforeLink:

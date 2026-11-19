@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Trophy } from "lucide-react";
-import { exploreList, exploreStats } from "@/lib/explore";
+import { exploreList } from "@/lib/explore";
+import { filterStats } from "@/lib/explore-server";
 import { ALL_PROJECT_TYPES, EXPERTS } from "@/lib/data";
 import { lhref, type Locale } from "@/lib/i18n";
 import { PublicShell } from "./PublicShell";
@@ -49,7 +50,7 @@ export async function ExploreView({ locale, filter }: { locale: Locale; filter?:
   const filterExpert = filter?.dimension === "expert" ? filter.id : undefined;
   const [items, stats] = await Promise.all([
     exploreList({ limit: 24, type: filterType, expert: filterExpert }),
-    exploreStats({ type: filterType, expert: filterExpert }),
+    filterStats(filterType ?? null, filterExpert ?? null),
   ]);
   const c = COPY[locale];
   const types = ALL_PROJECT_TYPES.map((t) => ({ id: t.id, name: t.name, icon: t.icon }));

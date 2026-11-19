@@ -26,7 +26,7 @@ export const COPY_EN: TypePageCopy[] = [
     slug: "ai-saas-wrapper",
     name: "AI SaaS Wrapper",
     title: "Master build prompt for an AI SaaS wrapper",
-    description: "A build prompt for an LLM-powered SaaS (chat, RAG, agents) with credit quotas, streaming and cost control. Claude, GPT, Gemini, Groq and vector DB picks included.",
+    description: "A build prompt for an LLM-powered SaaS (chat, RAG, agents) with credit quotas, streaming and cost control. Claude, GPT, Gemini, Groq and vector DBs included.",
     intro: [
       "With AI wrappers, the edge isn't the model, it's the product around it: quotas and credits, a streaming UI, RAG quality, margins over inference cost and abuse protection. Leave these out of your prompt and your AI coding tool will ship nothing more than a chat box.",
       "The prompt template on this page puts the AI Engineer and Monetization Strategist up front: model choice, vector database, token budget, credit-based pricing and an evaluation (evals) plan, all in one document.",
@@ -197,6 +197,7 @@ export const COPY_EN: TypePageCopy[] = [
     slug: "fatura-abonelik-saas",
     name: "Invoice & Billing SaaS",
     title: "Master build prompt for an invoicing & subscription management SaaS",
+    metaTitle: "Master build prompt for an invoicing & subscription SaaS",
     description: "The build prompt for a billing SaaS with invoice creation, e-invoicing, payment tracking, recurring invoices and a customer portal.",
     intro: [
       "In billing products, accuracy is everything: VAT calculations, currency rounding, e-invoice/e-archive integration and payment reconciliation. One small bug means accounting chaos.",
@@ -273,6 +274,7 @@ export const COPY_EN: TypePageCopy[] = [
     slug: "edtech-lms",
     name: "EdTech LMS",
     title: "Master build prompt for an EdTech LMS / online course platform",
+    metaTitle: "Master build prompt for an EdTech LMS / online course app",
     description: "The build prompt for an LMS with course creation, video lessons, quizzes, progress tracking, certificates and subscriptions.",
     intro: [
       "In online learning products, the learning experience matters as much as content management: progress tracking, quizzes and feedback, certificates and community. Video hosting and protection are a real cost line, too.",
@@ -292,6 +294,7 @@ export const COPY_EN: TypePageCopy[] = [
     slug: "telemedicine",
     name: "HealthTech Telemedicine",
     title: "Master build prompt for a telemedicine / online health platform",
+    metaTitle: "Master build prompt for a telemedicine / online health app",
     description: "A privacy-first build prompt for a telemedicine product with appointments, video visits, patient records, e-prescriptions and payments.",
     intro: [
       "In health products, data privacy and access control sit at the center of the design. Appointments, video call quality and the accuracy of clinical records determine whether users trust you.",
@@ -330,6 +333,7 @@ export const COPY_EN: TypePageCopy[] = [
     slug: "lojistik-takip",
     name: "Logistics Tracking",
     title: "Master build prompt for a logistics & shipment tracking platform",
+    metaTitle: "Master build prompt for a logistics & shipment tracker",
     description: "The build prompt for a logistics product with shipment creation, courier/vehicle tracking, route optimization, proof of delivery and customer alerts.",
     intro: [
       "In logistics software, real-time location, status transitions and exception handling (address not found, damaged goods) are the heart of the product. The field app and the operations dashboard have to share the same data.",
@@ -349,6 +353,7 @@ export const COPY_EN: TypePageCopy[] = [
     slug: "on-demand-uber-benzeri",
     name: "On-Demand Uber-like",
     title: "Master build prompt for an on-demand (Uber-like) services app",
+    metaTitle: "Master build prompt for an on-demand (Uber-like) app",
     description: "The build prompt for an on-demand app with customer, provider and operator roles: matching, live tracking, payments and ratings.",
     intro: [
       "On-demand products are really three apps: the customer app, the provider app and the operations dashboard. The matching algorithm, real-time location and the payment/commission flow are the hardest parts of the product.",

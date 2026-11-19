@@ -9,12 +9,12 @@ import { SetupSnippets } from "./SetupSnippets";
 
 export const DEV_META = {
   tr: {
-    title: "API ve MCP sunucusu — Prompter.Monster'ı editörünün içinden kullan",
+    title: "Prompter.Monster API ve MCP sunucusu — editöründen kullan",
     description:
       "MCP sunucusu ve REST API: Claude Code, Cursor, VS Code, Windsurf ve ChatGPT'den master build prompt'u ve AGENTS.md / CLAUDE.md gibi proje dosyalarını üret.",
   },
   en: {
-    title: "API & MCP server — use Prompter.Monster from inside your editor",
+    title: "Prompter.Monster API & MCP server — use it in your editor",
     description:
       "MCP server and REST API: generate master build prompts and project files like AGENTS.md and CLAUDE.md from Claude Code, Cursor, VS Code, Windsurf and ChatGPT.",
   },

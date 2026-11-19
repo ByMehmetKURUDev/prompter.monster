@@ -15,6 +15,8 @@ export interface TypePageCopy {
   name: string;
   /** <title> / H1 */
   title: string;
+  /** Shorter <title> when `title` does not fit in search results (the H1 keeps `title`). */
+  metaTitle?: string;
   /** Meta description (≤160 chars). */
   description: string;
   /** Two short paragraphs. */
@@ -56,7 +58,7 @@ const COPY: TypePageCopy[] = [
     slug: "ai-saas-wrapper",
     name: "AI SaaS Wrapper",
     title: "AI SaaS Wrapper için master build prompt",
-    description: "LLM tabanlı bir SaaS'ı (chat, RAG, ajan) kredili kota, streaming ve maliyet kontrolüyle kurduran build prompt. Claude, GPT, Gemini, Groq ve vektör DB seçimleri dahil.",
+    description: "LLM tabanlı bir SaaS (chat, RAG, ajan) için kredili kota, streaming ve maliyet kontrolü içeren build prompt. Claude, GPT, Gemini, Groq ve vektör DB dahil.",
     intro: [
       "AI wrapper ürünlerde fark, modelde değil çevresindeki üründe: kota ve kredi sistemi, streaming arayüz, RAG kalitesi, maliyet başına marj ve kötüye kullanım koruması. Bunları prompt'a yazmazsan AI kodlama aracı sadece bir chat kutusu üretir.",
       "Bu sayfadaki prompt şablonu AI Engineer ve Monetization uzmanlarını öne çıkarır: model seçimi, vektör veritabanı, token bütçesi, kredi tabanlı fiyatlandırma ve değerlendirme (eval) planı tek metinde.",
@@ -132,6 +134,7 @@ const COPY: TypePageCopy[] = [
     slug: "multi-vendor-marketplace",
     name: "Multi-Vendor Marketplace",
     title: "Çok satıcılı pazar yeri (marketplace) için master build prompt",
+    metaTitle: "Çok satıcılı pazar yeri için master build prompt",
     description: "Satıcı onboarding'i, komisyon, split ödeme, sipariş yönetimi ve arama içeren çok satıcılı pazar yerinin build prompt'u.",
     intro: [
       "Pazar yerinde üç taraf vardır: alıcı, satıcı ve platform. Satıcı onboarding'i, komisyon ve bölünmüş ödemeler, ihtilaf yönetimi ve arama kalitesi, ürünün başarısını belirleyen karmaşık parçalardır.",
@@ -208,6 +211,7 @@ const COPY: TypePageCopy[] = [
     slug: "crypto-defi-tracker",
     name: "Crypto/DeFi Tracker",
     title: "Kripto / DeFi portföy takip uygulaması için master build prompt",
+    metaTitle: "Kripto / DeFi portföy takibi için master build prompt",
     description: "Cüzdan bağlama, çoklu zincir portföy, fiyat uyarıları ve DeFi pozisyon takibi içeren uygulamanın build prompt'u.",
     intro: [
       "Kripto takip uygulamalarında zorluk veri tarafındadır: çoklu zincir, on-chain veri sağlayıcıları, fiyat kaynakları ve oran limitleri. Gerçek zamanlı güncelleme ve önbellekleme stratejisi olmadan ürün ya yavaş ya da pahalı olur.",
@@ -322,6 +326,7 @@ const COPY: TypePageCopy[] = [
     slug: "telemedicine",
     name: "HealthTech Telemedicine",
     title: "Telemedicine / online sağlık platformu için master build prompt",
+    metaTitle: "Telemedicine / online sağlık için master build prompt",
     description: "Randevu, görüntülü görüşme, hasta kayıtları, e-reçete ve ödeme içeren telemedicine ürününün gizlilik kısıtlarıyla yazılmış build prompt'u.",
     intro: [
       "Sağlık ürünlerinde veri gizliliği ve erişim kontrolü tasarımın merkezindedir. Randevu, görüntülü görüşme kalitesi ve klinik kayıtların doğruluğu kullanıcı güvenini belirler.",
@@ -379,6 +384,7 @@ const COPY: TypePageCopy[] = [
     slug: "on-demand-uber-benzeri",
     name: "On-Demand Uber-like",
     title: "On-demand (Uber benzeri) hizmet uygulaması için master build prompt",
+    metaTitle: "Uber benzeri hizmet uygulaması için master build prompt",
     description: "Müşteri, hizmet veren ve operatör rolleriyle eşleştirme, canlı takip, ödeme ve puanlama içeren on-demand uygulamanın build prompt'u.",
     intro: [
       "On-demand uygulamalarda üç uygulama vardır: müşteri, hizmet veren ve operasyon paneli. Eşleştirme algoritması, gerçek zamanlı konum ve ödeme/komisyon akışı ürünün en zor parçalarıdır.",

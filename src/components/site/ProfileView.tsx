@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { pageTitle, robotsWhen } from "@/lib/page-meta";
 import { notFound } from "next/navigation";
 import { Calendar, Eye, GitFork, Heart, Share2 } from "lucide-react";
 import { publicProfile, publicProfileShares } from "@/lib/profile";
@@ -38,7 +39,12 @@ export async function generateProfileMetadata(username: string, locale: Locale):
     locale === "en"
       ? `${profile.display_name}'s shared build prompts on Prompter.Monster: ${profile.share_count} shares, ${profile.total_likes} likes.`
       : `@${profile.username} kullanıcısının Prompter.Monster'da paylaştığı build prompt'lar: ${profile.share_count} paylaşım, ${profile.total_likes} beğeni.`;
-  return { title, description, ...socialFor(`/u/${profile.username}`, locale, title, description) };
+  return {
+    title: pageTitle(title),
+    description,
+    ...socialFor(`/u/${profile.username}`, locale, title, description),
+    robots: robotsWhen(profile.share_count > 0),
+  };
 }
 
 /** /u/[username] (+ /en twin) — herkese açık canavar profili: başlık, istatistikler, galerideki paylaşımları. */

@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { pageTitle } from "@/lib/page-meta";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowRight, Eye, GitFork, Sparkles } from "lucide-react";
@@ -68,7 +69,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       ? `A build prompt generated with ${shared.experts.length} expert monsters for ${type?.name ?? "a project"}. Copy it into Claude Code / Cursor / v0.`
       : `${type?.name ?? "Proje"} için ${shared.experts.length} uzman canavarla üretilmiş build prompt. Kopyala, Claude Code / Cursor / v0'a yapıştır.`);
   return {
-    title,
+    title: pageTitle(title),
     description,
     alternates: { canonical: `${SITE}/p/${shared.slug}` },
     openGraph: { type: "article", title, description, url: `${SITE}/p/${shared.slug}`, siteName: "Prompter.Monster", images: ogImages(locale) },

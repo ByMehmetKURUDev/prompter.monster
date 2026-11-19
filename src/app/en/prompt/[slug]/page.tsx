@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { TypePageView, typePageMeta } from "@/components/site/PromptPagesView";
 import { loadCatalog } from "@/lib/catalog-server";
 import { alternatesFor, ogImages, twitterImages } from "@/lib/i18n";
+import { pageTitle } from "@/lib/page-meta";
 
 export const dynamic = "force-dynamic";
 
@@ -13,7 +14,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   if (!m) return { title: "Page not found", robots: { index: false } };
   const { page, url } = m;
   return {
-    title: page.title,
+    title: pageTitle(page.metaTitle ?? page.title),
     description: page.description,
     keywords: page.keywords,
     alternates: alternatesFor(`/prompt/${page.slug}`, "en"),
