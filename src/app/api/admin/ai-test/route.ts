@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { isResponse, requireAdminApi } from "@/lib/admin";
-import { anthropic, hasApiKey } from "@/lib/ai";
+import { anthropic, answerOptions, hasApiKey } from "@/lib/ai";
 import { resolveModel } from "@/lib/settings-server";
 
 export const runtime = "nodejs";
@@ -16,7 +16,7 @@ export async function POST(req: Request) {
   try {
     const res = await anthropic().messages.create({
       model,
-      max_tokens: 40,
+      ...answerOptions(model, 40),
       messages: [{ role: "user", content: "Tek kelimeyle yanıtla: Prompter.Monster'ın maskotu ne?" }],
     });
     const reply = res.content.map((c) => ("text" in c ? c.text : "")).join("").trim();

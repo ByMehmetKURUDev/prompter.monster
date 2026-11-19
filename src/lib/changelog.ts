@@ -22,6 +22,15 @@ export interface ChangelogEntry {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: "4.20.2",
+    date: "2026-11-20",
+    title: "AI: kısa yanıtlarda düşünme kapalı (anahtar eklenmeden önce)",
+    items: [
+      "Claude 5 modelleri varsayılan olarak düşünüyor ve düşünme token'ları max_tokens'a sayılıyor. Pro modeli Claude Sonnet 5'te Enhance (600), stack önerisi (700) ve admin AI testi (40) yanıtı kesik ya da boş gelebilirdi. Yeni answerOptions(): düşünme modelin izin verdiği yerde kapalı (Sonnet 5, Haiku 4.5/5.5, Opus 5 ve 4.x: disabled; Sonnet 5.5: between_tools), kapatılamayan modellerde (Opus 5.5, Fable, Mythos) +4.000 token pay.",
+      "Fiyat sayfasında Claude Sonnet 5.5 ve Haiku 5.5 adları tanınıyor (Admin → Ayarlar'dan model değiştirilirse). Varsayılan modeller değişmedi: Free Claude Haiku 4.5, Pro Claude Sonnet 5 (ikisi de etkin).",
+    ],
+  },
+  {
     version: "4.20.1",
     date: "2026-11-20",
     title: "SEO: başlıklar arama sonucuna sığıyor, boş filtre ve profil sayfaları indekslenmiyor",

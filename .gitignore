@@ -41,3 +41,6 @@ cloudflare-env.d.ts
 
 # harnesskit local tooling state — not part of the app
 .harnesskit/
+
+# Claude çıktıları (taslaklar, ekran görüntüleri) — public repoya girmez; güncel belgeler claude.ai projesinde
+/Claude outputs/

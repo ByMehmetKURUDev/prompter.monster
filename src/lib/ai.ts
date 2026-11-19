@@ -18,6 +18,24 @@ export function anthropic(): Anthropic {
   return new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 }
 
+/**
+ * Request options for short one-shot answers (enhance 600, suggest 700, refine ≤4,000 tokens, admin test 40).
+ * Claude 5 models think by default and thinking tokens count toward max_tokens, so a small answer could come back
+ * cut off or empty. Thinking is turned off where the model allows it: "disabled" on Sonnet 5, Haiku 5.5, Opus 5,
+ * the 4.x models (a no-op on Haiku 4.5, where it is already off); "between_tools" on Sonnet 5.5 (no up-front
+ * thinking without tools; it rejects "disabled"). Opus 5.5, Fable and Mythos can't turn it off, so they get room
+ * for it instead. If a model rejects the setting with a 400 that names the model, complete() falls back to FALLBACK_MODEL.
+ * Source: platform.claude.com/docs/en/build-with-claude/thinking (November 2026).
+ */
+export function answerOptions(model: string, maxTokens: number): { max_tokens: number; thinking?: Anthropic.ThinkingConfigParam } {
+  const m = model.toLowerCase();
+  if (/^claude-(opus-5-5|fable-|mythos-)/.test(m)) return { max_tokens: maxTokens + 4000 };
+  if (m.startsWith("claude-sonnet-5-5")) {
+    return { max_tokens: maxTokens, thinking: { type: "between_tools" } as unknown as Anthropic.ThinkingConfigParam };
+  }
+  return { max_tokens: maxTokens, thinking: { type: "disabled" } };
+}
+
 export class AiRouteError extends Error {
   constructor(
     public status: number,
@@ -281,7 +299,7 @@ function isModelError(err: unknown): boolean {
 /** One-shot completion; records usage (and refunds on failure). */
 export async function complete(ctx: AiContext, system: string, user: string): Promise<string> {
   const run = (model: string) =>
-    anthropic().messages.create({ model, max_tokens: ctx.maxTokens, system, messages: [{ role: "user", content: user }] });
+    anthropic().messages.create({ model, ...answerOptions(model, ctx.maxTokens), system, messages: [{ role: "user", content: user }] });
   let model = ctx.model;
   try {
     let res: Anthropic.Message;
@@ -316,7 +334,7 @@ export function streamText(ctx: AiContext, system: string, user: string): Readab
       let inputTokens: number | undefined;
       let outputTokens: number | undefined;
       const attempt = async (m: string) => {
-        const stream = client.messages.stream({ model: m, max_tokens: ctx.maxTokens, system, messages: [{ role: "user", content: user }] });
+        const stream = client.messages.stream({ model: m, ...answerOptions(m, ctx.maxTokens), system, messages: [{ role: "user", content: user }] });
         for await (const ev of stream) {
           if (ev.type === "message_start") inputTokens = ev.message.usage?.input_tokens;
           else if (ev.type === "message_delta") outputTokens = ev.usage?.output_tokens ?? outputTokens;
