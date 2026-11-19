@@ -40,8 +40,9 @@ npm run dev                    # http://localhost:3000
 `NEXT_PUBLIC_SUPABASE_URL` ve `NEXT_PUBLIC_SUPABASE_ANON_KEY` herkese açık değerlerdir ve `.env.production` içinde gelir; yerelde kendi Supabase projenizi kullanmak için `.env.local`'e yazın.
 Şema için `supabase/migrations/` altındaki dosyaları sırayla (0001, 0002…) Supabase SQL Editor'da çalıştırın; Authentication → URL Configuration'da site URL ve `.../auth/callback` yönlendirmesini ekleyin.
 E-posta doğrulama ve sihirli bağlantı için Authentication → Emails → SMTP Settings'te özel SMTP tanımlayın (canlıda Resend: `smtp.resend.com:465`, kullanıcı `resend`, şifre = Resend API anahtarı) ve
-Authentication → Emails'teki altı şablonun (konu + gövde) yerine `supabase/email-templates/` içindekileri yapıştırın (konular `subjects.json`'da). Şablonlar TR/EN'dir: dil, isteğin geldiği sayfadan
-(`/auth/callback?lang=…`), yoksa kayıt dilinden (`user_metadata.lang`) seçilir; bağlantılar sunucu tarafı doğrulama yapan `/auth/callback?token_hash=…` adresine gider (PKCE uyumlu).
+Authentication → Emails'teki altı şablonun (konu + gövde) yerine `supabase/email-templates/` içindekileri yapıştırın (konular `subjects.json`'da). Şablonlar TR/EN'dir: dil, kayıt dilidir
+(`user_metadata.lang`; kayıt formu sayfanın dilini yazar), bilinmiyorsa Türkçe. Bağlantılar sunucu tarafı doğrulama yapan `/auth/callback?token_hash=…` adresine gider (PKCE uyumlu).
+Supabase paneli konuyu 255 karakterle sınırlar; `generate.ts` aşan konuda hata verir.
 Kaynak `src/lib/email/auth-templates.ts`; değiştirince `npx tsx supabase/email-templates/generate.ts` ile dosyaları yeniden üretin.
 Anahtar: <https://console.anthropic.com> → API Keys.
 

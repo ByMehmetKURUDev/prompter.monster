@@ -245,8 +245,8 @@ export default async function AdminEmails({ searchParams }: Props) {
         >
           <p className="text-[12.5px] text-zinc-400 leading-relaxed">
             Kayıt doğrulama, sihirli bağlantı, şifre sıfırlama gibi e-postaları Supabase gönderir (noreply@). Şablonlar{" "}
-            <code className="text-zinc-200">supabase/email-templates/</code> içinde ve Supabase → Authentication → Emails&apos;e kayıtlı. Dil: isteğin geldiği
-            sayfa (bağlantıdaki <code className="text-zinc-200">?lang=</code>), yoksa kayıt dili, o da yoksa Türkçe.
+            <code className="text-zinc-200">supabase/email-templates/</code> içinde ve Supabase → Authentication → Emails&apos;e kayıtlı. Dil: kişinin kaydolduğu
+            dil (kayıt formu sayfanın dilini hesaba yazar), bilinmiyorsa Türkçe.
           </p>
           <div className="mt-3 text-[13px]">
             <span className="text-zinc-500">Konu:</span> <span className="font-semibold">{authSample.subject}</span>

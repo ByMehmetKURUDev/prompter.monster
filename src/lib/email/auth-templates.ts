@@ -5,8 +5,8 @@
  * Supabase renders subject and body with Go's html/template (builtins only: printf, eq, and, or…).
  * goTemplate(kind) returns the subject and body to paste into Dashboard → Authentication → Emails (the copies in
  * supabase/email-templates/ are generated from here):
- *  - language: the page the request came from — `?lang=` in the app's callback URL (LoginForm), or `next=/en/…` for
- *    links requested before that — else user_metadata.lang (set by the sign-up form), else Turkish;
+ *  - language: the sign-up language, user_metadata.lang (the sign-up form stores the page's language), else Turkish.
+ *    Subject and body share this one-line rule (the dashboard caps the subject at 255 characters);
  *  - link: our server-side /auth/callback with token_hash (PKCE-safe). When the app passed its own callback as the
  *    redirect, its query is kept — someone who signs up from a team invite lands back on /join/<token>.
  * preview(kind, locale) renders one language with sample values for Admin → E-postalar.
@@ -27,12 +27,13 @@ const OTP_TYPE: Partial<Record<AuthEmailKind, string>> = { confirmation: "signup
 
 /** The app's own callback (apex and www). When the e-mail's redirect is one of these, its query is kept. */
 const CALLBACKS = ["https://prompter.monster/auth/callback?", "https://www.prompter.monster/auth/callback?"];
-/** Language hints right after the "?" of the app's callback: ?lang=… (LoginForm), or ?next=/en/… (older links). */
-const LANG_HINTS: Array<[hint: string, en: boolean]> = [
-  ["lang=en", true],
-  ["lang=tr", false],
-  ["next=%2Fen%2F", true],
-];
+/** Supabase Dashboard rejects longer subjects ("expected string to have <=255 characters"). */
+export const SUBJECT_MAX = 255;
+/**
+ * Go condition: the user signed up in English. printf "%v" keeps the comparison string-to-string, so empty metadata
+ * or a non-string lang can't make the template fail.
+ */
+const GO_EN = `eq (printf "%v" .Data.lang) "en"`;
 
 interface Copy {
   subject: string;
@@ -187,31 +188,24 @@ function body(kind: AuthEmailKind, locale: EmailLocale, v: Slots): { subject: st
 /** Go condition: $rt (the redirect URL as text) starts with p. printf "%.Ns" never fails, even on a missing value. */
 const startsWith = (p: string) => `eq (printf "%.${p.length}s" $rt) "${p}"`;
 
-/**
- * Go template actions (no output) that set $en. printf "%v" keeps every comparison string-to-string, so a missing
- * redirect (reauthentication has none), empty metadata or a non-string lang can't make the template fail.
- */
-function goLang(): string {
-  const hints = CALLBACKS.flatMap((cb) => LANG_HINTS.map(([hint, en]) => `{{- if ${startsWith(cb + hint)} -}}{{- $en = ${en} -}}{{- end -}}`));
-  return `{{- $rt := printf "%v" .RedirectTo -}}{{- $en := eq (printf "%v" .Data.lang) "en" -}}${hints.join("")}`;
-}
-
 /** Language + confirmation link (output nothing). */
 function goHeader(kind: AuthEmailKind): string {
+  const lang = `{{- $en := ${GO_EN} -}}\n`;
   const type = OTP_TYPE[kind];
   const next = DEFAULT_NEXT[kind];
-  if (!type || !next) return `${goLang()}\n`;
+  if (!type || !next) return lang;
   const own = CALLBACKS.map((cb) => `{{- if ${startsWith(cb)} -}}{{- $link = printf "%s&token_hash=%s&type=${type}" $rt .TokenHash -}}{{- end -}}`);
   return (
-    `${goLang()}\n` +
+    lang +
     `{{- $next := "${next.tr}" -}}{{- if $en -}}{{- $next = "${next.en}" -}}{{- end -}}\n` +
+    `{{- $rt := printf "%v" .RedirectTo -}}\n` +
     `{{- $link := printf "%s/auth/callback?token_hash=%s&type=${type}&next=%s" .SiteURL .TokenHash $next -}}${own.join("")}\n`
   );
 }
 
 /** The same language rule for the subject line (a separate template in Supabase). */
 function goSubject(tr: string, en: string): string {
-  return `${goLang()}{{- if $en -}}${en}{{- else -}}${tr}{{- end -}}`;
+  return `{{if ${GO_EN}}}${en}{{else}}${tr}{{end}}`;
 }
 
 /** Subject + body for Supabase Dashboard → Authentication → Emails. */
@@ -224,8 +218,10 @@ export function goTemplate(kind: AuthEmailKind): { subject: string; content: str
   };
   const tr = body(kind, "tr", slots);
   const en = body(kind, "en", slots);
+  const subject = goSubject(tr.subject, en.subject);
+  if (subject.length > SUBJECT_MAX) throw new Error(`${kind}: subject template is ${subject.length} characters (max ${SUBJECT_MAX})`);
   return {
-    subject: goSubject(tr.subject, en.subject),
+    subject,
     content: `${goHeader(kind)}{{- if $en -}}\n${en.html}\n{{- else -}}\n${tr.html}\n{{- end -}}\n`,
   };
 }

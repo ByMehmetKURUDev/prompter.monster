@@ -116,7 +116,7 @@ export function LoginForm({ next, initialError, initialMessage }: { next: string
     return <p className="text-[13px] text-zinc-400">{c.notConfigured}</p>;
   }
 
-  // lang= goes first: the Supabase e-mail templates read it to pick the language (src/lib/email/auth-templates.ts).
+  // lang= tells /auth/callback the request's language (welcome e-mail, expired-link page); sign-ups also store it as user_metadata.lang.
   const redirectTo = () => `${window.location.origin}/auth/callback?lang=${locale}&next=${encodeURIComponent(next)}`;
 
   const submit = async (e: React.FormEvent) => {
