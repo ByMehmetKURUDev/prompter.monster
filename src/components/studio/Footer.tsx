@@ -1,12 +1,14 @@
 "use client";
 
 import { Globe } from "lucide-react";
+import Link from "next/link";
 import { LegalLinks } from "@/components/site/LegalLinks";
 import { useLocale } from "@/components/site/LocaleProvider";
-import { CHANGELOG } from "@/lib/changelog";
+import { lhref } from "@/lib/i18n";
 import { useT } from "./useT";
 
-export function Footer() {
+/** `version` comes from the server page, so the changelog itself stays out of the client bundle. */
+export function Footer({ version }: { version?: string }) {
   const locale = useLocale();
   const t = useT().footer;
   return (
@@ -19,7 +21,15 @@ export function Footer() {
       </span>
       <LegalLinks locale={locale} className="hidden sm:inline-flex" />
       <span className="ml-auto flex items-center gap-2">
-        <span className="px-2 py-1 rounded-full bg-ink-800 border border-ink-600">v{CHANGELOG[0]?.version ?? "4.0"}</span>
+        {version && (
+          <Link
+            href={lhref("/changelog", locale)}
+            title={t.changelog}
+            className="px-2 py-1 rounded-full bg-ink-800 border border-ink-600 hover:text-zinc-300 hover:border-ink-400"
+          >
+            v{version}
+          </Link>
+        )}
         <span>Prompt.Monster © {new Date().getFullYear()}</span>
       </span>
     </div>

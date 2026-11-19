@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Studio } from "@/components/studio/Studio";
+import { CHANGELOG } from "@/lib/changelog";
 import { DEFAULT_PUBLIC } from "@/lib/settings";
 import { socialFor } from "@/lib/i18n";
 
@@ -12,5 +13,5 @@ export const metadata: Metadata = {
 };
 
 export default function StudioPage() {
-  return <Studio dailyLimit={DEFAULT_PUBLIC().anon_credits_per_day} />;
+  return <Studio dailyLimit={DEFAULT_PUBLIC().anon_credits_per_day} version={CHANGELOG[0]?.version} />;
 }

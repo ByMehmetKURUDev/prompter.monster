@@ -6,8 +6,8 @@ import { LanguageSwitch } from "./LanguageSwitch";
 import { LegalLinks } from "./LegalLinks";
 
 const NAV = {
-  tr: { menu: "Ana menü", prompts: "Build prompt'lar", explore: "Keşfet", guide: "Rehber", pricing: "Fiyat", studio: "Studio'yu aç", footerPrompts: "Proje tipine göre build prompt'lar", api: "API ve MCP" },
-  en: { menu: "Main menu", prompts: "Build prompts", explore: "Explore", guide: "Guide", pricing: "Pricing", studio: "Open Studio", footerPrompts: "Build prompts by project type", api: "API & MCP" },
+  tr: { menu: "Ana menü", prompts: "Build prompt'lar", explore: "Keşfet", guide: "Rehber", pricing: "Fiyat", studio: "Studio'yu aç", footerPrompts: "Proje tipine göre build prompt'lar", api: "API ve MCP", changelog: "Yenilikler" },
+  en: { menu: "Main menu", prompts: "Build prompts", explore: "Explore", guide: "Guide", pricing: "Pricing", studio: "Open Studio", footerPrompts: "Build prompts by project type", api: "API & MCP", changelog: "What's new" },
 } as const;
 
 /** Header + footer used by the public marketing pages (/prompt, /docs, /legal …). */
@@ -60,6 +60,10 @@ export function PublicShell({ children, cta, locale = "tr", langSwitch = true }:
         <span aria-hidden>•</span>
         <Link href={lhref("/developers", locale)} className="hover:text-zinc-300">
           {n.api}
+        </Link>
+        <span aria-hidden>•</span>
+        <Link href={lhref("/changelog", locale)} className="hover:text-zinc-300">
+          {n.changelog}
         </Link>
         <span aria-hidden>•</span>
         <LegalLinks locale={locale} />

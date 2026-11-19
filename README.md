@@ -25,6 +25,7 @@ Mimari, özellik matrisi, ödeme akışı (Stripe, Iyzico, PayTR…), kısıtlar
 - **Programmatic SEO (Faz 3.2):** 22 proje tipi için statik landing sayfası `/prompt/<slug>` (önerilen uzmanlar, stack, özellikler, kısaltılmış örnek prompt, SSS + FAQPage/Breadcrumb JSON-LD) ve `/prompt` hub'ı; her sayfa Studio'yu `?type=<id>` ile o tipin ön ayarlarıyla açar
 - Kayıt gerektirmez; ziyaretçi projesi tarayıcıda saklanır, günlük ücretsiz AI hakkı IP bazlı (varsayılan 3)
 - SEO: landing sayfası, `sitemap.xml`, `robots.txt`, Open Graph
+- **Yenilikler:** herkese açık sürüm notları `/changelog` ve `/en/changelog` (+ RSS: `/changelog/rss.xml`); `src/lib/changelog.ts` girdilerindeki `public` notlarından üretilir
 
 ## Kurulum (yerelde çalıştırma)
 

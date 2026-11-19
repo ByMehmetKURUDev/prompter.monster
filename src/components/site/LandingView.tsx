@@ -13,7 +13,7 @@ const D = DEFAULT_PUBLIC();
 
 const COPY = {
   tr: {
-    nav: { how: "Nasıl çalışır", prompts: "Build prompt'lar", pricing: "Fiyat", guide: "Rehber", studio: "Studio'yu aç" },
+    nav: { how: "Nasıl çalışır", prompts: "Build prompt'lar", pricing: "Fiyat", guide: "Rehber", studio: "Studio'yu aç", changelog: "Yenilikler" },
     badge: "Vibe-coder'lar için build-spec fabrikası",
     h1a: "Fikrini anlat.",
     h1b: "Canavar, build prompt'unu yazsın.",
@@ -46,7 +46,7 @@ const COPY = {
     proCta: "Pro'ya geç →",
   },
   en: {
-    nav: { how: "How it works", prompts: "Build prompts", pricing: "Pricing", guide: "Guide", studio: "Open Studio" },
+    nav: { how: "How it works", prompts: "Build prompts", pricing: "Pricing", guide: "Guide", studio: "Open Studio", changelog: "What's new" },
     badge: "The build-spec factory for vibe coders",
     h1a: "Describe your idea.",
     h1b: "The monster writes your build prompt.",
@@ -346,6 +346,10 @@ export function LandingView({ locale }: { locale: Locale }) {
         <span aria-hidden>•</span>
         <Link href={L("/pricing")} className="hover:text-zinc-300">
           {c.nav.pricing}
+        </Link>
+        <span aria-hidden>•</span>
+        <Link href={L("/changelog")} className="hover:text-zinc-300">
+          {c.nav.changelog}
         </Link>
         <span aria-hidden>•</span>
         <LegalLinks locale={locale} />

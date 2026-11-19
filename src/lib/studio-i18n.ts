@@ -298,6 +298,7 @@ const tr = {
   footer: {
     stats: "28 proje tipi • 15+ template • 8 ödeme • 18 uzman",
     trPayments: "Iyzico + PayTR TR desteği",
+    changelog: "Yenilikler",
   },
 };
 
@@ -592,6 +593,7 @@ const en: StudioText = {
   footer: {
     stats: "28 project types • 15+ templates • 8 payment providers • 18 experts",
     trPayments: "Iyzico + PayTR support for Turkey",
+    changelog: "What's new",
   },
 };
 

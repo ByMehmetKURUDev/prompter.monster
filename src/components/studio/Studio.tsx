@@ -74,7 +74,7 @@ function hash(str: string): string {
 type SaveJob = { ctx: number; state: StudioState; snapshot: boolean; silent: boolean; keepalive?: boolean };
 type SaveResult = { id: string; version: number | null } | null;
 
-export function Studio({ dailyLimit }: { dailyLimit: number }) {
+export function Studio({ dailyLimit, version }: { dailyLimit: number; version?: string }) {
   const locale = useLocale();
   const t = useT().studio;
   const pricing = lhref("/pricing", locale);
@@ -909,7 +909,7 @@ export function Studio({ dailyLimit }: { dailyLimit: number }) {
             </div>
           </div>
 
-          <Footer />
+          <Footer version={version} />
         </main>
 
         <aside className="hidden xl:flex w-[400px] shrink-0 flex-col border-l border-ink-600 bg-ink-900 h-[calc(100vh-56px)] sticky top-[56px]">
