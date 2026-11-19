@@ -1,6 +1,6 @@
 /**
- * Cloudflare Worker entry (wrangler.jsonc → "main"): OpenNext's generated fetch handler (English HTML pages get
- * <html lang="en">, see withPageLang), plus a scheduled
+ * Cloudflare Worker entry (wrangler.jsonc → "main"): OpenNext's generated fetch handler (www → canonical host 301,
+ * English HTML pages get <html lang="en">; see canonicalHostRedirect and withPageLang), plus a scheduled
  * handler for the hourly cron (wrangler.jsonc → triggers.crons) that sends the lifecycle e-mails — welcome and the
  * one-time getting-started reminder (migration 0023). See https://opennext.js.org/cloudflare/howtos/custom-worker
  *
@@ -43,6 +43,26 @@ function withPageLang(request: Request, response: Response): Response {
 }
 type WorkerCtx = { waitUntil(promise: Promise<unknown>): void };
 
+/**
+ * www.prompter.monster is routed to this Worker too (wrangler.jsonc → routes). Page visits there get a 301 to the
+ * canonical host (NEXT_PUBLIC_SITE_URL): one site for search engines and one login session (Supabase only sends
+ * sign-in links back to the canonical host). /api/ is left alone: webhooks and MCP clients don't follow redirects.
+ */
+function canonicalHostRedirect(request: Request, env: WorkerEnv): Response | null {
+  if (request.method !== "GET" && request.method !== "HEAD") return null;
+  let canonical: URL;
+  try {
+    canonical = new URL(String(env.NEXT_PUBLIC_SITE_URL || ""));
+  } catch {
+    return null;
+  }
+  const url = new URL(request.url);
+  if (url.hostname !== `www.${canonical.hostname}` || url.pathname.startsWith("/api/")) return null;
+  url.protocol = canonical.protocol;
+  url.host = canonical.host;
+  return Response.redirect(url.toString(), 301);
+}
+
 /** Same precedence as OpenNext's populateProcessEnv: worker vars and secrets win over the embedded .env values. */
 function flatEnv(env: WorkerEnv): Record<string, string> {
   const mode = typeof env.NEXTJS_ENV === "string" ? env.NEXTJS_ENV : "production";
@@ -54,6 +74,8 @@ function flatEnv(env: WorkerEnv): Record<string, string> {
 
 export default {
   async fetch(request: Request, env: WorkerEnv, ctx: WorkerCtx): Promise<Response> {
+    const redirect = canonicalHostRedirect(request, env);
+    if (redirect) return redirect;
     return withPageLang(request, await handler.fetch(request, env, ctx));
   },
 

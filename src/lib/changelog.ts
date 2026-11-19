@@ -22,6 +22,15 @@ export interface ChangelogEntry {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: "4.19.3",
+    date: "2026-11-19",
+    title: "www adresi ana adrese yönleniyor; CI'da actions v7",
+    items: [
+      "www.prompter.monster sayfaları artık 301 ile prompter.monster'a yönleniyor (Worker). Önceden www ayrı bir kopya gibi açılıyordu: arama motorları için çift adres, girişte de ayrı oturum (Supabase giriş bağlantılarını yalnız ana adrese gönderir). /api/ yolları yönlendirilmez; webhook ve MCP istemcileri yönlendirme izlemez.",
+      "GitHub Actions: actions/checkout ve actions/setup-node v4 → v7 (Node 24). 'Node.js 20 actions are deprecated' uyarısı kalktı.",
+    ],
+  },
+  {
     version: "4.19.2",
     date: "2026-11-19",
     title: "Canlı site taraması: İngilizce sayfalarda lang, site haritası, uzun açıklamalar",
