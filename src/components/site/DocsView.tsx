@@ -110,6 +110,16 @@ export function DocsView({ locale }: { locale: Locale }) {
             <Bot className="w-5 h-5 text-violet-400" aria-hidden /> {ui.agentsTitle}
           </h2>
           <p className="mt-2 text-[13px] text-zinc-400 leading-relaxed max-w-[720px]">{ui.agentsIntro}</p>
+          <p className="mt-1.5 text-[13px] text-zinc-400">
+            {ui.agentsMore}{" "}
+            <Link href={L("/developers")} className="text-lime underline decoration-lime/40 underline-offset-2 hover:decoration-lime">
+              {ui.agentsApi}
+            </Link>{" "}
+            ·{" "}
+            <Link href={L("/extensions")} className="text-lime underline decoration-lime/40 underline-offset-2 hover:decoration-lime">
+              {ui.agentsExtensions}
+            </Link>
+          </p>
           <div className="mt-4 rounded-2xl bg-ink-900 border border-ink-600 p-5 text-[12.5px] font-mono text-zinc-300 space-y-2 overflow-x-auto">
             <div>
               <span className="text-zinc-500">{ui.quickStartComment}</span>

@@ -1,6 +1,6 @@
 {
   "$schema": "https://www.raycast.com/schemas/extension.json",
-  "name": "prompt-monster",
+  "name": "prompter-monster",
   "title": "Prompter.Monster",
   "description": "Turn a product idea into a master build prompt for Claude, Cursor, v0, Lovable and more — right from Raycast.",
   "icon": "icon.png",

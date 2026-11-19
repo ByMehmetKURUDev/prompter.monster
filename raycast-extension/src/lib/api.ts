@@ -74,7 +74,10 @@ function authHeaders(): Record<string, string> {
 async function parseOrThrow<T>(res: Response): Promise<T> {
   const body = (await res.json().catch(() => null)) as (ApiErrorBody & { data?: T }) | null;
   if (!res.ok) {
-    throw new PromptMonsterError(body?.error?.code ?? "unknown", body?.error?.message ?? `prompter.monster returned ${res.status}.`);
+    throw new PromptMonsterError(
+      body?.error?.code ?? "unknown",
+      body?.error?.message ?? `prompter.monster returned ${res.status}.`,
+    );
   }
   if (!body || !("data" in body)) throw new PromptMonsterError("unknown", "Unexpected response from prompter.monster.");
   return body.data as T;

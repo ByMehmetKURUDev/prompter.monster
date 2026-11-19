@@ -2,7 +2,10 @@
 // Reads the clipboard (filled by the "Copy" buttons on prompter.monster) and
 // pastes it into whatever AI chat box is active in the current tab.
 
-const LANG = (navigator.language || "tr").toLowerCase().startsWith("en") ? "en" : "tr";
+// Turkish UI → Turkish, everything else → English (same rule as _locales: default_locale is "en").
+const UI_LANG = (globalThis.chrome?.i18n?.getUILanguage?.() || navigator.language || "en").toLowerCase();
+const LANG = UI_LANG.startsWith("tr") ? "tr" : "en";
+document.documentElement.lang = LANG;
 
 const COPY = {
   tr: {
@@ -49,7 +52,9 @@ const SITES = [
   { match: /(^|\.)poe\.com$/, name: "Poe" },
 ];
 
-const RESTRICTED = /^(chrome|chrome-extension|edge|about|devtools):/;
+// Browser-internal pages and extension stores can't be scripted by any extension.
+const RESTRICTED = /^(chrome|chrome-extension|chrome-untrusted|chrome-search|edge|brave|opera|vivaldi|about|devtools|view-source):/;
+const STORE_PAGES = /^https:\/\/(chromewebstore\.google\.com|chrome\.google\.com\/webstore|microsoftedge\.microsoft\.com\/addons)/;
 
 const pasteBtn = document.getElementById("pasteBtn");
 const btnLabel = document.getElementById("btnLabel");
@@ -65,6 +70,7 @@ btnLabel.textContent = COPY.paste;
 toggleLabel.textContent = COPY.toggle;
 toggleHint.textContent = COPY.hint;
 footerLink.textContent = COPY.footer;
+footerLink.href = LANG === "en" ? "https://prompter.monster/en/studio" : "https://prompter.monster/studio";
 
 let activeTab = null;
 
@@ -79,7 +85,7 @@ async function init() {
   activeTab = tab || null;
   const url = activeTab?.url || "";
 
-  if (!url || RESTRICTED.test(url)) {
+  if (!url || RESTRICTED.test(url) || STORE_PAGES.test(url)) {
     siteLabel.textContent = COPY.errRestricted;
     siteDot.className = "dot warn";
     pasteBtn.disabled = true;

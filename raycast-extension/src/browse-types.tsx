@@ -12,7 +12,6 @@ export default function BrowseTypesCommand() {
       .then(setTypes)
       .catch((e) => showToast({ style: Toast.Style.Failure, title: "Couldn't load project types", message: String(e) }))
       .finally(() => setIsLoading(false));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const categories = Array.from(new Set(types.map((t) => t.category)));
@@ -31,7 +30,7 @@ export default function BrowseTypesCommand() {
                 accessories={t.badge ? [{ tag: t.badge }] : undefined}
                 actions={
                   <ActionPanel>
-                    <Action.CopyToClipboard title="Copy Type ID" content={t.id} icon={Icon.CopyClipboard} />
+                    <Action.CopyToClipboard title="Copy Type Id" content={t.id} icon={Icon.CopyClipboard} />
                     {t.url && <Action.OpenInBrowser title="Open Page" url={t.url} icon={Icon.Globe} />}
                   </ActionPanel>
                 }

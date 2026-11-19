@@ -1,0 +1,18 @@
+{
+  "extName": {
+    "message": "Prompter.Monster — One-Click Paste",
+    "description": "Extension name (Chrome extensions page and store)."
+  },
+  "extShortName": {
+    "message": "Prompter.Monster",
+    "description": "Short name shown where space is limited."
+  },
+  "extDescription": {
+    "message": "Paste the master prompt you copied on Prompter.Monster into ChatGPT, Claude, Gemini and other AI tools in one click.",
+    "description": "Extension description (max 132 characters)."
+  },
+  "actionTitle": {
+    "message": "Prompter.Monster: paste your clipboard into the AI tool",
+    "description": "Tooltip on the toolbar icon."
+  }
+}

@@ -1,4 +1,4 @@
-import { ArrowRight, Braces, FileCode2, KeyRound, Plug, ShieldCheck, Terminal } from "lucide-react";
+import { ArrowRight, Braces, FileCode2, KeyRound, Plug, Puzzle, ShieldCheck, Terminal } from "lucide-react";
 import Link from "next/link";
 import { PROJECT_FILES } from "@/lib/exports";
 import { lhref, type Locale } from "@/lib/i18n";
@@ -91,6 +91,9 @@ const T = {
     ],
     cta: "Anahtarını oluştur ve 2 dakikada bağlan",
     llms: "Ajanlar için özet",
+    extTitle: "Tarayıcı ve Raycast eklentileri",
+    extBody: "Chrome eklentisi kopyaladığın prompt'u AI sohbetine tek tıkla yapıştırır; Raycast eklentisi aynı API ile Mac'inde prompt üretir.",
+    extLink: "Eklentileri kur",
   },
   en: {
     badge: "MCP · REST API · OpenAPI",
@@ -162,6 +165,9 @@ const T = {
     ],
     cta: "Create your key and connect in 2 minutes",
     llms: "Summary for agents",
+    extTitle: "Browser and Raycast extensions",
+    extBody: "The Chrome extension pastes the prompt you copied into your AI chat in one click; the Raycast extension generates prompts on your Mac through the same API.",
+    extLink: "Install the extensions",
   },
 } as const;
 
@@ -365,6 +371,18 @@ export async function DevelopersView({ locale }: { locale: Locale }) {
               </tbody>
             </table>
           </div>
+        </section>
+
+        <section className="mt-12 rounded-2xl bg-ink-900 border border-ink-600 p-5 flex flex-col sm:flex-row sm:items-center gap-4">
+          <div className="min-w-0 flex-1">
+            <h2 className="text-[16px] font-bold flex items-center gap-2">
+              <Puzzle className="w-4 h-4 text-lime" aria-hidden /> {t.extTitle}
+            </h2>
+            <p className="mt-1 text-[13px] text-zinc-400">{t.extBody}</p>
+          </div>
+          <Link href={L("/extensions")} className="h-10 px-4 rounded-xl bg-ink-800 border border-ink-600 text-[13px] font-semibold flex items-center justify-center gap-2 shrink-0">
+            {t.extLink} <ArrowRight className="w-4 h-4" aria-hidden />
+          </Link>
         </section>
 
         <section className="mt-12 rounded-2xl border border-lime/30 bg-gradient-to-br from-lime/10 to-violet/10 p-6 flex flex-col sm:flex-row sm:items-center gap-4">

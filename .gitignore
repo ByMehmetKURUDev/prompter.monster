@@ -44,3 +44,6 @@ cloudflare-env.d.ts
 
 # Claude çıktıları (taslaklar, ekran görüntüleri) — public repoya girmez; güncel belgeler claude.ai projesinde
 /Claude outputs/
+
+# eklenti zip'leri — build/dev sırasında scripts/build-extension-zips.mjs üretir (/extensions sayfasındaki indirmeler)
+/public/downloads/

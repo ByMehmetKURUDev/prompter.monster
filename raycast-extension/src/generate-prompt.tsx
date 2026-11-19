@@ -1,6 +1,25 @@
 import { useEffect, useState } from "react";
-import { Action, ActionPanel, Detail, Form, Icon, Toast, getPreferenceValues, showToast, useNavigation } from "@raycast/api";
-import { FORMATS, Format, GenerateResult, ProjectType, Preferences, generatePrompt, listProjectTypes, PromptMonsterError } from "./lib/api";
+import {
+  Action,
+  ActionPanel,
+  Detail,
+  Form,
+  Icon,
+  Toast,
+  getPreferenceValues,
+  showToast,
+  useNavigation,
+} from "@raycast/api";
+import {
+  FORMATS,
+  Format,
+  GenerateResult,
+  ProjectType,
+  Preferences,
+  generatePrompt,
+  listProjectTypes,
+  PromptMonsterError,
+} from "./lib/api";
 
 interface FormValues {
   name: string;
@@ -24,7 +43,6 @@ export default function GeneratePromptCommand() {
       // Non-fatal: the form still works fine with the project-type dropdown left on "None".
       .catch(() => setTypes([]))
       .finally(() => setTypesLoading(false));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   async function handleSubmit(values: FormValues) {
@@ -66,8 +84,17 @@ export default function GeneratePromptCommand() {
       <Form.Description text="Turns a product idea into a master build prompt for Claude, Cursor, v0, Lovable and more — the same engine as prompter.monster/studio. Free, deterministic, no AI credits used." />
       <Form.TextField id="name" title="Project name" placeholder="StudioFlow" autoFocus />
       <Form.TextField id="pitch" title="One-line pitch" placeholder="A visual workflow builder for freelance studios" />
-      <Form.TextArea id="description" title="Description" placeholder="Who it's for, the core features, anything a builder needs to know…" />
-      <Form.Dropdown id="projectType" title="Project type" defaultValue="" info="Optional — fills in a recommended stack, experts and features for this kind of project.">
+      <Form.TextArea
+        id="description"
+        title="Description"
+        placeholder="Who it's for, the core features, anything a builder needs to know…"
+      />
+      <Form.Dropdown
+        id="projectType"
+        title="Project type"
+        defaultValue=""
+        info="Optional — fills in a recommended stack, experts and features for this kind of project."
+      >
         <Form.Dropdown.Item value="" title="— None / custom —" />
         {types.map((t) => (
           <Form.Dropdown.Item key={t.id} value={t.id} title={t.name} />

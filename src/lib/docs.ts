@@ -160,6 +160,7 @@ export function llmsTxt(): string {
   lines.push(`- Blank project: ${SITE}/studio?new=1`);
   lines.push(`- Public share pages: ${SITE}/p/<slug>  (JSON: ${SITE}/api/share/<slug> → {name, version, format, lang, experts, output, state})`);
   lines.push(`- Project-type landing pages (recommended experts, stack, features, sample prompt, FAQ): ${SITE}/prompt/<slug>`);
+  lines.push(`- MCP server and REST API: ${SITE}/developers  • Chrome and Raycast extensions: ${SITE}/extensions`);
   lines.push(`- Pricing: ${SITE}/pricing  • Guide: ${SITE}/docs  • Sitemap: ${SITE}/sitemap.xml`);
   lines.push("");
   lines.push("## Project type ids");

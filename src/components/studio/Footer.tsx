@@ -20,6 +20,9 @@ export function Footer({ version }: { version?: string }) {
         • <Globe className="w-3 h-3" aria-hidden /> {t.trPayments}
       </span>
       <LegalLinks locale={locale} className="hidden sm:inline-flex" />
+      <Link href={lhref("/extensions", locale)} className="hidden sm:inline hover:text-zinc-300">
+        {t.extensions}
+      </Link>
       <span className="ml-auto flex items-center gap-2">
         {version && (
           <Link

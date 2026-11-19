@@ -22,6 +22,32 @@ export interface ChangelogEntry {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: "4.21",
+    date: "2026-11-20",
+    title: "Eklentiler sayfası: Chrome ve Raycast eklentisini indir ve kur",
+    items: [
+      "Yeni /extensions ve /en/extensions: Chrome eklentisi (zip indir, Geliştirici modu ile 4 adımda kurulum, izinler ve gizlilik, desteklenen tarayıcılar, güncelleme) ve Raycast eklentisi (Beta; Raycast 1.26+, Node.js 22.14+, npm install && npm run dev, isteğe bağlı pm_live_ anahtarı). Mağaza bağlantıları src/lib/extensions.ts'de boş; doldurulunca sayfa mağazayı ana düğme yapar.",
+      "Zip'ler her build ve dev öncesinde scripts/build-extension-zips.mjs ile public/downloads/'a üretiliyor (bağımlılıksız, deterministik, git dışı): prompter-monster-chrome.zip ve prompter-monster-raycast.zip (node_modules yok). Raycast zip'inden npm ci + ray build denendi: derleme başarılı.",
+      "Chrome eklentisi 1.0.1: Chrome eklentiyi hiç yüklemiyordu (manifest'te default_locale vardı ama _locales klasörü yoktu). _locales/tr ve en eklendi; ad ve açıklama tarayıcı diline göre, varsayılan İngilizce. Popup Türkçe dışındaki her dilde İngilizce (eskiden Almanca vb. tarayıcıda Türkçe açılıyordu), Studio bağlantısı dile göre, tarayıcı iç sayfalarında ve eklenti mağazalarında düğme kapalı.",
+      "Raycast eklentisinin paket adı prompter-monster (Store'a gönderilmeden önce marka adıyla aynı).",
+      "Bağlantılar: site, ana sayfa ve Studio alt bilgisi, geliştirici sayfası, kılavuzun ajanlar bölümü (eskiden \"MCP sunucusu ve Chrome eklentisi yolda\" diyordu), llms.txt, site haritası.",
+    ],
+    public: {
+      tr: {
+        title: "Chrome ve Raycast eklentileri",
+        items: [
+          "Yeni Eklentiler sayfası: Chrome eklentisi Studio'da kopyaladığın master prompt'u ChatGPT, Claude, Gemini ve diğer AI sohbetlerinin mesaj kutusuna tek tıkla yapıştırır. Raycast eklentisi (beta) Mac'inde, komut paletinden fikrinden master prompt üretir. İkisi de ücretsiz; kurulum adımları sayfada.",
+        ],
+      },
+      en: {
+        title: "Chrome and Raycast extensions",
+        items: [
+          "New Extensions page: the Chrome extension pastes the master prompt you copied in the Studio into the message box of ChatGPT, Claude, Gemini and other AI chats in one click. The Raycast extension (beta) turns an idea into a master prompt from the command palette on your Mac. Both are free; install steps are on the page.",
+        ],
+      },
+    },
+  },
+  {
     version: "4.20.2",
     date: "2026-11-20",
     title: "AI: kısa yanıtlarda düşünme kapalı (anahtar eklenmeden önce)",

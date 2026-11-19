@@ -1,0 +1,18 @@
+{
+  "extName": {
+    "message": "Prompter.Monster — Tek Tık Aktar",
+    "description": "Eklentinin adı (Chrome eklentiler sayfası ve mağaza)."
+  },
+  "extShortName": {
+    "message": "Prompter.Monster",
+    "description": "Yer darken gösterilen kısa ad."
+  },
+  "extDescription": {
+    "message": "Prompter.Monster'da kopyaladığın master prompt'u ChatGPT, Claude, Gemini ve benzeri AI araçlarına tek tıkla yapıştır.",
+    "description": "Eklenti açıklaması (en çok 132 karakter)."
+  },
+  "actionTitle": {
+    "message": "Prompter.Monster: Panodakini AI aracına aktar",
+    "description": "Araç çubuğu simgesinin üzerine gelince görünen metin."
+  }
+}

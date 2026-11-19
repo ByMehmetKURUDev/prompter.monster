@@ -190,6 +190,10 @@ export interface DocsUi {
   /** AI agents section. */
   agentsTitle: string;
   agentsIntro: string;
+  /** Line under the agents intro, linking the developer page (MCP + API) and the extensions page. */
+  agentsMore: string;
+  agentsApi: string;
+  agentsExtensions: string;
   /** Comment lines above each URL in the agents code block (include the leading "#"). */
   quickStartComment: string;
   shareApiComment: string;
@@ -227,7 +231,10 @@ export const DOCS_UI_TR: DocsUi = {
     "Mega Chain 8 adımdır ve her adım bir öncekinin çıktısını kullanır. Tamamını tek mesajda vermek yerine \"Adım 1\" deyip PRD'yi onayla, sonra \"Adım 2\" de. Böylece araç her adımda senin düzeltmelerini taşır ve context şişmez.",
   agentsTitle: "AI ajanları ve otomasyon",
   agentsIntro:
-    "Prompter.Monster'ı bir ajan (Claude Code, Cursor, OpenClaw, n8n…) içinden kullanmak için bugün şu kapılar açık; MCP sunucusu ve Chrome eklentisi yolda.",
+    "Prompter.Monster'ı bir ajan (Claude Code, Cursor, OpenClaw, n8n…) içinden kullanmak için bugün şu kapılar açık.",
+  agentsMore: "Ayrıca:",
+  agentsApi: "MCP sunucusu ve REST API",
+  agentsExtensions: "Chrome ve Raycast eklentileri",
   quickStartComment: "# tip ön ayarlarıyla Studio'yu aç",
   shareApiComment: "# paylaşılan bir prompt'u JSON olarak oku",
   llmsTxtComment: "# makine okunur rehber",
@@ -261,7 +268,10 @@ export const DOCS_UI_EN: DocsUi = {
     "The Mega Chain has 8 steps, and each one builds on the previous step's output. Instead of sending it all in one message, say \"Step 1\" and approve the PRD, then say \"Step 2\". That way the tool carries your corrections into every step and the context doesn't bloat.",
   agentsTitle: "AI agents & automation",
   agentsIntro:
-    "Want to use Prompter.Monster from inside an agent (Claude Code, Cursor, OpenClaw, n8n…)? These entry points work today; an MCP server and a Chrome extension are on the way.",
+    "Want to use Prompter.Monster from inside an agent (Claude Code, Cursor, OpenClaw, n8n…)? These entry points work today.",
+  agentsMore: "Also:",
+  agentsApi: "MCP server and REST API",
+  agentsExtensions: "Chrome and Raycast extensions",
   quickStartComment: "# open the Studio with a project type's presets",
   shareApiComment: "# read a shared prompt as JSON",
   llmsTxtComment: "# machine-readable guide",
