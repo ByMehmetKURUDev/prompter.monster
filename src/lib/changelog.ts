@@ -22,6 +22,16 @@ export interface ChangelogEntry {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: "4.19.1",
+    date: "2026-11-19",
+    title: "Veritabanı davranış testleri canlıda; admin hunisi düzeltmesi (0025)",
+    items: [
+      "0021 (takım kuralları), 0022 (admin huni) ve 0023 (e-postalar) davranış testleri canlı veritabanında çalıştırıldı, test verisi geri alındı: 0021 ve 0023'ün bütün kontrolleri beklenenle aynı.",
+      "0022'de tek sapma: admin olmayan bir kullanıcı admin_funnel'dan boş liste yerine değerleri sıfır olan tek bir 'toplam' satırı alıyordu (grouping sets'in boş kümesi, girdi olmasa da bir satır üretir). Gerçek veri yoktu. Migration 0025 bu satırı da 'having is_admin()' ile süzer; admin sonuçları değişmez.",
+      "0022 testine sızıntı kontrolü eklendi (leak=f): admin olmayana dönen satırlarda sıfırdan büyük sayı ya da kanal bilgisi olmamalı.",
+    ],
+  },
+  {
     version: "4.19",
     date: "2026-11-19",
     title: "Haftalık admin özeti: her pazartesi 08:17'de son 7 günün e-postası",

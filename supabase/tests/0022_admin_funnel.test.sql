@@ -3,7 +3,7 @@
 -- Kullanıcılar: bir admin (profiles.role = 'admin') ve bir admin olmayan profil, dinamik seçilir.
 --
 -- Beklenen:
---   01 non-admin: funnel=0 daily=0
+--   01 non-admin: funnel=0 daily=0 leak=f   (0025 öncesi funnel=1: değerleri sıfır olan tek toplam satırı)
 --   02 admin: total row=1; groups sum = total signups -> t
 --   03 admin: every step <= signups -> t; saved/generated/... non-negative -> t
 --   04 admin: daily rows (30) = 30; daily(7) = 7; daily(9999) capped = 365
@@ -20,7 +20,9 @@ begin
   if adm is null or usr is null then raise exception 'TEST_SETUP: bir admin ve bir admin olmayan profil gerekli'; end if;
 
   perform set_config('request.jwt.claims', json_build_object('sub', usr, 'role', 'authenticated')::text, true);
-  r := array_append(r, format('01 non-admin: funnel=%s daily=%s', (select count(*) from public.admin_funnel(30)), (select count(*) from public.admin_activity_daily(30))));
+  r := array_append(r, format('01 non-admin: funnel=%s daily=%s leak=%s', (select count(*) from public.admin_funnel(30)), (select count(*) from public.admin_activity_daily(30)),
+      (select coalesce(bool_or(signups > 0 or saved > 0 or generated > 0 or used_ai > 0 or shared > 0 or pro_interest > 0 or paid > 0
+                               or source is not null), false) from public.admin_funnel(365))));
 
   perform set_config('request.jwt.claims', json_build_object('sub', adm, 'role', 'authenticated')::text, true);
   select * into tot from public.admin_funnel(365) where is_total;
