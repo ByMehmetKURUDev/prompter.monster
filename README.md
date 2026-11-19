@@ -55,6 +55,10 @@ npm run deploy                              # build + deploy (prompter.monster v
 npm run preview                             # yayınlamadan önce Workers ortamında yerel önizleme (macOS 13.5+ / Linux)
 ```
 
+Worker girişi `custom-worker.ts`'tir: OpenNext'in ürettiği fetch işleyicisi + saatlik cron (`wrangler.jsonc` → `triggers.crons`), karşılama ve
+başlangıç hatırlatması e-postalarını gönderir (migration 0023). `npx wrangler secret put RESEND_API_KEY` (Resend → API Keys, "Sending access",
+alan adı prompter.monster) eklenene kadar hiçbir e-posta gitmez; `LIFECYCLE_EMAILS=off` duraklatır. Durum, önizleme ve test gönderimi: `/admin/emails`.
+
 Not: `npm run deploy`, `wrangler deploy`'u doğrudan çağırır (`OPEN_NEXT_DEPLOY=true`); böylece yerel Workers çalışma zamanı (workerd) gerekmez ve
 macOS 12 gibi eski sistemlerde de çalışır. Incremental cache (R2/KV) eklendiğinde `npm run deploy:full` kullanılmalıdır.
 

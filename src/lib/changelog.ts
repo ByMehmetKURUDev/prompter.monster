@@ -13,6 +13,19 @@ export interface ChangelogEntry {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: "4.15",
+    date: "2026-11-19",
+    title: "Karşılama ve başlangıç hatırlatması e-postaları (Resend), tek tıkla çıkış",
+    items: [
+      "Karşılama e-postası: e-postası doğrulanmış yeni hesaba bir kez — girişten hemen sonra (hızlı yol) ya da en geç bir saat içinde (saatlik cron, her saat :17). Başlangıç hatırlatması: 1–7 günlük, hiç proje kaydetmemiş hesaba bir kez; hazır proje tipi bağlantılarıyla Studio'yu önerilen ayarlarla açar.",
+      "Türkçe ve İngilizce şablonlar (kayıt dili / giriş sayfasının dili; Hesabım'dan değiştirilebilir). İçerik yalnız kullanım bilgilendirmesi, kampanya içermez; gizlilik metni buna göre güncellendi (2026-11-19).",
+      "Çıkış: her e-postada bağlantı (/unsubscribe, onay düğmeli) + Gmail/Yahoo için RFC 8058 tek tık List-Unsubscribe başlığı; Hesabım → E-posta bölümünden aç/kapat ve dil seçimi. Veri indirmeye e-posta tercihi ve gönderim geçmişi eklendi.",
+      "Admin → E-postalar: durum, son 30 gün sayıları, sıradakiler, son gönderimler, şablon önizlemeleri, 'kendime test gönder' ve 'şimdi çalıştır'. Sistem sayfasına RESEND_API_KEY kontrolü.",
+      "Migration 0023: email_prefs + email_log (RLS açık, politika yok) ve SECURITY DEFINER fonksiyonlar; (kullanıcı × e-posta türü) tekil olduğundan aynı e-posta iki kez gitmez, başarısız gönderim 1 saat arayla en fazla 3 kez denenir. RESEND_API_KEY eklenene kadar hiçbir e-posta gitmez; LIFECYCLE_EMAILS = off duraklatır.",
+      "Altyapı: Worker girişi custom-worker.ts (OpenNext fetch işleyicisi + scheduled); wrangler.jsonc'de saatlik cron ve EMAIL_FROM.",
+    ],
+  },
+  {
     version: "4.14",
     date: "2026-11-19",
     title: "Admin → Huni: kayıttan ödemeye kullanıcı yolculuğu, kanal ve gün bazında",

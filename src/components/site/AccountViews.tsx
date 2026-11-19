@@ -3,6 +3,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { AccountDanger } from "@/components/account/AccountDanger";
 import { ApiKeysPanel, type KeyItem } from "@/components/account/ApiKeysPanel";
+import { EmailPrefsPanel, type EmailPrefs } from "@/components/account/EmailPrefsPanel";
 import { ReferralPanel } from "@/components/account/ReferralPanel";
 import { TeamPanel } from "@/components/account/TeamPanel";
 import { TeamRulesPanel } from "@/components/account/TeamRulesPanel";
@@ -323,7 +324,7 @@ export async function AccountPageView({ locale }: { locale: Locale }) {
 
   const count = async (table: string) => (await supabase.from(table).select("*", { count: "exact", head: true }).eq("owner_id", user.id)).count ?? 0;
   // Team RPCs return no rows for users outside a team (and fail softly until migration 0017 is applied).
-  const [team, members, invites, teamRules, s] = await Promise.all([
+  const [team, members, invites, teamRules, s, emailPrefs] = await Promise.all([
     supabase
       .rpc("my_team")
       .maybeSingle<MyTeam>()
@@ -336,6 +337,8 @@ export async function AccountPageView({ locale }: { locale: Locale }) {
       .maybeSingle<MyTeamRules>()
       .then((r) => r.data ?? null),
     readServerSettings(),
+    // 0023: welcome / reminder e-mail preference; null before the migration is applied (panel hidden).
+    supabase.rpc("my_email_prefs").then((r) => (r.error ? null : ((r.data ?? null) as EmailPrefs | null))),
   ]);
   const [{ data: prof }, usage, referral, { data: sub }, projects, versions, shares, keys] = await Promise.all([
     supabase
@@ -479,6 +482,8 @@ export async function AccountPageView({ locale }: { locale: Locale }) {
             {link(lhref("/explore", locale), <Sparkles className="w-4 h-4 text-zinc-400" aria-hidden />, c.explore)}
           </div>
         </section>
+
+        {emailPrefs && <EmailPrefsPanel locale={locale} initial={emailPrefs} />}
 
         <AccountDanger locale={locale} isAdmin={prof?.role === "admin"} />
       </main>

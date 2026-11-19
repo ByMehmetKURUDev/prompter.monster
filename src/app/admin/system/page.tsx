@@ -38,6 +38,7 @@ export default async function AdminSystem() {
     { label: "ANTHROPIC_API_KEY", ok: Boolean(process.env.ANTHROPIC_API_KEY), hint: "Enhance / stack öner / iyileştir" },
     { label: "Lemon Squeezy (API key + store)", ok: billingConfigured(), hint: `Mağaza ${process.env.LEMONSQUEEZY_STORE_ID ?? "?"} • variant aylık ${variants.monthly ?? "?"} / yıllık ${variants.yearly ?? "?"}${variants.error ? " • " + variants.error : ""}` },
     { label: "LEMONSQUEEZY_WEBHOOK_SECRET", ok: Boolean(process.env.LEMONSQUEEZY_WEBHOOK_SECRET), hint: "X-Signature doğrulaması" },
+    { label: "RESEND_API_KEY", ok: Boolean(process.env.RESEND_API_KEY), hint: "Karşılama ve başlangıç hatırlatması e-postaları (Admin → E-postalar); yoksa kapalı" },
     { label: "KV RATE_LIMIT", ok: true, hint: "Ziyaretçi (anonim) günlük kota" },
     { label: "Analitik (GA4 / Ads / Meta)", ok: Boolean(process.env.NEXT_PUBLIC_GA_ID || process.env.NEXT_PUBLIC_META_PIXEL_ID), hint: `GA ${process.env.NEXT_PUBLIC_GA_ID ? "✓" : "—"} • Ads ${process.env.NEXT_PUBLIC_GADS_ID ? "✓" : "—"} • Meta ${process.env.NEXT_PUBLIC_META_PIXEL_ID ? "✓" : "—"}` },
   ];

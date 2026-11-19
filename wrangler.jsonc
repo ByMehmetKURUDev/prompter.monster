@@ -3,7 +3,8 @@
   "name": "prompter-monster",
   // Cloudflare account that owns the prompter.monster zone (Mehmetkuru.dev@gmail.com's Account)
   "account_id": "3c1b09b79b318ca2d364f5bb3469503c",
-  "main": ".open-next/worker.js",
+  // Custom entry = OpenNext's generated fetch handler + the hourly lifecycle-email cron (custom-worker.ts).
+  "main": "custom-worker.ts",
   "compatibility_date": "2026-09-01",
   "compatibility_flags": ["nodejs_compat"],
   "assets": {
@@ -13,6 +14,10 @@
   "observability": {
     "enabled": true
   },
+  // Hourly at :17 — welcome / getting-started reminder e-mails (migration 0023). Does nothing until RESEND_API_KEY exists.
+  "triggers": {
+    "crons": ["17 * * * *"]
+  },
   // Zone routes: the existing proxied DNS records for prompter.monster stay as they are;
   // every request to these patterns is served by this Worker.
   "routes": [
@@ -20,7 +25,8 @@
     { "pattern": "www.prompter.monster/*", "zone_name": "prompter.monster" }
   ],
   // Non-secret configuration. Secrets are set in the Cloudflare dashboard or with `wrangler secret put`:
-  //   ANTHROPIC_API_KEY, SUPABASE_SERVICE_ROLE_KEY (webhook writes), LEMONSQUEEZY_API_KEY, LEMONSQUEEZY_WEBHOOK_SECRET
+  //   ANTHROPIC_API_KEY, SUPABASE_SERVICE_ROLE_KEY (webhook writes), LEMONSQUEEZY_API_KEY, LEMONSQUEEZY_WEBHOOK_SECRET,
+  //   RESEND_API_KEY (lifecycle e-mails; without it they stay off)
   "vars": {
     "ANTHROPIC_MODEL": "claude-sonnet-5",
     "FREE_AI_CALLS_PER_DAY": "3",
@@ -31,7 +37,9 @@
     "LEMONSQUEEZY_VARIANT_PRO_MONTHLY": "",
     "LEMONSQUEEZY_VARIANT_PRO_YEARLY": "",
     // Admin panel (/admin): profiles.role = 'admin' OR one of these e-mails (comma separated).
-    "ADMIN_EMAILS": "mehmetkuru.dev@gmail.com"
+    "ADMIN_EMAILS": "mehmetkuru.dev@gmail.com",
+    // Lifecycle e-mails (0023): sender on the Resend-verified prompter.monster domain. LIFECYCLE_EMAILS = "off" pauses them.
+    "EMAIL_FROM": "Prompt.Monster <hello@prompter.monster>"
   },
   // Live version id shown in /admin/system.
   "version_metadata": { "binding": "CF_VERSION_METADATA" },

@@ -67,7 +67,8 @@ export function SiteNotice() {
   }
 
   if (suggestEn) {
-    const href = localePath(path, "en");
+    // Keep the query (e.g. the unsubscribe token, ?project=…); the banner only renders on the client, after the effect.
+    const href = localePath(path, "en") + (typeof window !== "undefined" ? window.location.search : "");
     return (
       <div className="bg-ink-800 border-b border-ink-600 text-zinc-200 text-[12.5px] px-4 py-2 flex items-center gap-2" lang="en">
         <a
