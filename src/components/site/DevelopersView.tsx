@@ -11,12 +11,12 @@ export const DEV_META = {
   tr: {
     title: "API ve MCP sunucusu — Prompt.Monster'ı editörünün içinden kullan",
     description:
-      "Prompt.Monster MCP sunucusu ve REST API: Claude Code, Cursor, VS Code, Windsurf, Claude Desktop ve ChatGPT'den fikrinden master build prompt'u ve AGENTS.md / CLAUDE.md gibi proje dosyalarını üret.",
+      "MCP sunucusu ve REST API: Claude Code, Cursor, VS Code, Windsurf ve ChatGPT'den master build prompt'u ve AGENTS.md / CLAUDE.md gibi proje dosyalarını üret.",
   },
   en: {
     title: "API & MCP server — use Prompt.Monster from inside your editor",
     description:
-      "The Prompt.Monster MCP server and REST API: generate master build prompts and project files like AGENTS.md and CLAUDE.md from Claude Code, Cursor, VS Code, Windsurf, Claude Desktop and ChatGPT.",
+      "MCP server and REST API: generate master build prompts and project files like AGENTS.md and CLAUDE.md from Claude Code, Cursor, VS Code, Windsurf and ChatGPT.",
   },
 } as const;
 

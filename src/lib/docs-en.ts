@@ -242,7 +242,7 @@ export const DOCS_UI_TR: DocsUi = {
 export const DOCS_UI_EN: DocsUi = {
   title: "Studio guide: what to write for a great build prompt",
   description:
-    "What to write in each Prompt.Monster field, which experts to pick, and how to hand the output to Claude Code, Cursor, v0 or Lovable — with examples. For AI agents: /llms.txt.",
+    "What to write in each field, which experts to pick and how to hand the output to Claude Code, Cursor, v0 or Lovable, with examples. For AI agents: /llms.txt",
   ogLocale: "en_US",
   badge: "Guide",
   introBeforeLink:

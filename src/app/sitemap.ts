@@ -23,6 +23,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${site}/developers`, lastModified: now, changeFrequency: "monthly", priority: 0.7 },
     { url: `${site}/changelog`, lastModified: now, changeFrequency: "weekly", priority: 0.5 },
     { url: `${site}/explore`, lastModified: now, changeFrequency: "daily", priority: 0.7 },
+    { url: `${site}/explore/leaderboard`, lastModified: now, changeFrequency: "daily", priority: 0.5 },
     ...TYPE_PAGES.filter((p) => visible.has(p.id)).map((p) => ({ url: `${site}/prompt/${p.slug}`, lastModified: now, changeFrequency: "monthly" as const, priority: 0.7 })),
     // English twins
     { url: `${site}/en`, lastModified: now, changeFrequency: "weekly", priority: 0.9 },
@@ -33,6 +34,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${site}/en/developers`, lastModified: now, changeFrequency: "monthly", priority: 0.7 },
     { url: `${site}/en/changelog`, lastModified: now, changeFrequency: "weekly", priority: 0.5 },
     { url: `${site}/en/explore`, lastModified: now, changeFrequency: "daily", priority: 0.6 },
+    { url: `${site}/en/explore/leaderboard`, lastModified: now, changeFrequency: "daily", priority: 0.4 },
     ...TYPE_PAGES_EN.filter((p) => visible.has(p.id)).map((p) => ({ url: `${site}/en/prompt/${p.slug}`, lastModified: now, changeFrequency: "monthly" as const, priority: 0.6 })),
     // Keşfet: tip/uzman filtre sayfaları (SEO) — ALL_PROJECT_TYPES ve EXPERTS loadCatalog() sonrası zaten güncel.
     ...ALL_PROJECT_TYPES.flatMap((t) => [

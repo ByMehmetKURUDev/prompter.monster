@@ -23,8 +23,9 @@ export const metadata: Metadata = {
 export default function EnglishLayout({ children }: { children: ReactNode }) {
   return (
     <LocaleProvider locale="en">
-      {/* The root layout renders <html lang="tr">; fix it while the HTML is parsed (crawlers, first paint).
-          HtmlLang keeps it right on client-side navigations. */}
+      {/* The root layout renders <html lang="tr">. In production the Worker already rewrites it to "en" in the HTML
+          (custom-worker.ts); this script covers next dev and any path the rewrite misses. HtmlLang keeps it right on
+          client-side navigations. */}
       <script dangerouslySetInnerHTML={{ __html: "document.documentElement.lang='en'" }} />
       <HtmlLang lang="en" />
       {children}

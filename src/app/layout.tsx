@@ -45,7 +45,9 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="tr">
+    // /en pages switch this to lang="en" (Worker rewrite + inline script in app/en/layout.tsx), so the attribute
+    // differs from the server render on purpose; suppressHydrationWarning covers this element's attributes only.
+    <html lang="tr" suppressHydrationWarning>
       <body className="min-h-screen bg-ink-950 text-zinc-100 antialiased">
         <SiteNotice />
         {children}

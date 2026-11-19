@@ -1,5 +1,6 @@
 /**
- * Cloudflare Worker entry (wrangler.jsonc → "main"): OpenNext's generated fetch handler, unchanged, plus a scheduled
+ * Cloudflare Worker entry (wrangler.jsonc → "main"): OpenNext's generated fetch handler (English HTML pages get
+ * <html lang="en">, see withPageLang), plus a scheduled
  * handler for the hourly cron (wrangler.jsonc → triggers.crons) that sends the lifecycle e-mails — welcome and the
  * one-time getting-started reminder (migration 0023). See https://opennext.js.org/cloudflare/howtos/custom-worker
  *
@@ -15,6 +16,31 @@ import { emailConfigFrom, runLifecycleEmails } from "./src/lib/email/lifecycle";
 import { isWeeklySlot, sendWeeklySummary, weeklyConfigFrom } from "./src/lib/email/weekly";
 
 type WorkerEnv = Record<string, unknown>;
+
+/** Workers runtime global (workerd); declared here because the project does not load @cloudflare/workers-types. */
+interface LangRewriter {
+  on(selector: string, handlers: { element(el: { setAttribute(name: string, value: string): void }): void }): LangRewriter;
+  transform(response: Response): Response;
+}
+declare const HTMLRewriter: { new (): LangRewriter };
+
+/**
+ * One root layout serves both languages and renders <html lang="tr">. Browsers already switch /en pages to "en"
+ * (inline script in app/en/layout.tsx), but crawlers, link previews and validators read the raw HTML, so English
+ * HTML documents get the attribute rewritten here as well. RSC payloads and other content types pass through.
+ */
+function withPageLang(request: Request, response: Response): Response {
+  const { pathname } = new URL(request.url);
+  if (pathname !== "/en" && !pathname.startsWith("/en/")) return response;
+  if (!(response.headers.get("content-type") || "").includes("text/html") || !response.body) return response;
+  return new HTMLRewriter()
+    .on("html", {
+      element(el) {
+        el.setAttribute("lang", "en");
+      },
+    })
+    .transform(response);
+}
 type WorkerCtx = { waitUntil(promise: Promise<unknown>): void };
 
 /** Same precedence as OpenNext's populateProcessEnv: worker vars and secrets win over the embedded .env values. */
@@ -27,7 +53,9 @@ function flatEnv(env: WorkerEnv): Record<string, string> {
 }
 
 export default {
-  fetch: handler.fetch,
+  async fetch(request: Request, env: WorkerEnv, ctx: WorkerCtx): Promise<Response> {
+    return withPageLang(request, await handler.fetch(request, env, ctx));
+  },
 
   async scheduled(controller: { scheduledTime?: number } | undefined, env: WorkerEnv, ctx: WorkerCtx) {
     const flat = flatEnv(env);

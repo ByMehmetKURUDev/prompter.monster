@@ -22,6 +22,17 @@ export interface ChangelogEntry {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: "4.19.2",
+    date: "2026-11-19",
+    title: "Canlı site taraması: İngilizce sayfalarda lang, site haritası, uzun açıklamalar",
+    items: [
+      "Canlı tarama: site haritasındaki 173 sayfa ve sayfalardan çıkan 70 iç bağlantı 200 döndü; hepsinde başlık, açıklama, canonical, hreflang, paylaşım görseli ve tek h1 var; 11 önemli sayfada konsol hatası yok; İngilizce sayfalarda Türkçe başlık ya da açıklama kalmamış.",
+      "İngilizce sayfaların HTML'i <html lang=\"tr\"> ile geliyordu (tarayıcıda bir betik düzeltiyordu, ama arama motoru botları, bağlantı önizlemeleri ve doğrulayıcılar ham HTML'i okur). Worker artık /en altındaki HTML belgelerinde lang=\"en\" yazıyor; hydration uyarısı da susturuldu.",
+      "Site haritasına /explore/leaderboard ve /en/explore/leaderboard eklendi (sayfalardan bağlantılıydı ama listede yoktu).",
+      "160 karakteri aşan 7 açıklama kısaltıldı (fiyatlandırma, geliştiriciler, build prompt'lar, İngilizce kılavuz).",
+    ],
+  },
+  {
     version: "4.19.1",
     date: "2026-11-19",
     title: "Veritabanı davranış testleri canlıda; admin hunisi düzeltmesi (0025)",

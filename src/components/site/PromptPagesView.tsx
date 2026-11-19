@@ -11,7 +11,7 @@ const HUB = {
   tr: {
     title: "Proje tipine göre master build prompt'lar",
     description: (n: number) =>
-      `${n} proje tipi için hazır build prompt şablonu: SaaS dashboard, AI wrapper, e-ticaret, marketplace, fintech, LMS, telemedicine ve daha fazlası. Claude Code, Cursor, v0, Lovable ve Bolt için.`,
+      `${n} proje tipi için hazır build prompt şablonu: SaaS, AI wrapper, e-ticaret, marketplace, fintech, LMS ve fazlası. Claude Code, Cursor, v0, Lovable ve Bolt için.`,
     crumb: "Build prompt'lar",
     pill: (t: number, e: number, f: number) => `${t} proje tipi • ${e} uzman • ${f} format`,
     intro: "Her sayfa bir proje tipi için önerilen uzmanları, stack'i, özellik listesini ve kısaltılmış örnek prompt'u gösterir. Beğendiğin tipi seç; Studio o ayarlarla açılır, sen sadece fikrini yazarsın.",
@@ -25,7 +25,7 @@ const HUB = {
   en: {
     title: "Master build prompts by project type",
     description: (n: number) =>
-      `Ready-made build prompt templates for ${n} project types: SaaS dashboard, AI wrapper, e-commerce, marketplace, fintech, LMS, telemedicine and more. For Claude Code, Cursor, v0, Lovable and Bolt.`,
+      `Build prompt templates for ${n} project types: SaaS, AI wrappers, e-commerce, marketplaces, fintech, LMS and more. For Claude Code, Cursor, v0, Lovable and Bolt.`,
     crumb: "Build prompts",
     pill: (t: number, e: number, f: number) => `${t} project types • ${e} experts • ${f} formats`,
     intro: "Each page shows the recommended experts, stack, feature list and a shortened sample prompt for one project type. Pick a type and the Studio opens with those settings — you just write your idea.",
