@@ -3,6 +3,7 @@
 import { Sparkles } from "lucide-react";
 import { ALL_PROJECT_TYPES, MONETIZATION } from "@/lib/data";
 import type { StudioState } from "@/lib/types";
+import { InputCoach } from "./InputCoach";
 import { Card, Input, Pill, SectionLabel, Spinner, StepHeader, Textarea, cx } from "./ui";
 import { useT } from "./useT";
 
@@ -13,6 +14,7 @@ export function Step1Idea({
   onEnhance,
   enhancing,
   cost = 1,
+  onNotify,
 }: {
   s: StudioState;
   patch: (p: Partial<StudioState>) => void;
@@ -21,6 +23,8 @@ export function Step1Idea({
   enhancing: boolean;
   /** Credit cost of one Enhance call. */
   cost?: number;
+  /** Studio toast (used by the Input Coach's example ideas). */
+  onNotify?: (message: string, ms?: number) => void;
 }) {
   const t = useT().step1;
   return (
@@ -61,6 +65,8 @@ export function Step1Idea({
             </div>
           </label>
         </Card>
+
+        <InputCoach s={s} patch={patch} onNotify={onNotify} />
 
         <Card className="p-5">
           <SectionLabel className="mb-3">{t.projectType}</SectionLabel>

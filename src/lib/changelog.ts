@@ -13,6 +13,16 @@ export interface ChangelogEntry {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: "4.10",
+    date: "2026-11-19",
+    title: "Girdi Koçu: Studio'nun ilk adımında içerik kontrol listesi ve örnek fikirler",
+    items: [
+      "Studio → Fikir & Vizyon: yeni Girdi Koçu kartı. 0–100 'Girdi Kalitesi' skoru ve 6 maddelik ağırlıklı kontrol listesi (proje adı 10, pitch 25, açıklama 20, hedef kitle 20, rakipler 10, USP 15); her madde için somut ipucu (klişe pitch, genel USP, eksik acı noktası gibi). Üstteki 'Quality' göstergesi değişmedi.",
+      "Tek tıkla örnek fikir: StudioFlow, ShipDeck, Nestegg — adım 1'i (ad, pitch, açıklama, hedef kitle, rakipler, USP, proje tipi, gelir modeli) doldurur; kendi girdilerin varsa önce onay ister. TR ve EN (/en/studio) ayrı metinlerle.",
+      "Kart 'Gizle' ile daraltılabilir; tercih tarayıcıda hatırlanır. Skorlama yerel ve ücretsiz — AI kredisi harcamaz, hiçbir şey sunucuya gitmez.",
+    ],
+  },
+  {
     version: "4.9.1",
     date: "2026-11-19",
     title: "Otomatik deploy açıldı, admin rolü düzeltmesi, RPC sertleştirmesi",

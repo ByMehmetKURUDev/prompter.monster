@@ -543,7 +543,9 @@ export function Studio({ dailyLimit }: { dailyLimit: number }) {
           )}
 
           <div className="px-4 lg:px-8 py-6 max-w-[900px]">
-            {s.step === 1 && <Step1Idea s={s} patch={patch} toggle={toggle} onEnhance={enhance} enhancing={enhancing} cost={costs.enhance} />}
+            {s.step === 1 && (
+              <Step1Idea s={s} patch={patch} toggle={toggle} onEnhance={enhance} enhancing={enhancing} cost={costs.enhance} onNotify={say} />
+            )}
             {s.step === 2 && <Step2Stack s={s} toggle={toggleStack} onSuggest={suggest} suggesting={suggesting} aiPicks={aiPicks} aiWhy={aiWhy} cost={costs.suggest} />}
             {s.step === 3 && <Step3Features s={s} toggle={toggle} />}
             {s.step === 4 && (
