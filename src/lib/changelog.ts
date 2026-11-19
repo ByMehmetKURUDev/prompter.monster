@@ -22,6 +22,17 @@ export interface ChangelogEntry {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: "4.19",
+    date: "2026-11-19",
+    title: "Haftalık admin özeti: her pazartesi 08:17'de son 7 günün e-postası",
+    items: [
+      "Her pazartesi 08:17'de (İstanbul) admin hesaplarına son 7 günün özeti gider: yeni kayıt, aktif kullanıcı, üretim ve AI çağrısı (önceki 7 güne göre oklarla), kredi, yeni proje, paylaşım, Pro ilgisi ve abonelikler, takımlar, bilgilendirme e-postaları, kayıt kanalları (Kanallar sayfasıyla aynı etiketler), en çok üretilen proje tipleri ve 'Göz at' listesi (başarısız AI çağrısı, gönderilemeyen e-posta, yeni bildirim, biten abonelik).",
+      "Admin → E-postalar → Haftalık admin özeti: canlı önizleme, alıcı sayısı ve 'Özeti şimdi bana gönder' (konu [Test] ile başlar).",
+      "Migration 0024: admin_weekly_summary() — yalnız servis rolü çağırabilir (anon/authenticated kapalı). 0024 uygulanmadan özet hazırlanmaz; sayfa uyarı gösterir.",
+      "Saatlik cron'a bağlı, ayrı tetikleyici yok; aynı gün aynı kişiye iki kez gitmez (Resend idempotency). RESEND_API_KEY eklenene kadar kapalı; WEEKLY_SUMMARY = off ile ayrıca kapatılır (LIFECYCLE_EMAILS'ten bağımsız).",
+    ],
+  },
+  {
     version: "4.18",
     date: "2026-11-19",
     title: "Herkese açık Yenilikler sayfası (/changelog, /en/changelog) ve RSS akışı",

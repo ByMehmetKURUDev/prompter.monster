@@ -53,6 +53,11 @@ function str(env: Record<string, unknown>, key: string): string {
 /** Reads the config from a flat env record (process.env in Next, worker bindings in the cron). Null → feature off. */
 export function emailConfigFrom(env: Record<string, unknown>): EmailConfig | null {
   if (str(env, "LIFECYCLE_EMAILS").toLowerCase() === "off") return null;
+  return baseEmailConfigFrom(env);
+}
+
+/** Resend + service-role settings without any feature switch (the weekly admin summary has its own: WEEKLY_SUMMARY). */
+export function baseEmailConfigFrom(env: Record<string, unknown>): EmailConfig | null {
   const supabaseUrl = str(env, "NEXT_PUBLIC_SUPABASE_URL") || str(env, "SUPABASE_URL");
   const serviceKey = str(env, "SUPABASE_SERVICE_ROLE_KEY");
   const resendKey = str(env, "RESEND_API_KEY");

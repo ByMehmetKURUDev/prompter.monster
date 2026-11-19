@@ -1,12 +1,13 @@
 import Link from "next/link";
 import { getAdmin } from "@/lib/admin";
-import { emailConfigFrom } from "@/lib/email/lifecycle";
+import { emailConfigFrom, emailRpc } from "@/lib/email/lifecycle";
+import { renderWeeklySummary, weeklyConfigFrom, type WeeklySummary } from "@/lib/email/weekly";
 import { renderLifecycleEmail, type EmailKind, type EmailLocale } from "@/lib/email/templates";
 import { AUTH_EMAIL_KINDS, preview as authPreview, type AuthEmailKind } from "@/lib/email/auth-templates";
 import { isMissingFunction } from "@/lib/share";
 import { cx } from "@/lib/cx";
 import { Badge, PageTitle, Panel, Stat, Table, fmtDate, fmtNum } from "@/components/admin/ui";
-import { EmailActions } from "@/components/admin/EmailActions";
+import { EmailActions, WeeklySummaryButton } from "@/components/admin/EmailActions";
 
 export const dynamic = "force-dynamic";
 
@@ -80,6 +81,23 @@ export default async function AdminEmails({ searchParams }: Props) {
   const authLoc: EmailLocale = auth.slice(cut + 1) === "en" ? "en" : "tr";
   const authSample = authPreview(authKind, authLoc, site);
   const href = (p: string, a: string, anchor: string) => `/admin/emails?preview=${p}&auth=${a}#${anchor}`;
+
+  // Weekly admin summary (0024): the live numbers, read with the service role (the function is closed to everyone else).
+  const weeklyOn = Boolean(weeklyConfigFrom(process.env));
+  const weeklyPaused = (process.env.WEEKLY_SUMMARY || "").trim().toLowerCase() === "off";
+  let weekly: WeeklySummary | null = null;
+  let weeklyErr: string | null = null;
+  const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  if (serviceKey && supabaseUrl) {
+    try {
+      weekly = await emailRpc<WeeklySummary>({ supabaseUrl: supabaseUrl.replace(/\/$/, ""), serviceKey }, "admin_weekly_summary", { p_days: 7 });
+    } catch (e) {
+      const m = e instanceof Error ? e.message : String(e);
+      weeklyErr = /PGRST202|404|does not exist/.test(m) ? "missing" : m;
+    }
+  }
+  const weeklyMail = weekly ? renderWeeklySummary(weekly, site) : null;
 
   return (
     <>
@@ -218,6 +236,34 @@ export default async function AdminEmails({ searchParams }: Props) {
             </pre>
           </details>
           <p className="mt-2 text-[11.5px] text-zinc-500">Örnek isim ve sahte çıkış bağlantısıyla gösterilir; gerçek gönderimde kişinin adı ve kendi bağlantısı kullanılır.</p>
+        </Panel>
+      </div>
+
+      <div className="mt-6 scroll-mt-4" id="weekly">
+        <Panel title="Haftalık admin özeti" actions={<WeeklySummaryButton enabled={weeklyOn && Boolean(weekly)} adminEmail={admin.user.email ?? null} />}>
+          <ul className="space-y-2 text-[13px]">
+            <li className="flex items-center gap-2">
+              <Badge tone={weeklyOn ? "lime" : "amber"}>{weeklyOn ? "AÇIK" : "KAPALI"}</Badge>
+              Her pazartesi 08:17 (İstanbul), son 7 gün önceki 7 günle karşılaştırılır {weeklyPaused ? "(WEEKLY_SUMMARY = off)" : !weeklyOn ? "(RESEND_API_KEY bekleniyor)" : ""}
+            </li>
+            <li className="text-zinc-400">
+              Alıcılar: admin rolündeki hesaplar{weekly ? ` (${weekly.recipients.length})` : ""}. Kapatmak için Cloudflare&apos;de WEEKLY_SUMMARY = off.
+            </li>
+          </ul>
+          {weeklyErr === "missing" && (
+            <div className="mt-3 rounded-xl border border-amber-500/30 bg-amber-500/10 p-3 text-[13px] text-amber-200">
+              Migration 0024 henüz uygulanmamış (supabase/migrations/0024_weekly_summary.sql) — Supabase SQL Editor&apos;da çalıştırınca özet hazır olur.
+            </div>
+          )}
+          {weeklyErr && weeklyErr !== "missing" && <div className="mt-3 rounded-xl border border-red-500/30 bg-red-500/10 p-3 text-[13px] text-red-300">{weeklyErr}</div>}
+          {weeklyMail && (
+            <>
+              <div className="mt-3 text-[13px]">
+                <span className="text-zinc-500">Konu:</span> <span className="font-semibold">{weeklyMail.subject}</span>
+              </div>
+              <iframe title="Haftalık özet önizlemesi" srcDoc={weeklyMail.html} sandbox="" className="mt-3 w-full h-[760px] rounded-xl border border-ink-600 bg-white" />
+            </>
+          )}
         </Panel>
       </div>
 

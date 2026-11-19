@@ -62,6 +62,7 @@ npm run preview                             # yayınlamadan önce Workers ortam�
 Worker girişi `custom-worker.ts`'tir: OpenNext'in ürettiği fetch işleyicisi + saatlik cron (`wrangler.jsonc` → `triggers.crons`), karşılama ve
 başlangıç hatırlatması e-postalarını gönderir (migration 0023). `npx wrangler secret put RESEND_API_KEY` (Resend → API Keys, "Sending access",
 alan adı prompter.monster) eklenene kadar hiçbir e-posta gitmez; `LIFECYCLE_EMAILS=off` duraklatır. Durum, önizleme ve test gönderimi: `/admin/emails`.
+Aynı cron her pazartesi 05:17 UTC'de (08:17 İstanbul) admin hesaplarına haftalık özet gönderir (migration 0024; `WEEKLY_SUMMARY=off` kapatır).
 
 Not: `npm run deploy`, `wrangler deploy`'u doğrudan çağırır (`OPEN_NEXT_DEPLOY=true`); böylece yerel Workers çalışma zamanı (workerd) gerekmez ve
 macOS 12 gibi eski sistemlerde de çalışır. Incremental cache (R2/KV) eklendiğinde `npm run deploy:full` kullanılmalıdır.

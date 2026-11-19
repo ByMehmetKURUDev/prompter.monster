@@ -89,3 +89,40 @@ export function EmailActions({ enabled, adminEmail }: { enabled: boolean; adminE
     </div>
   );
 }
+
+/** Admin → E-postalar → Haftalık özet: send this week's summary to myself now. */
+export function WeeklySummaryButton({ enabled, adminEmail }: { enabled: boolean; adminEmail: string | null }) {
+  const [busy, setBusy] = useState(false);
+  const [msg, setMsg] = useState<{ ok: boolean; text: string } | null>(null);
+  const send = async () => {
+    setBusy(true);
+    setMsg(null);
+    try {
+      const r = await fetch("/api/admin/emails", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ action: "weekly" }) });
+      const j = (await r.json().catch(() => ({}))) as { ok?: boolean; to?: string; message?: string; error?: string };
+      setMsg(!r.ok || j.ok === false ? { ok: false, text: j.message || j.error || `HTTP ${r.status}` } : { ok: true, text: `Gönderildi: ${j.to}.` });
+    } catch {
+      setMsg({ ok: false, text: "İstek başarısız." });
+    } finally {
+      setBusy(false);
+    }
+  };
+  return (
+    <div className="text-[13px]">
+      <button
+        type="button"
+        disabled={!enabled || busy}
+        onClick={send}
+        className="h-9 px-3 rounded-lg bg-ink-800 border border-ink-600 hover:border-ink-400 disabled:opacity-40"
+        title={adminEmail ? `${adminEmail} adresine “[Test]” konusuyla gönderir` : undefined}
+      >
+        {busy ? "Gönderiliyor…" : "Özeti şimdi bana gönder"}
+      </button>
+      {msg && (
+        <p role="status" className={`mt-2 ${msg.ok ? "text-lime" : "text-red-300"}`}>
+          {msg.text}
+        </p>
+      )}
+    </div>
+  );
+}
