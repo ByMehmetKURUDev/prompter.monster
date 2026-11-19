@@ -10,7 +10,7 @@ export const metadata: Metadata = {
   description:
     "Ücretsiz başla: günde 5 AI kredisi, 3 uzman, proje kütüphanesi. Monster Pro $29/ay: ayda 1.000 AI kredisi, 18 uzman, Mega Chain, 5 format ve Export to Builders.",
   alternates: alternatesFor("/pricing", "tr"),
-  openGraph: { title: "Prompt.Monster fiyatlandırma", description: "Ücretsiz başla, ciddiye alınca Pro'ya geç. $29/ay veya $290/yıl.", url: "https://prompter.monster/pricing", siteName: "Prompt.Monster", locale: "tr_TR", type: "website", images: ogImages("tr") },
+  openGraph: { title: "Prompter.Monster fiyatlandırma", description: "Ücretsiz başla, ciddiye alınca Pro'ya geç. $29/ay veya $290/yıl.", url: "https://prompter.monster/pricing", siteName: "Prompter.Monster", locale: "tr_TR", type: "website", images: ogImages("tr") },
 };
 
 export default function PricingPage() {

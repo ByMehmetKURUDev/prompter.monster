@@ -39,7 +39,7 @@ export function legalMetadata(slug: string, locale: Locale): Metadata {
     title: doc.title,
     description: doc.description,
     alternates: { canonical: locale === "en" ? en : tr, languages: { tr, en, "x-default": tr } },
-    openGraph: { title: `${doc.title} · Prompt.Monster`, description: doc.description, url: locale === "en" ? en : tr, siteName: "Prompt.Monster", locale: locale === "en" ? "en_US" : "tr_TR", type: "article", images: ogImages(locale) },
+    openGraph: { title: `${doc.title} · Prompter.Monster`, description: doc.description, url: locale === "en" ? en : tr, siteName: "Prompter.Monster", locale: locale === "en" ? "en_US" : "tr_TR", type: "article", images: ogImages(locale) },
   };
 }
 

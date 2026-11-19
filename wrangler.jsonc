@@ -39,7 +39,7 @@
     // Admin panel (/admin): profiles.role = 'admin' OR one of these e-mails (comma separated).
     "ADMIN_EMAILS": "mehmetkuru.dev@gmail.com",
     // Lifecycle e-mails (0023): sender on the Resend-verified prompter.monster domain. LIFECYCLE_EMAILS = "off" pauses them.
-    "EMAIL_FROM": "Prompt.Monster <hello@prompter.monster>"
+    "EMAIL_FROM": "Prompter.Monster <hello@prompter.monster>"
   },
   // Live version id shown in /admin/system.
   "version_metadata": { "binding": "CF_VERSION_METADATA" },

@@ -10,13 +10,13 @@ export const metadata: Metadata = {
   // A child openGraph replaces the parent's, so the English defaults are complete (image included).
   openGraph: {
     type: "website",
-    siteName: "Prompt.Monster",
+    siteName: "Prompter.Monster",
     locale: "en_US",
-    title: "Prompt.Monster — From idea to master build prompt",
+    title: "Prompter.Monster — From idea to master build prompt",
     description: "18 expert monsters, an 8-step Mega Chain, 5 output formats. Turn your idea into a build prompt for AI coding tools.",
     images: ogImages("en"),
   },
-  twitter: { card: "summary_large_image", title: "Prompt.Monster", description: "From idea to master build prompt.", images: twitterImages("en") },
+  twitter: { card: "summary_large_image", title: "Prompter.Monster", description: "From idea to master build prompt.", images: twitterImages("en") },
 };
 
 /** Everything under /en renders in English: client components read the locale from this provider. */

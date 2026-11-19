@@ -8,7 +8,7 @@ export const metadata: Metadata = {
   title: m.title,
   description: m.description,
   alternates: alternatesFor("/developers", "tr"),
-  openGraph: { title: m.title, description: m.description, url: "https://prompter.monster/developers", siteName: "Prompt.Monster", locale: "tr_TR", type: "website", images: ogImages("tr") },
+  openGraph: { title: m.title, description: m.description, url: "https://prompter.monster/developers", siteName: "Prompter.Monster", locale: "tr_TR", type: "website", images: ogImages("tr") },
   robots: { index: true, follow: true },
 };
 export const dynamic = "force-dynamic";

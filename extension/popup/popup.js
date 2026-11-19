@@ -1,4 +1,4 @@
-// Prompt.Monster — Tek Tık Aktar: popup logic.
+// Prompter.Monster — Tek Tık Aktar: popup logic.
 // Reads the clipboard (filled by the "Copy" buttons on prompter.monster) and
 // pastes it into whatever AI chat box is active in the current tab.
 
@@ -10,10 +10,10 @@ const COPY = {
     pasting: "Yapıştırılıyor…",
     toggle: "Yapıştırdıktan sonra otomatik gönder",
     hint: "İncelemeden gönderir — dikkatli kullan.",
-    footer: "Prompt.Monster'da yeni prompt oluştur →",
+    footer: "Prompter.Monster'da yeni prompt oluştur →",
     okPasted: "Yapıştırıldı ✅",
     okSent: "Yapıştırıldı ve gönderildi ✅",
-    errEmpty: "Pano boş görünüyor. Önce Prompt.Monster'da bir bölümü kopyala.",
+    errEmpty: "Pano boş görünüyor. Önce Prompter.Monster'da bir bölümü kopyala.",
     errClipboard: "Pano okunamadı. Chrome'un pano iznini kontrol et.",
     errNoTarget: "Bu sayfada bir sohbet kutusu bulunamadı.",
     errRestricted: "Bu sayfada çalışmaz — bir AI sohbet sekmesine geç.",
@@ -25,10 +25,10 @@ const COPY = {
     pasting: "Pasting…",
     toggle: "Auto-send after pasting",
     hint: "Sends without review — use with care.",
-    footer: "Create a new prompt on Prompt.Monster →",
+    footer: "Create a new prompt on Prompter.Monster →",
     okPasted: "Pasted ✅",
     okSent: "Pasted and sent ✅",
-    errEmpty: "Clipboard looks empty. Copy a section on Prompt.Monster first.",
+    errEmpty: "Clipboard looks empty. Copy a section on Prompter.Monster first.",
     errClipboard: "Couldn't read the clipboard. Check Chrome's clipboard permission.",
     errNoTarget: "No chat box found on this page.",
     errRestricted: "Doesn't work on this page — switch to an AI chat tab.",

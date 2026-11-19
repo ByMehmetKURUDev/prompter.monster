@@ -41,7 +41,7 @@ const KEYS_URL = `${SITE}/account/api`;
 export async function authorize(req: Request, kind: "api" | "mcp", opts: { requireKey?: boolean } = {}): Promise<Authz> {
   const [s] = await Promise.all([readServerSettings(), loadCatalog()]);
   const fail = (status: number, code: string, message: string, headers: Record<string, string> = {}): Authz => ({ ok: false, error: { status, code, message, headers } });
-  if (s.maintenance_mode) return fail(503, "maintenance", "Prompt.Monster is in maintenance mode. Please try again shortly.");
+  if (s.maintenance_mode) return fail(503, "maintenance", "Prompter.Monster is in maintenance mode. Please try again shortly.");
   if (kind === "api" && !s.api_enabled) return fail(503, "api_disabled", "The public API is temporarily disabled.");
   if (kind === "mcp" && !s.mcp_enabled) return fail(503, "mcp_disabled", "The MCP server is temporarily disabled.");
 

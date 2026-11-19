@@ -67,7 +67,7 @@ export function baseEmailConfigFrom(env: Record<string, unknown>): EmailConfig |
     serviceKey,
     resendKey,
     siteUrl: (str(env, "NEXT_PUBLIC_SITE_URL") || "https://prompter.monster").replace(/\/$/, ""),
-    from: str(env, "EMAIL_FROM") || "Prompt.Monster <hello@prompter.monster>",
+    from: str(env, "EMAIL_FROM") || "Prompter.Monster <hello@prompter.monster>",
     replyTo: str(env, "EMAIL_REPLY_TO") || null,
   };
 }

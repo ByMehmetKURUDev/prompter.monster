@@ -1,4 +1,4 @@
-# Prompt.Monster — Tek Tık Aktar (tarayıcı eklentisi)
+# Prompter.Monster — Tek Tık Aktar (tarayıcı eklentisi)
 
 Studio'da ürettiğin master prompt'u (veya herhangi bir bölümünü) kopyaladıktan sonra,
 ChatGPT / Claude / Gemini / Copilot / Perplexity gibi sohbet arayüzlerinde eklentinin
@@ -11,7 +11,7 @@ Bu, prompter.monster sitesinin kendisine **hiçbir değişiklik gerektirmiyor**.
 her yerde bir "Kopyala" düğmesi sunuyor (`src/lib/client.ts#copyText`); eklenti bunu
 tamamlıyor:
 
-1. Kullanıcı Prompt.Monster'da bir bölümü kopyalar (var olan davranış, değişmedi).
+1. Kullanıcı Prompter.Monster'da bir bölümü kopyalar (var olan davranış, değişmedi).
 2. ChatGPT/Claude/Gemini gibi bir sekmede eklenti simgesine tıklar.
 3. Popup (`popup/popup.js`), kullanıcı etkileşimiyle tetiklenen `navigator.clipboard.readText()`
    çağrısıyla panoyu okur.

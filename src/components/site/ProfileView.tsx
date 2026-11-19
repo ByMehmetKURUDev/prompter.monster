@@ -36,8 +36,8 @@ export async function generateProfileMetadata(username: string, locale: Locale):
   const title = `${profile.display_name} (@${profile.username})`;
   const description =
     locale === "en"
-      ? `${profile.display_name}'s shared build prompts on Prompt.Monster: ${profile.share_count} shares, ${profile.total_likes} likes.`
-      : `@${profile.username} kullanıcısının Prompt.Monster'da paylaştığı build prompt'lar: ${profile.share_count} paylaşım, ${profile.total_likes} beğeni.`;
+      ? `${profile.display_name}'s shared build prompts on Prompter.Monster: ${profile.share_count} shares, ${profile.total_likes} likes.`
+      : `@${profile.username} kullanıcısının Prompter.Monster'da paylaştığı build prompt'lar: ${profile.share_count} paylaşım, ${profile.total_likes} beğeni.`;
   return { title, description, ...socialFor(`/u/${profile.username}`, locale, title, description) };
 }
 

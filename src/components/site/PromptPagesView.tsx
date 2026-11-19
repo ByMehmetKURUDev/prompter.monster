@@ -54,7 +54,7 @@ export function PromptHubView({ locale }: { locale: Locale }) {
       "@context": "https://schema.org",
       "@type": "BreadcrumbList",
       itemListElement: [
-        { "@type": "ListItem", position: 1, name: "Prompt.Monster", item: base },
+        { "@type": "ListItem", position: 1, name: "Prompter.Monster", item: base },
         { "@type": "ListItem", position: 2, name: h.crumb, item: `${base}/prompt` },
       ],
     },
@@ -261,7 +261,7 @@ export function TypePageView({ slug, locale }: { slug: string; locale: Locale })
       "@context": "https://schema.org",
       "@type": "BreadcrumbList",
       itemListElement: [
-        { "@type": "ListItem", position: 1, name: "Prompt.Monster", item: base },
+        { "@type": "ListItem", position: 1, name: "Prompter.Monster", item: base },
         { "@type": "ListItem", position: 2, name: t.crumb, item: `${base}/prompt` },
         { "@type": "ListItem", position: 3, name: page.name, item: url },
       ],
@@ -278,7 +278,7 @@ export function TypePageView({ slug, locale }: { slug: string; locale: Locale })
       description: page.description,
       url,
       inLanguage: locale,
-      isPartOf: { "@type": "WebSite", name: "Prompt.Monster", url: SITE },
+      isPartOf: { "@type": "WebSite", name: "Prompter.Monster", url: SITE },
       about: { "@type": "Thing", name: page.name },
     },
   ];

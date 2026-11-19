@@ -17,7 +17,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     description: page.description,
     keywords: page.keywords,
     alternates: alternatesFor(`/prompt/${page.slug}`, "en"),
-    openGraph: { type: "article", title: `${page.title} · Prompt.Monster`, description: page.description, url, siteName: "Prompt.Monster", locale: "en_US", images: ogImages("en") },
+    openGraph: { type: "article", title: `${page.title} · Prompter.Monster`, description: page.description, url, siteName: "Prompter.Monster", locale: "en_US", images: ogImages("en") },
     twitter: { card: "summary_large_image", title: page.title, description: page.description, images: twitterImages("en") },
     robots: { index: true, follow: true },
   };

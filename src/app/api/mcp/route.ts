@@ -7,7 +7,7 @@ export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 /**
- * Prompt.Monster MCP server — Streamable HTTP transport, stateless (no Mcp-Session-Id, no server-initiated stream).
+ * Prompter.Monster MCP server — Streamable HTTP transport, stateless (no Mcp-Session-Id, no server-initiated stream).
  *   claude mcp add --transport http prompt-monster https://prompter.monster/api/mcp --header "Authorization: Bearer pm_live_…"
  * The key is optional: without one the Free plan applies and refine_prompt / export_files explain how to get one.
  */
@@ -63,7 +63,7 @@ export function GET() {
     {
       error: {
         code: "method_not_allowed",
-        message: "This is the Prompt.Monster MCP endpoint (Streamable HTTP). Send JSON-RPC via POST. Setup: https://prompter.monster/developers",
+        message: "This is the Prompter.Monster MCP endpoint (Streamable HTTP). Send JSON-RPC via POST. Setup: https://prompter.monster/developers",
       },
     },
     { status: 405, headers: { ...CORS_HEADERS, Allow: "POST, OPTIONS" } },

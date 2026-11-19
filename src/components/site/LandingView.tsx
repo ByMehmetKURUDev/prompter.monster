@@ -96,11 +96,11 @@ function structuredData(locale: Locale, description: string) {
   return {
     "@context": "https://schema.org",
     "@graph": [
-      { "@type": "Organization", "@id": `${SITE}/#org`, name: "Prompt.Monster", url: SITE, logo: `${SITE}/icon-512.png`, email: "hello@prompter.monster" },
-      { "@type": "WebSite", "@id": `${SITE}/#website`, name: "Prompt.Monster", url, inLanguage, publisher: { "@id": `${SITE}/#org` } },
+      { "@type": "Organization", "@id": `${SITE}/#org`, name: "Prompter.Monster", alternateName: "Prompt.Monster", url: SITE, logo: `${SITE}/icon-512.png`, email: "hello@prompter.monster" },
+      { "@type": "WebSite", "@id": `${SITE}/#website`, name: "Prompter.Monster", alternateName: "Prompt.Monster", url, inLanguage, publisher: { "@id": `${SITE}/#org` } },
       {
         "@type": "SoftwareApplication",
-        name: "Prompt.Monster",
+        name: "Prompter.Monster",
         url,
         inLanguage,
         description,
@@ -131,7 +131,7 @@ export function LandingView({ locale }: { locale: Locale }) {
       <header className="h-[56px] border-b border-ink-600 bg-ink-950/80 backdrop-blur-xl sticky top-0 z-50 flex items-center px-4 lg:px-8 gap-4">
         <Link href={L("/")} className="flex items-center gap-3 shrink-0">
           <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-lime to-violet flex items-center justify-center text-black font-bold">👹</div>
-          <span className="font-bold tracking-tight text-[15px] max-[400px]:hidden">Prompt.Monster</span>
+          <span className="font-bold tracking-tight text-[15px] max-[400px]:hidden">Prompter.Monster</span>
         </Link>
         <nav className="ml-auto flex items-center gap-2 text-[13px]">
           <a href="#how" className="hidden sm:block px-3 py-1.5 text-zinc-400 hover:text-white">
@@ -334,7 +334,7 @@ export function LandingView({ locale }: { locale: Locale }) {
       </main>
 
       <footer className="border-t border-ink-600 px-4 lg:px-8 py-6 text-[12px] text-zinc-600 flex flex-wrap items-center gap-x-3 gap-y-2">
-        <span>Prompt.Monster © {new Date().getFullYear()}</span>
+        <span>Prompter.Monster © {new Date().getFullYear()}</span>
         <span aria-hidden>•</span>
         <Link href={L("/docs")} className="hover:text-zinc-300">
           {c.nav.guide}

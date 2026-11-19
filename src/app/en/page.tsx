@@ -3,20 +3,20 @@ import { LandingView } from "@/components/site/LandingView";
 import { alternatesFor, ogImages, twitterImages } from "@/lib/i18n";
 
 export const metadata: Metadata = {
-  title: { absolute: "Prompt.Monster — From idea to master build prompt" },
+  title: { absolute: "Prompter.Monster — From idea to master build prompt" },
   description:
     "Turn your product idea into copy-paste-ready master build prompts for Claude Code, Cursor, v0, Lovable and Bolt, written by 18 expert personas.",
   alternates: alternatesFor("/", "en"),
   openGraph: {
     type: "website",
-    siteName: "Prompt.Monster",
+    siteName: "Prompter.Monster",
     locale: "en_US",
-    title: "Prompt.Monster — From idea to master build prompt",
+    title: "Prompter.Monster — From idea to master build prompt",
     description: "18 expert monsters, an 8-step Mega Chain, 5 output formats. Turn your idea into a build prompt for AI coding tools.",
     url: "https://prompter.monster/en",
     images: ogImages("en"),
   },
-  twitter: { card: "summary_large_image", title: "Prompt.Monster", description: "From idea to master build prompt.", images: twitterImages("en") },
+  twitter: { card: "summary_large_image", title: "Prompter.Monster", description: "From idea to master build prompt.", images: twitterImages("en") },
 };
 
 export default function LandingEn() {

@@ -1,9 +1,9 @@
 {
   "manifest_version": 3,
-  "name": "Prompt.Monster — Tek Tık Aktar",
-  "short_name": "Prompt.Monster",
+  "name": "Prompter.Monster — Tek Tık Aktar",
+  "short_name": "Prompter.Monster",
   "version": "1.0.0",
-  "description": "Prompt.Monster'da kopyaladığın master prompt'u ChatGPT, Claude, Gemini ve benzeri AI araçlarına tek tıkla yapıştır.",
+  "description": "Prompter.Monster'da kopyaladığın master prompt'u ChatGPT, Claude, Gemini ve benzeri AI araçlarına tek tıkla yapıştır.",
   "default_locale": "tr",
   "icons": {
     "16": "icons/icon16.png",
@@ -17,7 +17,7 @@
       "48": "icons/icon48.png",
       "128": "icons/icon128.png"
     },
-    "default_title": "Prompt.Monster: Panodakini AI aracına aktar"
+    "default_title": "Prompter.Monster: Panodakini AI aracına aktar"
   },
   "permissions": ["activeTab", "scripting", "clipboardRead", "storage"]
 }

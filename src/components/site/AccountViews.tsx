@@ -31,7 +31,7 @@ const COPY = {
     newPassword: "Yeni şifre belirle",
     backStudio: "Studio'ya dön",
     apiTitle: "API ve MCP",
-    apiText: "Prompt.Monster'ı Claude Code, Cursor, VS Code, Windsurf, Claude Desktop ve ChatGPT'den kullan. Prompt üretimi ücretsiz; AI iyileştirme planının kredisini harcar.",
+    apiText: "Prompter.Monster'ı Claude Code, Cursor, VS Code, Windsurf, Claude Desktop ve ChatGPT'den kullan. Prompt üretimi ücretsiz; AI iyileştirme planının kredisini harcar.",
     docs: "Dokümantasyon",
     plan: "Planın",
     viaApi: "API / MCP üzerinden",
@@ -70,7 +70,7 @@ const COPY = {
     newPassword: "Set a new password",
     backStudio: "Back to the Studio",
     apiTitle: "API & MCP",
-    apiText: "Use Prompt.Monster from Claude Code, Cursor, VS Code, Windsurf, Claude Desktop and ChatGPT. Prompt generation is free; AI refine spends your plan's credits.",
+    apiText: "Use Prompter.Monster from Claude Code, Cursor, VS Code, Windsurf, Claude Desktop and ChatGPT. Prompt generation is free; AI refine spends your plan's credits.",
     docs: "Documentation",
     plan: "Your plan",
     viaApi: "Through the API / MCP",
@@ -107,7 +107,7 @@ function Brand({ locale }: { locale: Locale }) {
   return (
     <Link href={lhref("/", locale)} className="flex items-center gap-3">
       <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-lime to-violet flex items-center justify-center text-black font-bold">👹</div>
-      <span className="font-bold tracking-tight text-[15px]">Prompt.Monster</span>
+      <span className="font-bold tracking-tight text-[15px]">Prompter.Monster</span>
     </Link>
   );
 }

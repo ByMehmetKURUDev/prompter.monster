@@ -22,7 +22,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
       <header className="h-[52px] border-b border-ink-600 bg-ink-950/90 backdrop-blur-xl sticky top-0 z-50 flex items-center px-4 gap-3">
         <Link href="/" className="flex items-center gap-2.5 shrink-0">
           <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-lime to-violet flex items-center justify-center text-black font-bold text-sm">👹</div>
-          <span className="font-bold tracking-tight text-[14px]">Prompt.Monster</span>
+          <span className="font-bold tracking-tight text-[14px]">Prompter.Monster</span>
         </Link>
         <span className="text-[10px] font-bold tracking-widest px-2 py-0.5 rounded bg-violet/20 text-violet-400 border border-violet/30 flex items-center gap-1">
           <ShieldCheck className="w-3 h-3" aria-hidden /> ADMIN

@@ -22,6 +22,25 @@ export interface ChangelogEntry {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: "4.20",
+    date: "2026-11-20",
+    title: "Marka adı her yerde Prompter.Monster",
+    items: [
+      "Prompt.Monster → Prompter.Monster: logonun yanındaki yazı, sekme başlıkları, açıklamalar, paylaşım önizlemeleri (og-tr/og-en yeniden üretildi), JSON-LD (alternateName: Prompt.Monster), e-postalar (gönderen adı EMAIL_FROM, konu ve gövde), Supabase giriş e-postası şablonları, kılavuz, geliştirici sayfası, OpenAPI başlığı, MCP açıklamaları, yasal metinler (LEGAL_UPDATED 2026-11-20), tarayıcı ve Raycast eklentileri.",
+      "Teknik adlar değişmedi: MCP sunucu takma adı prompt-monster, API anahtar öneki pm_live_, çerez ve localStorage anahtarları, Worker adı. Uygulanmış migration ve SQL testlerindeki yorumlara dokunulmadı.",
+    ],
+    public: {
+      tr: {
+        title: "Yeni adımız: Prompter.Monster",
+        items: ["Ürünün adı artık alan adıyla aynı: Prompter.Monster. Hesabın, projelerin, paylaşım bağlantıların ve API anahtarların aynen çalışmaya devam ediyor."],
+      },
+      en: {
+        title: "Our new name: Prompter.Monster",
+        items: ["The product now carries the same name as its domain: Prompter.Monster. Your account, projects, share links and API keys keep working as before."],
+      },
+    },
+  },
+  {
     version: "4.19.3",
     date: "2026-11-19",
     title: "www adresi ana adrese yönleniyor; CI'da actions v7",
@@ -75,11 +94,11 @@ export const CHANGELOG: ChangelogEntry[] = [
     public: {
       tr: {
         title: "Yenilikler sayfası",
-        items: ["Prompt.Monster'daki tüm yenilikler artık bu sayfada, en yenisi en üstte. RSS akışıyla takip edebilirsin."],
+        items: ["Prompter.Monster'daki tüm yenilikler artık bu sayfada, en yenisi en üstte. RSS akışıyla takip edebilirsin."],
       },
       en: {
         title: "What's new page",
-        items: ["Everything new in Prompt.Monster now lives on this page, newest first. Follow along with the RSS feed."],
+        items: ["Everything new in Prompter.Monster now lives on this page, newest first. Follow along with the RSS feed."],
       },
     },
   },
@@ -146,14 +165,14 @@ export const CHANGELOG: ChangelogEntry[] = [
       tr: {
         title: "E-posta tercihleri",
         items: [
-          "Hesabım → E-posta: Prompt.Monster'ın bilgilendirme e-postalarını (karşılama ve başlangıç ipuçları) kapatabilir, dillerini seçebilirsin.",
+          "Hesabım → E-posta: Prompter.Monster'ın bilgilendirme e-postalarını (karşılama ve başlangıç ipuçları) kapatabilir, dillerini seçebilirsin.",
           "Her bilgilendirme e-postasında tek tıkla abonelikten çıkış bağlantısı var. Kampanya ya da reklam e-postası göndermiyoruz.",
         ],
       },
       en: {
         title: "Email preferences",
         items: [
-          "Account → Email: turn off Prompt.Monster's informational emails (welcome and getting-started tips) and pick their language.",
+          "Account → Email: turn off Prompter.Monster's informational emails (welcome and getting-started tips) and pick their language.",
           "Every informational email has a one-click unsubscribe link. We don't send promotional emails.",
         ],
       },
@@ -229,7 +248,7 @@ export const CHANGELOG: ChangelogEntry[] = [
     title: "Lansman kalite turu: bağlantı önizlemeleri, erişilebilirlik, SEO, güvenlik başlıkları",
     items: [
       "Bağlantı önizlemeleri: her sayfada 1200×630 önizleme görseli (TR ve EN ayrı, public/og/), og:url artık sayfanın kendi adresi (önceden birçok sayfa ana sayfayı gösteriyordu); Studio, Keşfet, lider tablosu, tip/uzman ve profil sayfalarına sayfaya özel başlık/açıklama.",
-      "SEO: başlık ve açıklama etiketleri her ziyaretçide <head> içinde (htmlLimitedBots); Keşfet başlıklarında çift 'Prompt.Monster' ve emoji kaldırıldı; ana sayfalara schema.org (Organization, WebSite, SoftwareApplication + Free/Pro fiyatları); /en sayfaları ilk HTML'den itibaren lang=\"en\".",
+      "SEO: başlık ve açıklama etiketleri her ziyaretçide <head> içinde (htmlLimitedBots); Keşfet başlıklarında çift 'Prompter.Monster' ve emoji kaldırıldı; ana sayfalara schema.org (Organization, WebSite, SoftwareApplication + Free/Pro fiyatları); /en sayfaları ilk HTML'den itibaren lang=\"en\".",
       "Erişilebilirlik (WCAG AA): ikincil metin renkleri (zinc-500/600) ve mor etiketler 4.5:1 kontrasta çekildi; ana sayfa ve 404'te <main>; Studio'da h1 ve ikon düğmesine erişilebilir ad; Keşfet filtrelerine etiket; kaydırılabilir kod/ tablo alanları klavyeyle odaklanabilir; metin içi bağlantılar altı çizili; dil düğmesi ve menü işaretleri düzeltildi. Lighthouse erişilebilirlik puanı 90–96 → 100.",
       "Mobil: Studio üst çubuğu 390 px telefonlarda yatay kaymaya yol açmıyor. Simgeler: favicon.ico, apple-touch-icon, 192/512 PNG ve /manifest.webmanifest (ana ekrana ekleme). Güvenlik: Strict-Transport-Security ve Permissions-Policy başlıkları; statik görseller middleware'den geçmiyor.",
     ],
@@ -451,19 +470,19 @@ export const CHANGELOG: ChangelogEntry[] = [
       tr: {
         title: "API ve MCP sunucusu",
         items: [
-          "Prompt.Monster artık editörünün içinde: MCP sunucusuyla Claude Code, Cursor, VS Code, Windsurf ve Claude Desktop'tan master build prompt'u ve proje dosyaları üret.",
+          "Prompter.Monster artık editörünün içinde: MCP sunucusuyla Claude Code, Cursor, VS Code, Windsurf ve Claude Desktop'tan master build prompt'u ve proje dosyaları üret.",
           "REST API ve OpenAPI şeması (ChatGPT GPT Actions ile uyumlu). API anahtarını Hesabım → API ve MCP'den oluşturursun; anahtarsız kullanım da Free sınırlarıyla çalışır.",
         ],
       },
       en: {
         title: "API and MCP server",
         items: [
-          "Prompt.Monster now lives in your editor: generate master build prompts and project files from Claude Code, Cursor, VS Code, Windsurf and Claude Desktop with the MCP server.",
+          "Prompter.Monster now lives in your editor: generate master build prompts and project files from Claude Code, Cursor, VS Code, Windsurf and Claude Desktop with the MCP server.",
           "A REST API with an OpenAPI schema (works with ChatGPT GPT Actions). Create API keys under Account → API & MCP; it also works without a key within the Free limits.",
         ],
       },
     },
-    title: "Public API + MCP sunucusu — Prompt.Monster editörlerin içinde",
+    title: "Public API + MCP sunucusu — Prompter.Monster editörlerin içinde",
     items: [
       "MCP sunucusu (/api/mcp, Streamable HTTP): Claude Code, Cursor, VS Code, Windsurf, Claude Desktop. Araçlar: generate_build_prompt, list_project_types, get_type_preset, list_experts, export_files (Pro), get_shared_prompt, refine_prompt (kredi). Claude Code'da /mcp__prompt-monster__new_project komutu.",
       "REST API (/api/v1): types, types/{id}, generate, refine, shared/{slug} + OpenAPI 3.1 şeması (ChatGPT GPT Actions ile uyumlu).",

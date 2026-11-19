@@ -17,7 +17,7 @@ export async function POST(req: Request) {
     const res = await anthropic().messages.create({
       model,
       max_tokens: 40,
-      messages: [{ role: "user", content: "Tek kelimeyle yanıtla: Prompt.Monster'ın maskotu ne?" }],
+      messages: [{ role: "user", content: "Tek kelimeyle yanıtla: Prompter.Monster'ın maskotu ne?" }],
     });
     const reply = res.content.map((c) => ("text" in c ? c.text : "")).join("").trim();
     return NextResponse.json({ ok: true, model, reply, ms: Date.now() - t0, usage: res.usage });

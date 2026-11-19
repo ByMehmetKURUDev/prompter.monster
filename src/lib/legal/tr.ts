@@ -23,9 +23,9 @@ export function trDoc(slug: LegalSlug, i: LegalInfo): LegalDoc {
         slug,
         title: "Kullanım Koşulları",
         short: "Kullanım Koşulları",
-        description: "Prompt.Monster'ı kullanma koşulları: hesap, planlar ve ödeme, içerik hakları, kabul edilebilir kullanım, sorumluluk ve uyuşmazlıklar.",
+        description: "Prompter.Monster'ı kullanma koşulları: hesap, planlar ve ödeme, içerik hakları, kabul edilebilir kullanım, sorumluluk ve uyuşmazlıklar.",
         intro: [
-          `Bu koşullar; Prompt.Monster web sitesinin (${i.site}), Studio'nun, API ve entegrasyonların (birlikte "Hizmet") kullanımını düzenler. Hizmet'i kullanarak veya hesap oluşturarak bu koşulları kabul etmiş olursun. Kabul etmiyorsan lütfen Hizmet'i kullanma.`,
+          `Bu koşullar; Prompter.Monster web sitesinin (${i.site}), Studio'nun, API ve entegrasyonların (birlikte "Hizmet") kullanımını düzenler. Hizmet'i kullanarak veya hesap oluşturarak bu koşulları kabul etmiş olursun. Kabul etmiyorsan lütfen Hizmet'i kullanma.`,
         ],
         sections: [
           {
@@ -37,7 +37,7 @@ export function trDoc(slug: LegalSlug, i: LegalInfo): LegalDoc {
             id: "hizmet",
             h: "2. Hizmetin tanımı",
             blocks: [
-              { p: "Prompt.Monster; proje fikrini uzman persona şablonları ve yapay zekâ desteğiyle Claude Code, Cursor, v0, Lovable, Bolt gibi araçlara verilecek build prompt'larına dönüştüren bir yazılım hizmetidir. Bazı özellikler, girdiğin metni üçüncü taraf bir yapay zekâ modeline (Anthropic Claude) göndererek çalışır." },
+              { p: "Prompter.Monster; proje fikrini uzman persona şablonları ve yapay zekâ desteğiyle Claude Code, Cursor, v0, Lovable, Bolt gibi araçlara verilecek build prompt'larına dönüştüren bir yazılım hizmetidir. Bazı özellikler, girdiğin metni üçüncü taraf bir yapay zekâ modeline (Anthropic Claude) göndererek çalışır." },
               { p: "Yapay zekâ çıktıları hatalı, eksik veya güncel olmayan bilgi içerebilir. Üretilen prompt'ları ve bunlarla oluşturduğun kodu kullanmadan önce gözden geçirmek, test etmek ve güvenliğini sağlamak senin sorumluluğundadır. Hizmet; hukuki, mali, tıbbi veya güvenlik danışmanlığı değildir." },
             ],
           },
@@ -116,7 +116,7 @@ export function trDoc(slug: LegalSlug, i: LegalInfo): LegalDoc {
             id: "fikri-mulkiyet",
             h: "8. Fikri mülkiyet",
             blocks: [
-              { p: "Prompt.Monster adı, logosu, arayüzü, uzman persona metinleri, şablonları ve yazılımı bize veya lisans verenlerimize aittir. Yazılımın açık kaynak lisansıyla yayımlanan bölümleri için ilgili lisans hükümleri geçerlidir. Bu koşullar sana, Hizmet'i bu koşullara uygun olarak kullanman için kişisel, devredilemez ve münhasır olmayan bir kullanım hakkı dışında bir hak vermez." },
+              { p: "Prompter.Monster adı, logosu, arayüzü, uzman persona metinleri, şablonları ve yazılımı bize veya lisans verenlerimize aittir. Yazılımın açık kaynak lisansıyla yayımlanan bölümleri için ilgili lisans hükümleri geçerlidir. Bu koşullar sana, Hizmet'i bu koşullara uygun olarak kullanman için kişisel, devredilemez ve münhasır olmayan bir kullanım hakkı dışında bir hak vermez." },
             ],
           },
           {
@@ -168,9 +168,9 @@ export function trDoc(slug: LegalSlug, i: LegalInfo): LegalDoc {
         slug,
         title: "Gizlilik Politikası ve KVKK Aydınlatma Metni",
         short: "Gizlilik (KVKK)",
-        description: "Prompt.Monster'ın hangi kişisel verileri hangi amaç ve hukuki sebeple işlediği; aktarımlar, saklama süreleri ve KVKK/GDPR kapsamındaki hakların.",
+        description: "Prompter.Monster'ın hangi kişisel verileri hangi amaç ve hukuki sebeple işlediği; aktarımlar, saklama süreleri ve KVKK/GDPR kapsamındaki hakların.",
         intro: [
-          "Bu metin, 6698 sayılı Kişisel Verilerin Korunması Kanunu (\"KVKK\") madde 10 ve AB Genel Veri Koruma Tüzüğü (\"GDPR\") kapsamında, Prompt.Monster'ı kullanırken kişisel verilerinin nasıl işlendiğini açıklar. Kişisel verilerini satmayız.",
+          "Bu metin, 6698 sayılı Kişisel Verilerin Korunması Kanunu (\"KVKK\") madde 10 ve AB Genel Veri Koruma Tüzüğü (\"GDPR\") kapsamında, Prompter.Monster'ı kullanırken kişisel verilerinin nasıl işlendiğini açıklar. Kişisel verilerini satmayız.",
         ],
         sections: [
           {
@@ -332,9 +332,9 @@ export function trDoc(slug: LegalSlug, i: LegalInfo): LegalDoc {
         slug,
         title: "Çerez Politikası",
         short: "Çerezler",
-        description: "Prompt.Monster'da hangi çerezlerin hangi amaçla ve ne kadar süreyle kullanıldığı ve çerez tercihlerini nasıl yöneteceğin.",
+        description: "Prompter.Monster'da hangi çerezlerin hangi amaçla ve ne kadar süreyle kullanıldığı ve çerez tercihlerini nasıl yöneteceğin.",
         intro: [
-          "Çerezler, bir web sitesini ziyaret ettiğinde tarayıcına kaydedilen küçük metin dosyalarıdır. Prompt.Monster'da varsayılan olarak yalnızca Hizmet'in çalışması için gerekli çerezleri kullanırız. Analitik ve reklam çerezleri yalnızca izin verirsen etkinleşir ve iznini istediğin zaman geri alabilirsin.",
+          "Çerezler, bir web sitesini ziyaret ettiğinde tarayıcına kaydedilen küçük metin dosyalarıdır. Prompter.Monster'da varsayılan olarak yalnızca Hizmet'in çalışması için gerekli çerezleri kullanırız. Analitik ve reklam çerezleri yalnızca izin verirsen etkinleşir ve iznini istediğin zaman geri alabilirsin.",
           i.tracking ? "Tercihlerini aşağıdaki düğmeyle istediğin zaman değiştirebilirsin." : "**Şu anda sitede analitik veya reklam etiketi etkin değildir; yalnızca zorunlu çerezler kullanılmaktadır.** Bu etiketler ileride etkinleştirilirse sana önceden izin soran bir bant gösterilir.",
         ],
         sections: [

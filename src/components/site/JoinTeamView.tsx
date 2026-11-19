@@ -9,8 +9,8 @@ import { PublicShell } from "./PublicShell";
 const COPY = {
   tr: {
     invited: (team: string) => `"${team}" takımına davet edildin`,
-    by: (u: string) => `@${u} seni Prompt.Monster'daki takımına çağırıyor.`,
-    byAnon: "Prompt.Monster'da bir takıma çağrıldın.",
+    by: (u: string) => `@${u} seni Prompter.Monster'daki takımına çağırıyor.`,
+    byAnon: "Prompter.Monster'da bir takıma çağrıldın.",
     active: "Katıldığın anda Monster Pro özellikleri (18 uzman, Mega Chain, 5 format, aylık AI kredisi) hesabında açılır.",
     pending: "Takım henüz aktivasyon bekliyor: şimdi katılabilirsin, Pro özellikleri takım aktifleşince açılır.",
     login: "Giriş yap veya kayıt ol, sonra katıl",
@@ -27,8 +27,8 @@ const COPY = {
   },
   en: {
     invited: (team: string) => `You're invited to "${team}"`,
-    by: (u: string) => `@${u} is inviting you to their team on Prompt.Monster.`,
-    byAnon: "You've been invited to a team on Prompt.Monster.",
+    by: (u: string) => `@${u} is inviting you to their team on Prompter.Monster.`,
+    byAnon: "You've been invited to a team on Prompter.Monster.",
     active: "As soon as you join, Monster Pro features (18 experts, Mega Chain, 5 formats, monthly AI credits) switch on for your account.",
     pending: "The team is still awaiting activation: you can join now, and Pro features switch on once the team is active.",
     login: "Sign in or sign up, then join",

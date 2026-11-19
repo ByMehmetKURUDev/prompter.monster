@@ -23,9 +23,9 @@ export function enDoc(slug: LegalSlug, i: LegalInfo): LegalDoc {
         slug,
         title: "Terms of Service",
         short: "Terms",
-        description: "The terms for using Prompt.Monster: accounts, plans and billing, content ownership, acceptable use, liability and disputes.",
+        description: "The terms for using Prompter.Monster: accounts, plans and billing, content ownership, acceptable use, liability and disputes.",
         intro: [
-          `These terms govern your use of the Prompt.Monster website (${i.site}), the Studio, the API and integrations (together, the "Service"). By using the Service or creating an account you agree to these terms. If you do not agree, please do not use the Service.`,
+          `These terms govern your use of the Prompter.Monster website (${i.site}), the Studio, the API and integrations (together, the "Service"). By using the Service or creating an account you agree to these terms. If you do not agree, please do not use the Service.`,
         ],
         sections: [
           {
@@ -37,7 +37,7 @@ export function enDoc(slug: LegalSlug, i: LegalInfo): LegalDoc {
             id: "service",
             h: "2. What the Service does",
             blocks: [
-              { p: "Prompt.Monster is software that turns a project idea into build prompts for tools such as Claude Code, Cursor, v0, Lovable and Bolt, using expert persona templates and AI assistance. Some features work by sending the text you enter to a third-party AI model (Anthropic Claude)." },
+              { p: "Prompter.Monster is software that turns a project idea into build prompts for tools such as Claude Code, Cursor, v0, Lovable and Bolt, using expert persona templates and AI assistance. Some features work by sending the text you enter to a third-party AI model (Anthropic Claude)." },
               { p: "AI output can be wrong, incomplete or outdated. You are responsible for reviewing and testing the prompts you generate, and the code you build with them, before relying on them. The Service is not legal, financial, medical or security advice." },
             ],
           },
@@ -116,7 +116,7 @@ export function enDoc(slug: LegalSlug, i: LegalInfo): LegalDoc {
             id: "ip",
             h: "8. Intellectual property",
             blocks: [
-              { p: "The Prompt.Monster name, logo, interface, expert persona texts, templates and software belong to us or our licensors. Parts of the software published under an open-source licence are governed by that licence. Apart from a personal, non-transferable, non-exclusive right to use the Service in line with these terms, these terms give you no rights." },
+              { p: "The Prompter.Monster name, logo, interface, expert persona texts, templates and software belong to us or our licensors. Parts of the software published under an open-source licence are governed by that licence. Apart from a personal, non-transferable, non-exclusive right to use the Service in line with these terms, these terms give you no rights." },
             ],
           },
           {
@@ -168,9 +168,9 @@ export function enDoc(slug: LegalSlug, i: LegalInfo): LegalDoc {
         slug,
         title: "Privacy Policy",
         short: "Privacy",
-        description: "What personal data Prompt.Monster processes, why and on what legal basis; who we share it with, how long we keep it and your rights under KVKK and the GDPR.",
+        description: "What personal data Prompter.Monster processes, why and on what legal basis; who we share it with, how long we keep it and your rights under KVKK and the GDPR.",
         intro: [
-          "This policy explains how your personal data is processed when you use Prompt.Monster, in line with Turkish Personal Data Protection Law No. 6698 (\"KVKK\", Article 10) and the EU General Data Protection Regulation (\"GDPR\"). We do not sell your personal data.",
+          "This policy explains how your personal data is processed when you use Prompter.Monster, in line with Turkish Personal Data Protection Law No. 6698 (\"KVKK\", Article 10) and the EU General Data Protection Regulation (\"GDPR\"). We do not sell your personal data.",
         ],
         sections: [
           {
@@ -332,9 +332,9 @@ export function enDoc(slug: LegalSlug, i: LegalInfo): LegalDoc {
         slug,
         title: "Cookie Policy",
         short: "Cookies",
-        description: "Which cookies Prompt.Monster uses, why and for how long, and how to manage your cookie choices.",
+        description: "Which cookies Prompter.Monster uses, why and for how long, and how to manage your cookie choices.",
         intro: [
-          "Cookies are small text files stored by your browser when you visit a website. By default Prompt.Monster only uses cookies that are needed for the Service to work. Analytics and advertising cookies are only enabled with your consent, which you can withdraw at any time.",
+          "Cookies are small text files stored by your browser when you visit a website. By default Prompter.Monster only uses cookies that are needed for the Service to work. Analytics and advertising cookies are only enabled with your consent, which you can withdraw at any time.",
           i.tracking ? "You can change your choices at any time with the button below." : "**No analytics or advertising tags are active on the site right now; only strictly necessary cookies are used.** If such tags are enabled in the future, you will see a banner asking for your consent first.",
         ],
         sections: [

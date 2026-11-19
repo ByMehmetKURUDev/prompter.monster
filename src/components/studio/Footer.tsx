@@ -30,7 +30,7 @@ export function Footer({ version }: { version?: string }) {
             v{version}
           </Link>
         )}
-        <span>Prompt.Monster © {new Date().getFullYear()}</span>
+        <span>Prompter.Monster © {new Date().getFullYear()}</span>
       </span>
     </div>
   );

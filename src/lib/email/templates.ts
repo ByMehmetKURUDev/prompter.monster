@@ -158,7 +158,7 @@ export function emailShell(o: { locale: EmailLocale; site: string; title: string
     `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="max-width:560px;background:#ffffff;border:1px solid #e4e4e7;border-radius:16px;">` +
     `<tr><td style="background:${INK};padding:16px 28px;border-radius:16px 16px 0 0;">` +
     `<a href="${esc(o.site)}" style="text-decoration:none;"><img src="${esc(o.site)}/icon-192.png" width="32" height="32" alt="" style="vertical-align:middle;border:0;border-radius:8px;">` +
-    `<span style="vertical-align:middle;padding-left:10px;font:700 16px/1 ${FONT};color:#ffffff;letter-spacing:-0.2px;">Prompt.Monster</span></a></td></tr>` +
+    `<span style="vertical-align:middle;padding-left:10px;font:700 16px/1 ${FONT};color:#ffffff;letter-spacing:-0.2px;">Prompter.Monster</span></a></td></tr>` +
     `<tr><td style="padding:28px 28px 10px;">${o.bodyHtml}</td></tr>` +
     `<tr><td style="padding:18px 28px 24px;border-top:1px solid #f0f0f2;font:12px/1.6 ${FONT};color:#71717a;">${o.footerHtml}</td></tr>` +
     `</table></td></tr></table></body></html>`
@@ -183,19 +183,19 @@ function copy(kind: EmailKind, r: EmailRecipient, site: string) {
   const name = cleanName(r.name);
   const base = `${site}${en ? "/en" : ""}`;
   const studio = utm(`${base}/studio`, kind);
-  const sign = en ? "Happy building,\n**Prompt.Monster**" : "İyi üretimler,\n**Prompt.Monster**";
+  const sign = en ? "Happy building,\n**Prompter.Monster**" : "İyi üretimler,\n**Prompter.Monster**";
 
   if (kind === "welcome") {
     const developers = utm(`${base}/developers`, kind);
     return en
       ? {
-          subject: "Welcome to Prompt.Monster — your first build prompt is 3 steps away",
+          subject: "Welcome to Prompter.Monster — your first build prompt is 3 steps away",
           preheader: "Turn your idea into a master build prompt that Claude Code, Cursor, v0, Lovable and Bolt get right the first time.",
           body: [
             { t: "h1", text: name ? `Welcome, ${name}!` : "Welcome!" },
             {
               t: "p",
-              text: "Prompt.Monster turns a product idea into a master build prompt — architecture, feature list, payment flow and constraints included — that you can paste straight into **Claude Code, Cursor, v0, Lovable or Bolt**.",
+              text: "Prompter.Monster turns a product idea into a master build prompt — architecture, feature list, payment flow and constraints included — that you can paste straight into **Claude Code, Cursor, v0, Lovable or Bolt**.",
             },
             { t: "p", text: "Your first prompt in three steps:" },
             {
@@ -215,13 +215,13 @@ function copy(kind: EmailKind, r: EmailRecipient, site: string) {
           ] as Block[],
         }
       : {
-          subject: "Prompt.Monster'a hoş geldin — ilk build prompt'un 3 adım uzakta",
+          subject: "Prompter.Monster'a hoş geldin — ilk build prompt'un 3 adım uzakta",
           preheader: "Fikrini Claude Code, Cursor, v0, Lovable ve Bolt'un ilk seferde anlayacağı bir master build prompt'una çevir.",
           body: [
             { t: "h1", text: name ? `Hoş geldin, ${name}!` : "Hoş geldin!" },
             {
               t: "p",
-              text: "Prompt.Monster'da bir ürün fikrini; mimarisi, özellik listesi, ödeme akışı ve kısıtlarıyla birlikte **Claude Code, Cursor, v0, Lovable ve Bolt**'a doğrudan yapıştırabileceğin bir master build prompt'una çeviriyorsun.",
+              text: "Prompter.Monster'da bir ürün fikrini; mimarisi, özellik listesi, ödeme akışı ve kısıtlarıyla birlikte **Claude Code, Cursor, v0, Lovable ve Bolt**'a doğrudan yapıştırabileceğin bir master build prompt'una çeviriyorsun.",
             },
             { t: "p", text: "İlk prompt'un için üç adım:" },
             {
@@ -253,7 +253,7 @@ function copy(kind: EmailKind, r: EmailRecipient, site: string) {
           { t: "p", text: name ? `Hi ${name},` : "Hi there,", plain: true },
           {
             t: "p",
-            text: "You opened a Prompt.Monster account but haven't saved a project yet. The fastest way in: pick a project type below and the Studio opens with the recommended experts, stack and features for it. All that's left is your idea's name and a one-line pitch.",
+            text: "You opened a Prompter.Monster account but haven't saved a project yet. The fastest way in: pick a project type below and the Studio opens with the recommended experts, stack and features for it. All that's left is your idea's name and a one-line pitch.",
           },
           { t: "choices", items: choices },
           { t: "p", text: `Got a different idea? Browse the prompts the community shared in [Explore](${explore}) and use one as a starting point — or open a blank [Studio](${studio}).` },
@@ -270,7 +270,7 @@ function copy(kind: EmailKind, r: EmailRecipient, site: string) {
           { t: "p", text: name ? `Merhaba ${name},` : "Merhaba,", plain: true },
           {
             t: "p",
-            text: "Prompt.Monster hesabını açtın ama henüz kayıtlı bir projen yok. En hızlı yol: aşağıdan bir proje tipi seç; Studio o tipe önerilen uzmanlar, stack ve özelliklerle açılsın. Sana kalan, fikrinin adını ve tek cümlelik pitch'ini yazmak.",
+            text: "Prompter.Monster hesabını açtın ama henüz kayıtlı bir projen yok. En hızlı yol: aşağıdan bir proje tipi seç; Studio o tipe önerilen uzmanlar, stack ve özelliklerle açılsın. Sana kalan, fikrinin adını ve tek cümlelik pitch'ini yazmak.",
           },
           { t: "choices", items: choices },
           { t: "p", text: `Başka bir fikrin mi var? [Keşfet](${explore}) sayfasında topluluğun paylaştığı prompt'ları incele ve birini başlangıç yap ya da [Studio](${studio})'yu boş aç.` },
@@ -290,8 +290,8 @@ export function renderLifecycleEmail(kind: EmailKind, r: EmailRecipient, site: s
   const oneClickUrl = `${origin}/api/email/unsubscribe?t=${t}`;
   const c = copy(kind, r, origin);
   const footer = en
-    ? `You're receiving this because you have a Prompt.Monster account — it's a note to help you get started, not a promotion. Don't want these? [Unsubscribe](${unsubscribeUrl}). Sign-in and security e-mails aren't affected. Questions? Just reply to this e-mail.\n[prompter.monster](${origin})`
-    : `Bu e-postayı Prompt.Monster hesabın olduğu için aldın — hesabını kullanmaya başlaman için bir bilgilendirme, kampanya değil. Bu tür e-postaları istemiyorsan [buradan çık](${unsubscribeUrl}). Giriş ve güvenlik e-postaları bu ayardan etkilenmez. Sorun mu var? Bu e-postayı yanıtla.\n[prompter.monster](${origin})`;
+    ? `You're receiving this because you have a Prompter.Monster account — it's a note to help you get started, not a promotion. Don't want these? [Unsubscribe](${unsubscribeUrl}). Sign-in and security e-mails aren't affected. Questions? Just reply to this e-mail.\n[prompter.monster](${origin})`
+    : `Bu e-postayı Prompter.Monster hesabın olduğu için aldın — hesabını kullanmaya başlaman için bir bilgilendirme, kampanya değil. Bu tür e-postaları istemiyorsan [buradan çık](${unsubscribeUrl}). Giriş ve güvenlik e-postaları bu ayardan etkilenmez. Sorun mu var? Bu e-postayı yanıtla.\n[prompter.monster](${origin})`;
   const html = layout({ locale: r.locale, site: origin, subject: c.subject, preheader: c.preheader, body: c.body, footer });
   const text = [...c.body.map(blockText), "—", mdText(footer)].join("\n\n");
   return { subject: c.subject, preheader: c.preheader, html, text, unsubscribeUrl, oneClickUrl };

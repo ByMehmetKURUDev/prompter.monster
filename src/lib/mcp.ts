@@ -1,5 +1,5 @@
 /**
- * Prompt.Monster MCP server — tool catalogue and JSON-RPC dispatcher (transport: /api/mcp, Streamable HTTP, stateless).
+ * Prompter.Monster MCP server — tool catalogue and JSON-RPC dispatcher (transport: /api/mcp, Streamable HTTP, stateless).
  * Every tool reuses api-core / ai, so the Studio, the REST API and MCP always produce the same prompts.
  */
 import { z } from "zod";
@@ -12,11 +12,11 @@ import { getShared } from "./share";
 import { teamRulesFor } from "./team-server";
 
 export const MCP_PROTOCOL_VERSIONS = ["2025-11-25", "2025-06-18", "2025-03-26", "2024-11-05"] as const;
-export const MCP_SERVER_INFO = { name: "prompt-monster", title: "Prompt.Monster", version: "4.4.0", websiteUrl: `${SITE}/developers` };
+export const MCP_SERVER_INFO = { name: "prompt-monster", title: "Prompter.Monster", version: "4.4.0", websiteUrl: `${SITE}/developers` };
 const KEYS_URL = `${SITE}/account/api`;
 
 export const MCP_INSTRUCTIONS = [
-  "Prompt.Monster turns a product idea into a production-grade master build prompt for AI coding tools (Claude Code, Cursor, v0, Lovable, Bolt, ChatGPT).",
+  "Prompter.Monster turns a product idea into a production-grade master build prompt for AI coding tools (Claude Code, Cursor, v0, Lovable, Bolt, ChatGPT).",
   "Typical flow: list_project_types → pick the closest projectType → generate_build_prompt (free, deterministic, no AI credits) → export_files for CLAUDE.md / AGENTS.md / .cursorrules (Monster Pro) → optionally refine_prompt (spends AI credits, needs an API key).",
   "Fill name, a one-line pitch and a 100–200 word description; pass 5–12 concrete v1 features; name the audience's role and pain. Leave stack/experts empty to use the project type's presets.",
   `Without an API key the Free plan applies (3 experts, ChatGPT Markdown or Claude XML, no file exports). Keys: ${KEYS_URL}`,
@@ -147,7 +147,7 @@ const TOOLS: ToolDef[] = [
   {
     name: "list_project_types",
     title: "List project types",
-    description: "Lists Prompt.Monster's project types (id, name, category, one-line description). Pick the closest id and pass it as projectType to generate_build_prompt.",
+    description: "Lists Prompter.Monster's project types (id, name, category, one-line description). Pick the closest id and pass it as projectType to generate_build_prompt.",
     inputSchema: () => ({
       type: "object",
       properties: {
@@ -229,7 +229,7 @@ const TOOLS: ToolDef[] = [
   {
     name: "get_shared_prompt",
     title: "Get a shared prompt",
-    description: `Fetches a prompt someone shared on Prompt.Monster (${SITE}/p/<slug>) — pass the slug or the full URL.`,
+    description: `Fetches a prompt someone shared on Prompter.Monster (${SITE}/p/<slug>) — pass the slug or the full URL.`,
     inputSchema: () => ({ type: "object", properties: { slug: { type: "string", description: "Share slug or URL, e.g. 'ai-invoice-app-x1y2'." } }, required: ["slug"] }),
     annotations: { title: "Get a shared prompt", readOnlyHint: true, idempotentHint: true, openWorldHint: false },
     async run(args) {
@@ -294,7 +294,7 @@ const PROMPTS = [
   {
     name: "new_project",
     title: "Idea → master build prompt",
-    description: "Turns a one-line product idea into a full master build prompt using the Prompt.Monster tools.",
+    description: "Turns a one-line product idea into a full master build prompt using the Prompter.Monster tools.",
     arguments: [
       { name: "idea", description: "The product idea in a sentence or two.", required: true },
       { name: "lang", description: "Output language: EN (default) or TR.", required: false },
@@ -313,7 +313,7 @@ function getPrompt(name: string, args: Record<string, unknown>) {
         role: "user",
         content: text(
           [
-            "Use the Prompt.Monster MCP tools to turn my idea into a master build prompt.",
+            "Use the Prompter.Monster MCP tools to turn my idea into a master build prompt.",
             "1. Call list_project_types and choose the closest projectType.",
             "2. Draft the inputs: name, one-line pitch, a 100–200 word description, audience (role, pain, budget), 2–3 competitors, the USP, and 5–12 concrete v1 features. Ask me at most 3 short questions only if something essential is missing.",
             `3. Call generate_build_prompt with format "Claude XML" and lang "${lang}". Leave stack and experts empty unless I specified them.`,

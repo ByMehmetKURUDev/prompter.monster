@@ -12,7 +12,7 @@ import type { CoachKey, CoachState, CoachTip } from "./input-coach";
 
 const tr = {
   nav: {
-    homeAria: "Prompt.Monster ana sayfa",
+    homeAria: "Prompter.Monster ana sayfa",
     saveTitle: "Projeyi kütüphanene kaydet",
     saveTitleSignedOut: "Kaydetmek için giriş yap",
     save: "Kaydet",
@@ -309,7 +309,7 @@ const count = (n: number, noun: string) => `${n} ${noun}${n === 1 ? "" : "s"}`;
 
 const en: StudioText = {
   nav: {
-    homeAria: "Prompt.Monster home",
+    homeAria: "Prompter.Monster home",
     saveTitle: "Save the project to your library",
     saveTitleSignedOut: "Sign in to save",
     save: "Save",

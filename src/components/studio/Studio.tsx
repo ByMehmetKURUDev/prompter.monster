@@ -815,7 +815,7 @@ export function Studio({ dailyLimit, version }: { dailyLimit: number; version?: 
         />
 
         <main className="flex-1 min-w-0 bg-ink-950">
-          <h1 className="sr-only">Prompt.Monster Studio</h1>
+          <h1 className="sr-only">Prompter.Monster Studio</h1>
           <StepBar step={s.step} onStep={setStep} quality={quality} />
 
           {projectId && versions.length > 0 && (

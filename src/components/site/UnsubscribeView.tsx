@@ -7,7 +7,7 @@ const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const COPY = {
   tr: {
     title: "E-posta tercihin",
-    ask: "Prompt.Monster'ın karşılama ve başlangıç hatırlatması e-postalarını almayı bırakmak istiyor musun?",
+    ask: "Prompter.Monster'ın karşılama ve başlangıç hatırlatması e-postalarını almayı bırakmak istiyor musun?",
     askNote: "Giriş, şifre sıfırlama ve ödeme e-postaları bu ayardan etkilenmez.",
     out: "Abonelikten çık",
     doneOutTitle: "Abonelikten çıktın",
@@ -24,7 +24,7 @@ const COPY = {
   },
   en: {
     title: "Your e-mail preference",
-    ask: "Do you want to stop receiving Prompt.Monster's welcome and getting-started reminder e-mails?",
+    ask: "Do you want to stop receiving Prompter.Monster's welcome and getting-started reminder e-mails?",
     askNote: "Sign-in, password reset and billing e-mails aren't affected by this setting.",
     out: "Unsubscribe",
     doneOutTitle: "You're unsubscribed",

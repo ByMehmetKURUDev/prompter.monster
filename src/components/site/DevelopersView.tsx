@@ -9,12 +9,12 @@ import { SetupSnippets } from "./SetupSnippets";
 
 export const DEV_META = {
   tr: {
-    title: "API ve MCP sunucusu — Prompt.Monster'ı editörünün içinden kullan",
+    title: "API ve MCP sunucusu — Prompter.Monster'ı editörünün içinden kullan",
     description:
       "MCP sunucusu ve REST API: Claude Code, Cursor, VS Code, Windsurf ve ChatGPT'den master build prompt'u ve AGENTS.md / CLAUDE.md gibi proje dosyalarını üret.",
   },
   en: {
-    title: "API & MCP server — use Prompt.Monster from inside your editor",
+    title: "API & MCP server — use Prompter.Monster from inside your editor",
     description:
       "MCP server and REST API: generate master build prompts and project files like AGENTS.md and CLAUDE.md from Claude Code, Cursor, VS Code, Windsurf and ChatGPT.",
   },
@@ -23,7 +23,7 @@ export const DEV_META = {
 const T = {
   tr: {
     badge: "MCP · REST API · OpenAPI",
-    h1: "Prompt.Monster'ı editörünün içinden kullan",
+    h1: "Prompter.Monster'ı editörünün içinden kullan",
     lead: "MCP sunucusu ve REST API ile fikrini Claude Code, Cursor, VS Code, Windsurf, Claude Desktop veya ChatGPT'den çıkmadan master build prompt'una ve ajan dosyalarına dönüştür. Prompt üretimi ücretsiz; anahtarsız da çalışır.",
     getKey: "API anahtarı al",
     quick: "3 adımda başla",
@@ -94,7 +94,7 @@ const T = {
   },
   en: {
     badge: "MCP · REST API · OpenAPI",
-    h1: "Use Prompt.Monster from inside your editor",
+    h1: "Use Prompter.Monster from inside your editor",
     lead: "With the MCP server and the REST API, turn an idea into a master build prompt and agent files without leaving Claude Code, Cursor, VS Code, Windsurf, Claude Desktop or ChatGPT. Prompt generation is free and works without a key.",
     getKey: "Get an API key",
     quick: "Start in 3 steps",
@@ -190,11 +190,11 @@ export async function DevelopersView({ locale }: { locale: Locale }) {
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "WebAPI",
-    name: "Prompt.Monster API & MCP server",
+    name: "Prompter.Monster API & MCP server",
     description: DEV_META[locale].description,
     documentation: `https://prompter.monster${L("/developers")}`,
     url: API_BASE,
-    provider: { "@type": "Organization", name: "Prompt.Monster", url: "https://prompter.monster" },
+    provider: { "@type": "Organization", name: "Prompter.Monster", url: "https://prompter.monster" },
   };
 
   return (

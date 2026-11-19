@@ -3,8 +3,8 @@ import type { MetadataRoute } from "next";
 /** Web app manifest (/manifest.webmanifest): name, colours and icons for "Add to home screen". */
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: "Prompt.Monster",
-    short_name: "Prompt.Monster",
+    name: "Prompter.Monster",
+    short_name: "Prompter.Monster",
     description: "Fikrini 18 uzman canavar persona ile AI kodlama araçlarına hazır master build prompt'a çevir.",
     start_url: "/studio",
     scope: "/",

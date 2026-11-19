@@ -121,7 +121,7 @@ export function renderWeeklySummary(s: WeeklySummary, site: string): { subject: 
   const range = weeklyRange(s.from, s.to);
   const dSign = delta(s.signups, s.signups_prev);
   const dActive = delta(s.active_users, s.active_users_prev);
-  const subject = `Prompt.Monster · haftalık özet (${range}): ${num(s.signups)} kayıt, ${num(s.generations)} üretim`;
+  const subject = `Prompter.Monster · haftalık özet (${range}): ${num(s.signups)} kayıt, ${num(s.generations)} üretim`;
   const preheader = `Kayıt ${dSign.text === "—" ? "değişmedi" : dSign.text}, aktif kullanıcı ${dActive.text === "—" ? "değişmedi" : dActive.text} (önceki 7 güne göre).`;
 
   type Row = { label: string; value: string; note?: string; d?: Delta };

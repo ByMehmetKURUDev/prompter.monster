@@ -9,7 +9,7 @@ const DESCRIPTION = "Fikrini 4 adımda master build prompt'a çevir: fikir, stac
 export const metadata: Metadata = {
   title: "Studio",
   description: DESCRIPTION,
-  ...socialFor("/studio", "tr", "Prompt.Monster Studio — fikrini 4 adımda master build prompt'a çevir", DESCRIPTION),
+  ...socialFor("/studio", "tr", "Prompter.Monster Studio — fikrini 4 adımda master build prompt'a çevir", DESCRIPTION),
 };
 
 export default function StudioPage() {

@@ -10,7 +10,7 @@ export const COPY_EN: TypePageCopy[] = [
     description: "A build prompt that gets Claude Code, Cursor or v0 to ship a multi-tenant SaaS dashboard in one go: auth, RBAC, billing, analytics and ⌘K search included.",
     intro: [
       "The SaaS dashboard is the backbone of most B2B products: teams, roles, subscriptions and usage data all come together on one screen. Telling an AI coding tool \"build me a dashboard\" isn't enough; if decisions like multi-tenancy, RBAC, billing and audit logs aren't made up front, the tool invents a different architecture every time.",
-      "Prompt.Monster walks you through those decisions, combines them with the perspectives of 18 expert personas and generates a master build prompt you can paste straight into Claude Code, Cursor, v0, Lovable or Bolt.",
+      "Prompter.Monster walks you through those decisions, combines them with the perspectives of 18 expert personas and generates a master build prompt you can paste straight into Claude Code, Cursor, v0, Lovable or Bolt.",
     ],
     audience: "Indie hackers, agencies and product teams building B2B SaaS",
     samplePitch: "A Linear-fast, multi-tenant SaaS admin dashboard for small teams",

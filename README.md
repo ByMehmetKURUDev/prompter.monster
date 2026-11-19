@@ -1,8 +1,8 @@
-# 👹 Prompt.Monster
+# 👹 Prompter.Monster
 
 **Fikrini anlat, canavar build prompt'unu yazsın.**
 
-Prompt.Monster, bir ürün fikrini 12 uzman persona (CTO, PM, Design, AI, Monetization, SEO/AEO, DevOps, Security, Copy, Data, QA, Growth) ile
+Prompter.Monster, bir ürün fikrini 12 uzman persona (CTO, PM, Design, AI, Monetization, SEO/AEO, DevOps, Security, Copy, Data, QA, Growth) ile
 **Claude Code, Cursor, Windsurf, v0, Lovable ve Bolt**'a doğrudan yapıştırılacak *master build prompt*'lara çeviren bir web uygulamasıdır.
 Mimari, özellik matrisi, ödeme akışı (Stripe, Iyzico, PayTR…), kısıtlar ve başarı kriterleri dahil.
 
@@ -133,7 +133,7 @@ Hata/öneri için Issues. Lisans: bkz. `LICENSE`.
 
 ## English
 
-**Prompt.Monster** turns a product idea into expert-grade *master build prompts* for AI coding tools (Claude Code, Cursor, Windsurf, v0, Lovable, Bolt).
+**Prompter.Monster** turns a product idea into expert-grade *master build prompts* for AI coding tools (Claude Code, Cursor, Windsurf, v0, Lovable, Bolt).
 Twelve expert personas each add their own task block; output includes architecture, feature matrix, payment flow, constraints and success criteria.
 
 **Run locally:** `npm install && cp .env.example .env.local && npm run dev` — add `ANTHROPIC_API_KEY` to enable the AI features (Enhance, stack suggestion, prompt refinement).

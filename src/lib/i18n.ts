@@ -65,8 +65,8 @@ export function alternatesFor(path: string, locale: Locale) {
 }
 
 const OG_ALT: Record<Locale, string> = {
-  tr: "Prompt.Monster — Fikrini anlat, canavar build prompt'unu yazsın. Claude Code, Cursor, v0, Lovable ve Bolt için master build prompt.",
-  en: "Prompt.Monster — Describe your idea, the monster writes your build prompt. Master build prompts for Claude Code, Cursor, v0, Lovable and Bolt.",
+  tr: "Prompter.Monster — Fikrini anlat, canavar build prompt'unu yazsın. Claude Code, Cursor, v0, Lovable ve Bolt için master build prompt.",
+  en: "Prompter.Monster — Describe your idea, the monster writes your build prompt. Master build prompts for Claude Code, Cursor, v0, Lovable and Bolt.",
 };
 
 /**
@@ -93,7 +93,7 @@ export function socialFor(path: string, locale: Locale, title: string, descripti
     alternates,
     openGraph: {
       type: "website" as const,
-      siteName: "Prompt.Monster",
+      siteName: "Prompter.Monster",
       locale: locale === "en" ? "en_US" : "tr_TR",
       title,
       description,

@@ -2,7 +2,7 @@
   "name": "prompter-monster",
   "version": "0.1.0",
   "private": true,
-  "description": "Prompt.Monster — turn a product idea into expert-grade master build prompts for AI coding tools.",
+  "description": "Prompter.Monster — turn a product idea into expert-grade master build prompts for AI coding tools.",
   "scripts": {
     "dev": "next dev",
     "build": "next build",

@@ -54,9 +54,9 @@ const COPY = {
     confirmDelete: "Takımı silmek istediğine emin misin? Tüm üyelikler ve davetler silinir.",
     confirmRemove: (u: string) => `${u} takımdan çıkarılsın mı?`,
     confirmTransfer: (u: string) => `Takımın sahipliği ${u} kullanıcısına devredilsin mi? Sen yönetici olarak kalırsın.`,
-    mailSubject: (team: string) => `${team} takımına davet — Prompt.Monster`,
+    mailSubject: (team: string) => `${team} takımına davet — Prompter.Monster`,
     mailBody: (team: string, link: string) =>
-      `Merhaba,\n\nSeni Prompt.Monster'daki "${team}" takımına davet ediyorum. Bu linkten katılabilirsin (14 gün geçerli):\n${link}\n`,
+      `Merhaba,\n\nSeni Prompter.Monster'daki "${team}" takımına davet ediyorum. Bu linkten katılabilirsin (14 gün geçerli):\n${link}\n`,
     activationSubject: (team: string) => `Takım aktivasyonu: ${team}`,
     activationBody: (team: string, seats: number, id: string) =>
       `Merhaba,\n\n"${team}" takımını aktifleştirmek istiyorum (şu an ${seats} koltuk).\nTakım kimliği: ${id}\n`,
@@ -105,9 +105,9 @@ const COPY = {
     confirmDelete: "Delete the team? All memberships and invites are removed.",
     confirmRemove: (u: string) => `Remove ${u} from the team?`,
     confirmTransfer: (u: string) => `Transfer team ownership to ${u}? You stay on as an admin.`,
-    mailSubject: (team: string) => `Join ${team} on Prompt.Monster`,
+    mailSubject: (team: string) => `Join ${team} on Prompter.Monster`,
     mailBody: (team: string, link: string) =>
-      `Hi,\n\nI'm inviting you to the "${team}" team on Prompt.Monster. Join with this link (valid for 14 days):\n${link}\n`,
+      `Hi,\n\nI'm inviting you to the "${team}" team on Prompter.Monster. Join with this link (valid for 14 days):\n${link}\n`,
     activationSubject: (team: string) => `Team activation: ${team}`,
     activationBody: (team: string, seats: number, id: string) =>
       `Hi,\n\nI'd like to activate the "${team}" team (currently ${seats} seats).\nTeam id: ${id}\n`,

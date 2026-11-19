@@ -1,8 +1,8 @@
 {
-  "confirmation": "{{if eq (printf \"%v\" .Data.lang) \"en\"}}Prompt.Monster — confirm your email 👹{{else}}Prompt.Monster — e-posta adresini doğrula 👹{{end}}",
-  "magic_link": "{{if eq (printf \"%v\" .Data.lang) \"en\"}}Your Prompt.Monster sign-in link 👹{{else}}Prompt.Monster giriş bağlantın 👹{{end}}",
-  "recovery": "{{if eq (printf \"%v\" .Data.lang) \"en\"}}Reset your Prompt.Monster password 🔑{{else}}Prompt.Monster şifre sıfırlama 🔑{{end}}",
-  "email_change": "{{if eq (printf \"%v\" .Data.lang) \"en\"}}Prompt.Monster — confirm your new email{{else}}Prompt.Monster — yeni e-posta adresini doğrula{{end}}",
-  "invite": "{{if eq (printf \"%v\" .Data.lang) \"en\"}}You're invited to Prompt.Monster{{else}}Prompt.Monster'a davet edildin{{end}}",
-  "reauthentication": "{{if eq (printf \"%v\" .Data.lang) \"en\"}}{{ .Token }} is your Prompt.Monster verification code{{else}}{{ .Token }} — Prompt.Monster doğrulama kodun{{end}}"
+  "confirmation": "{{if eq (printf \"%v\" .Data.lang) \"en\"}}Prompter.Monster — confirm your email 👹{{else}}Prompter.Monster — e-posta adresini doğrula 👹{{end}}",
+  "magic_link": "{{if eq (printf \"%v\" .Data.lang) \"en\"}}Your Prompter.Monster sign-in link 👹{{else}}Prompter.Monster giriş bağlantın 👹{{end}}",
+  "recovery": "{{if eq (printf \"%v\" .Data.lang) \"en\"}}Reset your Prompter.Monster password 🔑{{else}}Prompter.Monster şifre sıfırlama 🔑{{end}}",
+  "email_change": "{{if eq (printf \"%v\" .Data.lang) \"en\"}}Prompter.Monster — confirm your new email{{else}}Prompter.Monster — yeni e-posta adresini doğrula{{end}}",
+  "invite": "{{if eq (printf \"%v\" .Data.lang) \"en\"}}You're invited to Prompter.Monster{{else}}Prompter.Monster'a davet edildin{{end}}",
+  "reauthentication": "{{if eq (printf \"%v\" .Data.lang) \"en\"}}{{ .Token }} is your Prompter.Monster verification code{{else}}{{ .Token }} — Prompter.Monster doğrulama kodun{{end}}"
 }

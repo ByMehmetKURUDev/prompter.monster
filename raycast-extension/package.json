@@ -1,7 +1,7 @@
 {
   "$schema": "https://www.raycast.com/schemas/extension.json",
   "name": "prompt-monster",
-  "title": "Prompt.Monster",
+  "title": "Prompter.Monster",
   "description": "Turn a product idea into a master build prompt for Claude, Cursor, v0, Lovable and more — right from Raycast.",
   "icon": "icon.png",
   "author": "mehmetkuru_dev",
@@ -14,15 +14,15 @@
     {
       "name": "generate-prompt",
       "title": "Generate Build Prompt",
-      "subtitle": "Prompt.Monster",
+      "subtitle": "Prompter.Monster",
       "description": "Turn a one-line idea into a full master build prompt (ChatGPT, Claude XML, Cursor Rules, v0, Lovable/Bolt).",
       "mode": "view"
     },
     {
       "name": "browse-types",
       "title": "Browse Project Types",
-      "subtitle": "Prompt.Monster",
-      "description": "Search Prompt.Monster's project-type presets and copy an id to use in Generate Build Prompt.",
+      "subtitle": "Prompter.Monster",
+      "description": "Search Prompter.Monster's project-type presets and copy an id to use in Generate Build Prompt.",
       "mode": "view"
     }
   ],

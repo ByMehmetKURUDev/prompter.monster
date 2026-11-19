@@ -68,7 +68,7 @@ export default async function AdminEmails({ searchParams }: Props) {
   const hasKey = Boolean(process.env.RESEND_API_KEY);
   const paused = (process.env.LIFECYCLE_EMAILS || "").trim().toLowerCase() === "off";
   const enabled = Boolean(emailConfigFrom(process.env));
-  const from = process.env.EMAIL_FROM || "Prompt.Monster <hello@prompter.monster>";
+  const from = process.env.EMAIL_FROM || "Prompter.Monster <hello@prompter.monster>";
   const site = (process.env.NEXT_PUBLIC_SITE_URL || "https://prompter.monster").replace(/\/$/, "");
 
   const [pk, pl] = preview.split("-");

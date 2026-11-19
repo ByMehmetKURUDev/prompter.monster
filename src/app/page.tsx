@@ -6,7 +6,7 @@ export const metadata: Metadata = {
   ...socialFor(
     "/",
     "tr",
-    "Prompt.Monster — Fikirden master build prompt'a",
+    "Prompter.Monster — Fikirden master build prompt'a",
     "18 uzman canavar, 8 adımlı mega chain, 5 çıktı formatı. Fikrini AI kodlama araçlarına hazır prompt'a çevir.",
   ),
 };

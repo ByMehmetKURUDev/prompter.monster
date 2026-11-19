@@ -40,7 +40,7 @@ export function Nav({
     <nav className="h-[56px] border-b border-ink-600 bg-ink-950/80 backdrop-blur-xl sticky top-0 z-50 flex items-center px-4 lg:px-5 gap-3 lg:gap-4">
       <Link href={lhref("/", locale)} className="flex items-center gap-3 shrink-0" aria-label={t.homeAria}>
         <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-lime to-violet flex items-center justify-center text-black font-bold">👹</div>
-        <span className="font-bold tracking-tight text-[15px] max-[400px]:hidden">Prompt.Monster</span>
+        <span className="font-bold tracking-tight text-[15px] max-[400px]:hidden">Prompter.Monster</span>
         <span className="hidden lg:inline text-[10px] px-1.5 py-0.5 rounded bg-lime text-black font-bold tracking-widest">ULTIMATE</span>
       </Link>
 

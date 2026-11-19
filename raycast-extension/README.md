@@ -1,4 +1,4 @@
-# Prompt.Monster — Raycast eklentisi
+# Prompter.Monster — Raycast eklentisi
 
 prompts.chat analizindeki 8. (ikincil) öneri: master prompt üretimini Raycast'in komut
 paletinden tek adımda yapmak. Backend/DB değişikliği YOK — yalnızca sitenin zaten canlı

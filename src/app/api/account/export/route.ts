@@ -33,7 +33,7 @@ export async function GET() {
 
   const body = {
     exported_at: new Date().toISOString(),
-    service: "Prompt.Monster (https://prompter.monster)",
+    service: "Prompter.Monster (https://prompter.monster)",
     note: "Your account data: profile, projects (Studio state), every generated version, share links, subscriptions, API keys (metadata only, never the secret), AI usage records, your team membership and your e-mail preference with the welcome / reminder e-mails sent to you.",
     account: { id: uid, email: user.email ?? null, created_at: user.created_at, last_sign_in_at: user.last_sign_in_at ?? null, ...(profile.data ?? {}) },
     projects: projects.data ?? [],

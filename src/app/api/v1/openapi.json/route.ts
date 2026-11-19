@@ -24,7 +24,7 @@ export async function GET() {
   const spec = {
     openapi: "3.1.0",
     info: {
-      title: "Prompt.Monster API",
+      title: "Prompter.Monster API",
       version: "1.0.0",
       description:
         "Turn a product idea into a production-grade master build prompt for AI coding tools. Prompt generation is free and deterministic; refine spends AI credits. Keys: " +

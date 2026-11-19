@@ -9,7 +9,7 @@ export const metadata: Metadata = {
   title: ui.title,
   description: ui.description,
   alternates: alternatesFor("/docs", "tr"),
-  openGraph: { title: `${ui.title} · Prompt.Monster`, description: ui.description, url: `${SITE}/docs`, siteName: "Prompt.Monster", locale: ui.ogLocale, type: "article", images: ogImages("tr") },
+  openGraph: { title: `${ui.title} · Prompter.Monster`, description: ui.description, url: `${SITE}/docs`, siteName: "Prompter.Monster", locale: ui.ogLocale, type: "article", images: ogImages("tr") },
   robots: { index: true, follow: true },
 };
 

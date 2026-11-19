@@ -40,7 +40,7 @@ const COPY: TypePageCopy[] = [
     description: "Çok kiracılı SaaS dashboard'unu Claude Code, Cursor veya v0'a tek seferde yaptıran build prompt: auth, RBAC, faturalandırma, analitik ve ⌘K arama dahil.",
     intro: [
       "SaaS dashboard, çoğu B2B ürünün omurgasıdır: ekipler, roller, abonelik ve kullanım verisi tek ekranda birleşir. AI kodlama araçlarına \"bana bir dashboard yap\" demek yetmez; multi-tenancy, RBAC, faturalandırma ve audit log gibi kararlar önceden verilmemişse araç her seferinde farklı bir mimari uydurur.",
-      "Prompt.Monster bu kararları senin yerine sorar, 18 uzman personanın bakış açısıyla birleştirir ve Claude Code, Cursor, v0, Lovable veya Bolt'a doğrudan yapıştırılacak bir master build prompt üretir.",
+      "Prompter.Monster bu kararları senin yerine sorar, 18 uzman personanın bakış açısıyla birleştirir ve Claude Code, Cursor, v0, Lovable veya Bolt'a doğrudan yapıştırılacak bir master build prompt üretir.",
     ],
     audience: "B2B SaaS kuran indie hacker'lar, ajanslar ve ürün ekipleri",
     samplePitch: "Küçük ekipler için Linear hızında, çok kiracılı bir SaaS yönetim paneli",

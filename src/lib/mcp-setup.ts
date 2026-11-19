@@ -41,7 +41,7 @@ export function setupSnippets(key: string = KEY_PLACEHOLDER): SetupSnippet[] {
       where: { tr: ".vscode/mcp.json — anahtarı VS Code güvenle sorar", en: ".vscode/mcp.json — VS Code asks for the key securely" },
       code: JSON.stringify(
         {
-          inputs: [{ type: "promptString", id: "pm-key", description: "Prompt.Monster API key", password: true }],
+          inputs: [{ type: "promptString", id: "pm-key", description: "Prompter.Monster API key", password: true }],
           servers: { "prompt-monster": { type: "http", url: MCP_URL, headers: { Authorization: "Bearer ${input:pm-key}" } } },
         },
         null,

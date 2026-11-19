@@ -18,28 +18,28 @@ export interface PublicRelease {
 
 export const CHANGELOG_TEXT = {
   tr: {
-    metaTitle: "Yenilikler — Prompt.Monster'da neler değişti",
+    metaTitle: "Yenilikler — Prompter.Monster'da neler değişti",
     metaDescription:
-      "Prompt.Monster'ın sürüm notları: Studio, uzmanlar, Keşfet, takımlar, API ve MCP'deki yenilikler, en yenisi en üstte. RSS ile takip et.",
+      "Prompter.Monster'ın sürüm notları: Studio, uzmanlar, Keşfet, takımlar, API ve MCP'deki yenilikler, en yenisi en üstte. RSS ile takip et.",
     badge: "Sürüm notları",
     h1: "Yenilikler",
-    lead: "Prompt.Monster'a eklenen her şey, en yenisi en üstte. Takip etmek için RSS akışına abone olabilirsin.",
+    lead: "Prompter.Monster'a eklenen her şey, en yenisi en üstte. Takip etmek için RSS akışına abone olabilirsin.",
     rss: "RSS akışı",
-    feedTitle: "Prompt.Monster — Yenilikler",
-    feedDescription: "Prompt.Monster sürüm notları: yeni özellikler ve iyileştirmeler.",
+    feedTitle: "Prompter.Monster — Yenilikler",
+    feedDescription: "Prompter.Monster sürüm notları: yeni özellikler ve iyileştirmeler.",
     linkToRelease: (v: string) => `v${v} bağlantısı`,
     studio: "Studio'yu aç",
   },
   en: {
-    metaTitle: "What's new — the Prompt.Monster changelog",
+    metaTitle: "What's new — the Prompter.Monster changelog",
     metaDescription:
-      "Prompt.Monster release notes: what's new in Studio, experts, Explore, teams, the API and MCP, newest first. Follow along with RSS.",
+      "Prompter.Monster release notes: what's new in Studio, experts, Explore, teams, the API and MCP, newest first. Follow along with RSS.",
     badge: "Release notes",
     h1: "What's new",
-    lead: "Everything we add to Prompt.Monster, newest first. Subscribe to the RSS feed to follow along.",
+    lead: "Everything we add to Prompter.Monster, newest first. Subscribe to the RSS feed to follow along.",
     rss: "RSS feed",
-    feedTitle: "Prompt.Monster — What's new",
-    feedDescription: "Prompt.Monster release notes: new features and improvements.",
+    feedTitle: "Prompter.Monster — What's new",
+    feedDescription: "Prompter.Monster release notes: new features and improvements.",
     linkToRelease: (v: string) => `Link to v${v}`,
     studio: "Open Studio",
   },

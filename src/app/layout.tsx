@@ -9,24 +9,24 @@ const SITE = process.env.NEXT_PUBLIC_SITE_URL || "https://prompter.monster";
 export const metadata: Metadata = {
   metadataBase: new URL(SITE),
   title: {
-    default: "Prompt.Monster — Fikirden master build prompt'a",
-    template: "%s · Prompt.Monster",
+    default: "Prompter.Monster — Fikirden master build prompt'a",
+    template: "%s · Prompter.Monster",
   },
   description:
     "Proje fikrini 18 uzman canavar persona ile Claude Code, Cursor, v0, Lovable ve Bolt için kopyala-yapıştır çalışan master build prompt'lara dönüştür.",
   keywords: ["prompt generator", "vibe coding", "build prompt", "Claude Code", "Cursor", "v0", "Lovable", "Bolt", "SaaS spec"],
-  applicationName: "Prompt.Monster",
+  applicationName: "Prompter.Monster",
   // No og:url here: a page without its own openGraph would otherwise advertise the home page URL in previews.
   // Pages set it via socialFor().
   openGraph: {
     type: "website",
-    siteName: "Prompt.Monster",
+    siteName: "Prompter.Monster",
     locale: "tr_TR",
-    title: "Prompt.Monster — Fikirden master build prompt'a",
+    title: "Prompter.Monster — Fikirden master build prompt'a",
     description: "18 uzman canavar, 8 adımlı mega chain, 5 çıktı formatı. Fikrini AI kodlama araçlarına hazır prompt'a çevir.",
     images: ogImages("tr"),
   },
-  twitter: { card: "summary_large_image", title: "Prompt.Monster", description: "Fikirden master build prompt'a.", images: twitterImages("tr") },
+  twitter: { card: "summary_large_image", title: "Prompter.Monster", description: "Fikirden master build prompt'a.", images: twitterImages("tr") },
   robots: { index: true, follow: true },
   icons: {
     icon: [

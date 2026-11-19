@@ -9,7 +9,7 @@ const DESCRIPTION = "Turn your idea into a master build prompt in 4 steps: idea,
 export const metadata: Metadata = {
   title: "Studio",
   description: DESCRIPTION,
-  ...socialFor("/studio", "en", "Prompt.Monster Studio — turn your idea into a master build prompt in 4 steps", DESCRIPTION),
+  ...socialFor("/studio", "en", "Prompter.Monster Studio — turn your idea into a master build prompt in 4 steps", DESCRIPTION),
 };
 
 export default function StudioPageEn() {

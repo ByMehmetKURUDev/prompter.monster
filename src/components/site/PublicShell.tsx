@@ -19,7 +19,7 @@ export function PublicShell({ children, cta, locale = "tr", langSwitch = true }:
       <header className="h-[56px] border-b border-ink-600 bg-ink-950/80 backdrop-blur-xl sticky top-0 z-50 flex items-center px-4 lg:px-8 gap-4">
         <Link href={lhref("/", locale)} className="flex items-center gap-3 shrink-0">
           <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-lime to-violet flex items-center justify-center text-black font-bold">👹</div>
-          <span className={langSwitch ? "font-bold tracking-tight text-[15px] max-[400px]:hidden" : "font-bold tracking-tight text-[15px]"}>Prompt.Monster</span>
+          <span className={langSwitch ? "font-bold tracking-tight text-[15px] max-[400px]:hidden" : "font-bold tracking-tight text-[15px]"}>Prompter.Monster</span>
         </Link>
         <nav aria-label={n.menu} className="ml-auto flex items-center gap-1 text-[13px]">
           <Link href={lhref("/prompt", locale)} className="hidden sm:block px-3 py-1.5 text-zinc-400 hover:text-white">
@@ -44,7 +44,7 @@ export function PublicShell({ children, cta, locale = "tr", langSwitch = true }:
       {children}
 
       <footer className="border-t border-ink-600 px-4 lg:px-8 py-6 text-[12px] text-zinc-600 flex flex-wrap items-center gap-x-3 gap-y-2">
-        <span>Prompt.Monster © {new Date().getFullYear()}</span>
+        <span>Prompter.Monster © {new Date().getFullYear()}</span>
         <span aria-hidden>•</span>
         <Link href={lhref("/prompt", locale)} className="hover:text-zinc-300">
           {n.footerPrompts}

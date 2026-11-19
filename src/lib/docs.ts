@@ -133,9 +133,9 @@ export const AGENT_GUIDE = {
 /** Plain-text guide for AI agents (llms.txt). */
 export function llmsTxt(): string {
   const lines: string[] = [];
-  lines.push("# Prompt.Monster");
+  lines.push("# Prompter.Monster");
   lines.push("");
-  lines.push("> Prompt.Monster turns a product idea into a production-grade \"master build prompt\" for AI coding tools (Claude Code, Cursor, v0, Lovable, Bolt, ChatGPT). Eighteen expert personas (CTO, PM, Design Director, AI Engineer, AI Agent Architect, Automation Engineer, Security, Monetization, SEO/AEO, DevOps, QA, Data, Growth, Copy, Motion & 3D, Performance Marketing, Launch & Community, Mobile & ASO) each write their block; an 8-step Mega Chain sequences the build. Interface: Turkish and English (/en); outputs in TR or EN.");
+  lines.push("> Prompter.Monster turns a product idea into a production-grade \"master build prompt\" for AI coding tools (Claude Code, Cursor, v0, Lovable, Bolt, ChatGPT). Eighteen expert personas (CTO, PM, Design Director, AI Engineer, AI Agent Architect, Automation Engineer, Security, Monetization, SEO/AEO, DevOps, QA, Data, Growth, Copy, Motion & 3D, Performance Marketing, Launch & Community, Mobile & ASO) each write their block; an 8-step Mega Chain sequences the build. Interface: Turkish and English (/en); outputs in TR or EN.");
   lines.push("");
   lines.push("## How the Studio works (4 steps)");
   lines.push("1. Idea & vision: name, one-line pitch, description (100–200 words), audience (role, pain, budget), competitors, USP, monetization.");

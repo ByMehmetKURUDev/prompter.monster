@@ -25,7 +25,7 @@ const COPY = {
     unnamed: "Adsız canavar",
     words: (n: string) => `~${n} kelime`,
     masterPrompt: "MASTER BUILD PROMPT",
-    ctaTitle: "Bu prompt Prompt.Monster ile üretildi.",
+    ctaTitle: "Bu prompt Prompter.Monster ile üretildi.",
     ctaText:
       "Kendi fikrini 4 adımda anlat; 18 uzman canavar (CTO, PM, Design, AI, SEO…) Claude Code, Cursor, v0, Lovable ve Bolt için kopyala-çalıştır kalitesinde build prompt'unu yazsın. Kayıt gerektirmez.",
     tryFree: "Ücretsiz dene",
@@ -38,7 +38,7 @@ const COPY = {
     unnamed: "Unnamed monster",
     words: (n: string) => `~${n} words`,
     masterPrompt: "MASTER BUILD PROMPT",
-    ctaTitle: "This prompt was generated with Prompt.Monster.",
+    ctaTitle: "This prompt was generated with Prompter.Monster.",
     ctaText:
       "Describe your idea in 4 steps; 18 expert monsters (CTO, PM, Design, AI, SEO…) write a copy-paste-ready build prompt for Claude Code, Cursor, v0, Lovable and Bolt. No sign-up required.",
     tryFree: "Try for free",
@@ -71,7 +71,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     title,
     description,
     alternates: { canonical: `${SITE}/p/${shared.slug}` },
-    openGraph: { type: "article", title, description, url: `${SITE}/p/${shared.slug}`, siteName: "Prompt.Monster", images: ogImages(locale) },
+    openGraph: { type: "article", title, description, url: `${SITE}/p/${shared.slug}`, siteName: "Prompter.Monster", images: ogImages(locale) },
     twitter: { card: "summary_large_image", title, description, images: twitterImages(locale) },
     robots: { index: true, follow: true },
   };
@@ -95,7 +95,7 @@ export default async function SharedPromptPage({ params }: Props) {
       <header className="h-[56px] border-b border-ink-600 bg-ink-950/80 backdrop-blur-xl sticky top-0 z-50 flex items-center px-4 lg:px-8 gap-4">
         <Link href="/" className="flex items-center gap-3 shrink-0">
           <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-lime to-violet flex items-center justify-center text-black font-bold">👹</div>
-          <span className="font-bold tracking-tight text-[15px]">Prompt.Monster</span>
+          <span className="font-bold tracking-tight text-[15px]">Prompter.Monster</span>
         </Link>
         <nav className="ml-auto flex items-center gap-2 text-[13px]">
           <span className="hidden sm:block text-zinc-500 text-[12px]">{c.badge}</span>
@@ -176,7 +176,7 @@ export default async function SharedPromptPage({ params }: Props) {
       </main>
 
       <footer className="border-t border-ink-600 px-4 lg:px-8 py-4 text-[11px] text-zinc-600 flex flex-wrap gap-3">
-        <span>Prompt.Monster © {new Date().getFullYear()}</span>
+        <span>Prompter.Monster © {new Date().getFullYear()}</span>
         <LegalLinks />
         <span className="ml-auto">{c.footer}</span>
       </footer>

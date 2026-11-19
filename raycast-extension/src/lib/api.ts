@@ -1,5 +1,5 @@
 /**
- * Minimal client for the Prompt.Monster public API (https://prompter.monster/api/v1).
+ * Minimal client for the Prompter.Monster public API (https://prompter.monster/api/v1).
  * Mirrors the shapes in src/lib/api-core.ts and src/app/api/v1/* on the main site — this
  * extension has no build step shared with the Next.js app, so the two are kept in sync by
  * hand. Human docs: prompter.monster/developers. Machine-readable spec: /api/v1/openapi.json.
