@@ -138,13 +138,20 @@ function blockText(b: Block): string {
   }
 }
 
-function layout(o: { locale: EmailLocale; site: string; subject: string; preheader: string; body: Block[]; footer: string }): string {
+/** Shared colours and font stack, also used by the Supabase Auth templates (auth-templates.ts). */
+export const EMAIL_STYLE = { FONT, INK, LIME, LINK, TEXT, MUTED } as const;
+
+/**
+ * The branded e-mail frame: dark header with the logo, white card, footer. `bodyHtml` and `footerHtml` are inserted
+ * as-is (callers build safe HTML); `site`, `title` and `preheader` are escaped.
+ */
+export function emailShell(o: { locale: EmailLocale; site: string; title: string; preheader: string; bodyHtml: string; footerHtml: string }): string {
   // Invisible filler keeps the client's preview text to the preheader instead of pulling in the body.
   const filler = "&#847;&zwnj;&nbsp;".repeat(60);
   return (
     `<!DOCTYPE html><html lang="${o.locale}"><head><meta charset="utf-8">` +
     `<meta name="viewport" content="width=device-width,initial-scale=1"><meta name="x-apple-disable-message-reformatting">` +
-    `<meta name="color-scheme" content="light"><meta name="supported-color-schemes" content="light"><title>${esc(o.subject)}</title></head>` +
+    `<meta name="color-scheme" content="light"><meta name="supported-color-schemes" content="light"><title>${esc(o.title)}</title></head>` +
     `<body style="margin:0;padding:0;background:#f4f4f5;-webkit-text-size-adjust:100%;">` +
     `<div style="display:none;max-height:0;overflow:hidden;opacity:0;mso-hide:all;">${esc(o.preheader)}${filler}</div>` +
     `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#f4f4f5;"><tr><td align="center" style="padding:28px 12px;">` +
@@ -152,10 +159,14 @@ function layout(o: { locale: EmailLocale; site: string; subject: string; prehead
     `<tr><td style="background:${INK};padding:16px 28px;border-radius:16px 16px 0 0;">` +
     `<a href="${esc(o.site)}" style="text-decoration:none;"><img src="${esc(o.site)}/icon-192.png" width="32" height="32" alt="" style="vertical-align:middle;border:0;border-radius:8px;">` +
     `<span style="vertical-align:middle;padding-left:10px;font:700 16px/1 ${FONT};color:#ffffff;letter-spacing:-0.2px;">Prompt.Monster</span></a></td></tr>` +
-    `<tr><td style="padding:28px 28px 10px;">${o.body.map(blockHtml).join("")}</td></tr>` +
-    `<tr><td style="padding:18px 28px 24px;border-top:1px solid #f0f0f2;font:12px/1.6 ${FONT};color:#71717a;">${md(o.footer)}</td></tr>` +
+    `<tr><td style="padding:28px 28px 10px;">${o.bodyHtml}</td></tr>` +
+    `<tr><td style="padding:18px 28px 24px;border-top:1px solid #f0f0f2;font:12px/1.6 ${FONT};color:#71717a;">${o.footerHtml}</td></tr>` +
     `</table></td></tr></table></body></html>`
   );
+}
+
+function layout(o: { locale: EmailLocale; site: string; subject: string; preheader: string; body: Block[]; footer: string }): string {
+  return emailShell({ locale: o.locale, site: o.site, title: o.subject, preheader: o.preheader, bodyHtml: o.body.map(blockHtml).join(""), footerHtml: md(o.footer) });
 }
 
 /** Adds UTM tags so returning sessions are attributed to the e-mail in GA4. */

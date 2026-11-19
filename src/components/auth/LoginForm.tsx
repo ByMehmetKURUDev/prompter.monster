@@ -116,7 +116,8 @@ export function LoginForm({ next, initialError, initialMessage }: { next: string
     return <p className="text-[13px] text-zinc-400">{c.notConfigured}</p>;
   }
 
-  const redirectTo = () => `${window.location.origin}/auth/callback?next=${encodeURIComponent(next)}`;
+  // lang= goes first: the Supabase e-mail templates read it to pick the language (src/lib/email/auth-templates.ts).
+  const redirectTo = () => `${window.location.origin}/auth/callback?lang=${locale}&next=${encodeURIComponent(next)}`;
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -150,7 +151,7 @@ export function LoginForm({ next, initialError, initialMessage }: { next: string
       }
       if (mode === "reset") {
         const { error } = await supabase.auth.resetPasswordForEmail(email, {
-          redirectTo: `${window.location.origin}/auth/callback?next=${encodeURIComponent(lhref("/account/password", locale))}`,
+          redirectTo: `${window.location.origin}/auth/callback?lang=${locale}&next=${encodeURIComponent(lhref("/account/password", locale))}`,
         });
         if (error) throw error;
         setMsg({ kind: "ok", text: c.resetOk });

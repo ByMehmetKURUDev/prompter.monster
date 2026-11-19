@@ -13,6 +13,17 @@ export interface ChangelogEntry {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: "4.16",
+    date: "2026-11-19",
+    title: "Giriş e-postaları Türkçe ve İngilizce: kayıt doğrulama, sihirli bağlantı, şifre sıfırlama",
+    items: [
+      "Supabase'in gönderdiği altı e-posta (kayıt doğrulama, sihirli bağlantı, şifre sıfırlama, e-posta değişikliği, davet, doğrulama kodu) karşılama e-postalarıyla aynı tasarımda ve iki dilde.",
+      "Dil, isteğin yapıldığı sayfadan seçilir (giriş formu bağlantıya ?lang= ekler); bağlantı eski biçimdeyse kayıt dili, o da yoksa Türkçe. Bozuk ya da süresi dolmuş bağlantı da kişiyi kendi dilindeki giriş sayfasına götürür.",
+      "Bağlantılar sunucu tarafı doğrulama yapan /auth/callback?token_hash=… adresine gider; kişi kaydı nereden başlattıysa (ör. ekip daveti /join/…) oraya döner.",
+      "Şablonlar supabase/email-templates/ içinde (src/lib/email/auth-templates.ts'den üretilir); Admin → E-postalar'da önizlemesi var.",
+    ],
+  },
+  {
     version: "4.15",
     date: "2026-11-19",
     title: "Karşılama ve başlangıç hatırlatması e-postaları (Resend), tek tıkla çıkış",

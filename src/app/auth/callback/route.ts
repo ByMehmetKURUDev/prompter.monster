@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { background } from "@/lib/background";
 import { emailConfigFrom, runLifecycleEmails } from "@/lib/email/lifecycle";
-import { stripLocale } from "@/lib/i18n";
+import { stripLocale, type Locale } from "@/lib/i18n";
 import { createClient } from "@/lib/supabase/server";
 
 export const runtime = "nodejs";
@@ -16,6 +16,9 @@ export async function GET(req: Request) {
   const tokenHash = url.searchParams.get("token_hash");
   const type = url.searchParams.get("type");
   const next = safeNext(url.searchParams.get("next"));
+  // The page the request came from (LoginForm adds ?lang=); older links only carry `next`.
+  const lang = url.searchParams.get("lang");
+  const locale: Locale = lang === "en" || lang === "tr" ? lang : stripLocale(next).locale;
 
   const supabase = await createClient();
   let ok = false;
@@ -32,15 +35,16 @@ export async function GET(req: Request) {
   }
 
   // Welcome e-mail (0023) right after the first sign-in instead of at the next hourly cron. The database decides
-  // whether it is due (new, confirmed, not sent yet, not opted out); the language of this page becomes the default.
+  // whether it is due (new, confirmed, not sent yet, not opted out); the language of the request becomes the default.
   if (ok && user && Date.now() - new Date(user.created_at).getTime() < 3 * 86_400_000) {
     const cfg = emailConfigFrom(process.env);
-    if (cfg) background(runLifecycleEmails(cfg, { kinds: ["welcome"], userId: user.id, locale: stripLocale(next).locale, limit: 1 }));
+    if (cfg) background(runLifecycleEmails(cfg, { kinds: ["welcome"], userId: user.id, locale, limit: 1 }));
   }
 
   // Error params (e.g. otp_expired) arrive as query or hash; the login page explains them.
   const errDesc = url.searchParams.get("error_description");
-  const to = new URL(ok ? next : `/login?error=link${errDesc ? `&msg=${encodeURIComponent(errDesc)}` : ""}&next=${encodeURIComponent(next)}`, url.origin);
+  const login = locale === "en" ? "/en/login" : "/login";
+  const to = new URL(ok ? next : `${login}?error=link${errDesc ? `&msg=${encodeURIComponent(errDesc)}` : ""}&next=${encodeURIComponent(next)}`, url.origin);
   return NextResponse.redirect(to);
 }
 

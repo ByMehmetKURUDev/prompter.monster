@@ -2,6 +2,7 @@ import Link from "next/link";
 import { getAdmin } from "@/lib/admin";
 import { emailConfigFrom } from "@/lib/email/lifecycle";
 import { renderLifecycleEmail, type EmailKind, type EmailLocale } from "@/lib/email/templates";
+import { AUTH_EMAIL_KINDS, preview as authPreview, type AuthEmailKind } from "@/lib/email/auth-templates";
 import { isMissingFunction } from "@/lib/share";
 import { cx } from "@/lib/cx";
 import { Badge, PageTitle, Panel, Stat, Table, fmtDate, fmtNum } from "@/components/admin/ui";
@@ -33,12 +34,20 @@ const PREVIEWS: { id: string; label: string }[] = [
   { id: "nudge-tr", label: "Hatırlatma · TR" },
   { id: "nudge-en", label: "Hatırlatma · EN" },
 ];
+const AUTH_LABEL: Record<AuthEmailKind, string> = {
+  confirmation: "Kayıt doğrulama",
+  magic_link: "Sihirli bağlantı",
+  recovery: "Şifre sıfırlama",
+  email_change: "E-posta değişikliği",
+  invite: "Davet",
+  reauthentication: "Doğrulama kodu",
+};
 
-type Props = { searchParams: Promise<{ preview?: string }> };
+type Props = { searchParams: Promise<{ preview?: string; auth?: string }> };
 
 /** Admin → E-postalar (0023): welcome + one getting-started reminder via Resend — status, numbers, previews, test send. */
 export default async function AdminEmails({ searchParams }: Props) {
-  const { preview = "welcome-tr" } = await searchParams;
+  const { preview = "welcome-tr", auth = "confirmation-tr" } = await searchParams;
   const admin = (await getAdmin())!;
   const [ov, rc, du] = await Promise.all([
     admin.supabase.rpc("admin_email_overview", { p_days: 30 }),
@@ -65,6 +74,12 @@ export default async function AdminEmails({ searchParams }: Props) {
   const kind: EmailKind = pk === "nudge" ? "nudge" : "welcome";
   const loc: EmailLocale = pl === "en" ? "en" : "tr";
   const sample = renderLifecycleEmail(kind, { name: loc === "en" ? "Alex" : "Deniz", locale: loc, token: "00000000-0000-4000-8000-000000000000" }, site);
+  // Supabase Auth e-mails (sign-up, magic link, reset…): same frame, sent by Supabase SMTP, not by this app.
+  const cut = auth.lastIndexOf("-");
+  const authKind = AUTH_EMAIL_KINDS.find((k) => k === auth.slice(0, cut)) ?? "confirmation";
+  const authLoc: EmailLocale = auth.slice(cut + 1) === "en" ? "en" : "tr";
+  const authSample = authPreview(authKind, authLoc, site);
+  const href = (p: string, a: string, anchor: string) => `/admin/emails?preview=${p}&auth=${a}#${anchor}`;
 
   return (
     <>
@@ -162,7 +177,7 @@ export default async function AdminEmails({ searchParams }: Props) {
         </Panel>
       </div>
 
-      <div className="mt-6">
+      <div className="mt-6 scroll-mt-4" id="preview">
         <Panel
           title="Önizleme"
           actions={
@@ -170,7 +185,7 @@ export default async function AdminEmails({ searchParams }: Props) {
               {PREVIEWS.map((p) => (
                 <Link
                   key={p.id}
-                  href={`/admin/emails?preview=${p.id}`}
+                  href={href(p.id, `${authKind}-${authLoc}`, "preview")}
                   className={cx(
                     "h-7 px-2.5 rounded-md text-[11.5px] flex items-center border",
                     p.id === `${kind}-${loc}` ? "bg-ink-800 border-ink-400 text-white" : "border-transparent text-zinc-400 hover:text-white",
@@ -203,6 +218,46 @@ export default async function AdminEmails({ searchParams }: Props) {
             </pre>
           </details>
           <p className="mt-2 text-[11.5px] text-zinc-500">Örnek isim ve sahte çıkış bağlantısıyla gösterilir; gerçek gönderimde kişinin adı ve kendi bağlantısı kullanılır.</p>
+        </Panel>
+      </div>
+
+      <div className="mt-6 scroll-mt-4" id="auth">
+        <Panel
+          title="Giriş e-postaları (Supabase)"
+          actions={
+            <div className="flex flex-wrap gap-1">
+              {AUTH_EMAIL_KINDS.flatMap((k) =>
+                (["tr", "en"] as const).map((l) => (
+                  <Link
+                    key={`${k}-${l}`}
+                    href={href(`${kind}-${loc}`, `${k}-${l}`, "auth")}
+                    className={cx(
+                      "h-7 px-2.5 rounded-md text-[11.5px] flex items-center border",
+                      k === authKind && l === authLoc ? "bg-ink-800 border-ink-400 text-white" : "border-transparent text-zinc-400 hover:text-white",
+                    )}
+                  >
+                    {AUTH_LABEL[k]} · {l.toUpperCase()}
+                  </Link>
+                )),
+              )}
+            </div>
+          }
+        >
+          <p className="text-[12.5px] text-zinc-400 leading-relaxed">
+            Kayıt doğrulama, sihirli bağlantı, şifre sıfırlama gibi e-postaları Supabase gönderir (noreply@). Şablonlar{" "}
+            <code className="text-zinc-200">supabase/email-templates/</code> içinde ve Supabase → Authentication → Emails&apos;e kayıtlı. Dil: isteğin geldiği
+            sayfa (bağlantıdaki <code className="text-zinc-200">?lang=</code>), yoksa kayıt dili, o da yoksa Türkçe.
+          </p>
+          <div className="mt-3 text-[13px]">
+            <span className="text-zinc-500">Konu:</span> <span className="font-semibold">{authSample.subject}</span>
+          </div>
+          <iframe
+            title="Giriş e-postası önizlemesi"
+            srcDoc={authSample.html}
+            sandbox=""
+            className="mt-3 w-full h-[640px] rounded-xl border border-ink-600 bg-white"
+          />
+          <p className="mt-2 text-[11.5px] text-zinc-500">Örnek bağlantı ve kodla gösterilir.</p>
         </Panel>
       </div>
     </>
