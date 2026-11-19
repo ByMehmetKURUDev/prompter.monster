@@ -2,6 +2,7 @@ import { getAdmin } from "@/lib/admin";
 import { projectTypeName } from "@/lib/prompt";
 import { Panel, PageTitle, Table, Badge, fmtDate, fmtNum } from "@/components/admin/ui";
 import { ShareAdminActions } from "@/components/admin/ShareAdminActions";
+import { isMissingFunction } from "@/lib/share";
 
 export const dynamic = "force-dynamic";
 
@@ -25,11 +26,16 @@ type Feedback = { id: number; slug: string | null; email: string | null; message
 
 export default async function AdminShares() {
   const admin = (await getAdmin())!;
-  const [{ data, error }, { data: fbData }] = await Promise.all([
-    admin.supabase.rpc("admin_shares", { p_limit: 300 }),
+  const [v2, { data: fbData }] = await Promise.all([
+    admin.supabase.rpc("admin_shares_v2", { p_limit: 300 }),
     admin.supabase.rpc("admin_feedback", { p_limit: 50 }),
   ]);
-  const rows = (data ?? []) as Share[];
+  // admin_shares_v2 (0019) carries forks + gallery/moderation flags; the original RPC lacks them.
+  const legacy = v2.error && isMissingFunction(v2.error.message);
+  const { data, error } = legacy ? await admin.supabase.rpc("admin_shares", { p_limit: 300 }) : v2;
+  const rows = ((data ?? []) as Partial<Share>[]).map(
+    (r) => ({ ...r, forks: r.forks ?? 0, listed: r.listed ?? false, featured: r.featured ?? false, hidden: r.hidden ?? false, lang: r.lang ?? "" }) as Share,
+  );
   const feedback = (fbData ?? []) as Feedback[];
 
   return (

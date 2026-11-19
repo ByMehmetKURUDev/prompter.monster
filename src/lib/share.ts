@@ -22,15 +22,22 @@ export interface SharedPrompt {
 
 export const SLUG_RE = /^[a-z0-9-]{3,64}$/;
 
+/** PostgREST/Postgres error for an RPC that is not in the database yet (a migration not applied). */
+export function isMissingFunction(message: string | null | undefined): boolean {
+  return /function .* does not exist|could not find the function/i.test(message ?? "");
+}
+
 /** Public read of a shared prompt; cached per request so metadata + page share one query. */
 export const getShared = cache(async (slug: string): Promise<SharedPrompt | null> => {
   if (!supabaseConfigured() || !SLUG_RE.test(slug)) return null;
   try {
     const supabase = await createClient();
-    const { data, error } = await supabase.rpc("get_shared", { p_slug: slug });
+    // get_shared_v2 (0019) adds the fork count; before 0019 is applied fall back to the original RPC.
+    let { data, error } = await supabase.rpc("get_shared_v2", { p_slug: slug });
+    if (error && isMissingFunction(error.message)) ({ data, error } = await supabase.rpc("get_shared", { p_slug: slug }));
     if (error || !data) return null;
     const row = (Array.isArray(data) ? data[0] : data) as SharedPrompt | undefined;
-    return row ?? null;
+    return row ? { ...row, forks: row.forks ?? 0 } : null;
   } catch {
     return null;
   }

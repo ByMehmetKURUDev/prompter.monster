@@ -20,6 +20,7 @@ export const CHANGELOG: ChangelogEntry[] = [
       "Studio → Fikir & Vizyon: yeni Girdi Koçu kartı. 0–100 'Girdi Kalitesi' skoru ve 6 maddelik ağırlıklı kontrol listesi (proje adı 10, pitch 25, açıklama 20, hedef kitle 20, rakipler 10, USP 15); her madde için somut ipucu (klişe pitch, genel USP, eksik acı noktası gibi). Üstteki 'Quality' göstergesi değişmedi.",
       "Tek tıkla örnek fikir: StudioFlow, ShipDeck, Nestegg — adım 1'i (ad, pitch, açıklama, hedef kitle, rakipler, USP, proje tipi, gelir modeli) doldurur; kendi girdilerin varsa önce onay ister. TR ve EN (/en/studio) ayrı metinlerle.",
       "Kart 'Gizle' ile daraltılabilir; tercih tarayıcıda hatırlanır. Skorlama yerel ve ücretsiz — AI kredisi harcamaz, hiçbir şey sunucuya gitmez.",
+      "Paylaşımlar: migration 0019 (get_shared_v2, admin_shares_v2) — paylaşım sayfasında çatal sayısı ve Admin → Paylaşımlar'da galeri/öne çıkar/gizle durumu artık doğru geliyor (0010'un DROP gerektiren kalan kısmı, DROP'suz). Uygulama 0019 yoksa eski fonksiyonlara düşer.",
     ],
   },
   {
