@@ -166,6 +166,7 @@ export function ExploreGrid({
       <div className="flex flex-wrap items-center gap-2 mb-6">
         <select
           value={lang}
+          aria-label={l.lang}
           onChange={(e) => {
             const v = e.target.value as "" | "TR" | "EN";
             setLang(v);
@@ -181,6 +182,7 @@ export function ExploreGrid({
         </select>
         <select
           value={type}
+          aria-label={l.type}
           onChange={(e) => {
             setType(e.target.value);
             refetch({ type: e.target.value });
@@ -199,6 +201,7 @@ export function ExploreGrid({
         {experts.length > 0 && (
           <select
             value={expert}
+            aria-label={l.expert}
             onChange={(e) => {
               setExpert(e.target.value);
               refetch({ expert: e.target.value });
@@ -217,6 +220,7 @@ export function ExploreGrid({
         )}
         <select
           value={format}
+          aria-label={l.format}
           onChange={(e) => {
             setFormat(e.target.value);
             refetch({ format: e.target.value });

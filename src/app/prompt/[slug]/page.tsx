@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { TypePageView, typePageMeta } from "@/components/site/PromptPagesView";
 import { loadCatalog } from "@/lib/catalog-server";
-import { alternatesFor } from "@/lib/i18n";
+import { alternatesFor, ogImages, twitterImages } from "@/lib/i18n";
 
 // Rendered on demand: the Workers deployment has no incremental cache, so prerendered dynamic
 // routes (generateStaticParams) would 404 there. Content is in code, so rendering is instant.
@@ -19,8 +19,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     description: page.description,
     keywords: page.keywords,
     alternates: alternatesFor(`/prompt/${page.slug}`, "tr"),
-    openGraph: { type: "article", title: `${page.title} · Prompt.Monster`, description: page.description, url, siteName: "Prompt.Monster", locale: "tr_TR" },
-    twitter: { card: "summary_large_image", title: page.title, description: page.description },
+    openGraph: { type: "article", title: `${page.title} · Prompt.Monster`, description: page.description, url, siteName: "Prompt.Monster", locale: "tr_TR", images: ogImages("tr") },
+    twitter: { card: "summary_large_image", title: page.title, description: page.description, images: twitterImages("tr") },
     robots: { index: true, follow: true },
   };
 }

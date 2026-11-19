@@ -220,14 +220,14 @@ export async function PricingView({ locale }: { locale: Locale }) {
 
         <section id="team" className="mt-4 max-w-[820px] mx-auto rounded-2xl bg-ink-800 border border-ink-600 p-6 flex flex-col md:flex-row md:items-center gap-5 scroll-mt-20">
           <div className="min-w-0 flex-1">
-            <div className="text-[12px] font-bold tracking-widest text-violet flex items-center gap-1.5">
+            <div className="text-[12px] font-bold tracking-widest text-violet-400 flex items-center gap-1.5">
               <Users className="w-4 h-4" aria-hidden /> {c.teamTitle.toUpperCase()}
             </div>
             <p className="mt-2 text-[13px] text-zinc-300 leading-relaxed">{c.teamText}</p>
             <ul className="mt-3 grid sm:grid-cols-2 gap-x-4 gap-y-1.5 text-[12.5px]">
               {c.teamList.map((f) => (
                 <li key={f} className="flex items-center gap-2 text-zinc-400">
-                  <Check className="w-3.5 h-3.5 text-violet shrink-0" aria-hidden /> {f}
+                  <Check className="w-3.5 h-3.5 text-violet-400 shrink-0" aria-hidden /> {f}
                 </li>
               ))}
             </ul>
@@ -255,7 +255,7 @@ export async function PricingView({ locale }: { locale: Locale }) {
 
         <section className="mt-16 max-w-[820px] mx-auto">
           <h2 className="text-xl font-bold tracking-tight">{c.compare}</h2>
-          <div className="mt-4 rounded-2xl border border-ink-600 overflow-x-auto">
+          <div className="mt-4 rounded-2xl border border-ink-600 overflow-x-auto" tabIndex={0} role="region" aria-label={c.compare}>
             <table className="w-full text-[13px] min-w-[560px]">
               <thead className="bg-ink-800 text-[11px] tracking-widest text-zinc-400">
                 <tr>

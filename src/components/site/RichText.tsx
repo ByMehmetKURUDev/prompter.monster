@@ -22,7 +22,7 @@ export function RichText({ text, locale }: { text: string; locale: Locale }) {
       );
     } else {
       const [label, href] = [m[1], m[2]];
-      const cls = "text-lime hover:underline underline-offset-2";
+      const cls = "text-lime underline decoration-lime/40 underline-offset-2 hover:decoration-lime";
       if (href.startsWith("/")) {
         out.push(
           <Link key={k++} href={lhref(href, locale)} className={cls}>

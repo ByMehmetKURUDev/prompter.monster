@@ -82,16 +82,52 @@ const COPY = {
 
 const STEP_ICONS = [
   <Sparkles key="1" className="w-5 h-5 text-lime" />,
-  <Layers key="2" className="w-5 h-5 text-violet" />,
+  <Layers key="2" className="w-5 h-5 text-violet-400" />,
   <Check key="3" className="w-5 h-5 text-lime" />,
-  <Users key="4" className="w-5 h-5 text-violet" />,
+  <Users key="4" className="w-5 h-5 text-violet-400" />,
 ];
+
+const SITE = "https://prompter.monster";
+
+/** schema.org graph for the home pages: organization, website and the app with its two plans. */
+function structuredData(locale: Locale, description: string) {
+  const url = locale === "en" ? `${SITE}/en` : SITE;
+  const inLanguage = locale === "en" ? "en" : "tr";
+  return {
+    "@context": "https://schema.org",
+    "@graph": [
+      { "@type": "Organization", "@id": `${SITE}/#org`, name: "Prompt.Monster", url: SITE, logo: `${SITE}/icon-512.png`, email: "hello@prompter.monster" },
+      { "@type": "WebSite", "@id": `${SITE}/#website`, name: "Prompt.Monster", url, inLanguage, publisher: { "@id": `${SITE}/#org` } },
+      {
+        "@type": "SoftwareApplication",
+        name: "Prompt.Monster",
+        url,
+        inLanguage,
+        description,
+        applicationCategory: "DeveloperApplication",
+        operatingSystem: "Web",
+        publisher: { "@id": `${SITE}/#org` },
+        offers: [
+          { "@type": "Offer", name: "Free", price: "0", priceCurrency: "USD" },
+          {
+            "@type": "Offer",
+            name: "Monster Pro",
+            price: "29",
+            priceCurrency: "USD",
+            priceSpecification: { "@type": "UnitPriceSpecification", price: "29", priceCurrency: "USD", billingDuration: "P1M" },
+          },
+        ],
+      },
+    ],
+  };
+}
 
 export function LandingView({ locale }: { locale: Locale }) {
   const c = COPY[locale];
   const L = (p: string) => lhref(p, locale);
   return (
     <div className="min-h-screen bg-ink-950 text-zinc-100">
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData(locale, c.sub)) }} />
       <header className="h-[56px] border-b border-ink-600 bg-ink-950/80 backdrop-blur-xl sticky top-0 z-50 flex items-center px-4 lg:px-8 gap-4">
         <Link href={L("/")} className="flex items-center gap-3 shrink-0">
           <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-lime to-violet flex items-center justify-center text-black font-bold">👹</div>
@@ -116,6 +152,8 @@ export function LandingView({ locale }: { locale: Locale }) {
           </Link>
         </nav>
       </header>
+
+      <main id="main">
 
       {/* Hero */}
       <section className="relative overflow-hidden">
@@ -292,6 +330,8 @@ export function LandingView({ locale }: { locale: Locale }) {
           </div>
         </div>
       </section>
+
+      </main>
 
       <footer className="border-t border-ink-600 px-4 lg:px-8 py-6 text-[12px] text-zinc-600 flex flex-wrap items-center gap-x-3 gap-y-2">
         <span>Prompt.Monster © {new Date().getFullYear()}</span>

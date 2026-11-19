@@ -23,10 +23,10 @@ export function usePathLocale(): Locale {
 /** Keeps <html lang> in sync for screen readers when an /en page is shown (root layout renders lang="tr"). */
 export function HtmlLang({ lang }: { lang: Locale }) {
   useEffect(() => {
-    const prev = document.documentElement.lang;
     document.documentElement.lang = lang;
     return () => {
-      document.documentElement.lang = prev || DEFAULT_LOCALE;
+      // Back to the root layout's language. (Not the previous value: app/en/layout.tsx already set "en" inline.)
+      document.documentElement.lang = DEFAULT_LOCALE;
     };
   }, [lang]);
   return null;

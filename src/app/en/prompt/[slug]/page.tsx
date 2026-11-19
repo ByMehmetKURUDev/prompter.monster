@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { TypePageView, typePageMeta } from "@/components/site/PromptPagesView";
 import { loadCatalog } from "@/lib/catalog-server";
-import { alternatesFor } from "@/lib/i18n";
+import { alternatesFor, ogImages, twitterImages } from "@/lib/i18n";
 
 export const dynamic = "force-dynamic";
 
@@ -17,8 +17,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     description: page.description,
     keywords: page.keywords,
     alternates: alternatesFor(`/prompt/${page.slug}`, "en"),
-    openGraph: { type: "article", title: `${page.title} · Prompt.Monster`, description: page.description, url, siteName: "Prompt.Monster", locale: "en_US" },
-    twitter: { card: "summary_large_image", title: page.title, description: page.description },
+    openGraph: { type: "article", title: `${page.title} · Prompt.Monster`, description: page.description, url, siteName: "Prompt.Monster", locale: "en_US", images: ogImages("en") },
+    twitter: { card: "summary_large_image", title: page.title, description: page.description, images: twitterImages("en") },
     robots: { index: true, follow: true },
   };
 }

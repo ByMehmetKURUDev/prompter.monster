@@ -28,7 +28,7 @@ export function LanguageSwitch({ className }: { className?: string }) {
         window.location.assign(href + window.location.search + window.location.hash);
       }}
       className={cx("inline-flex items-center gap-1.5 h-8 px-2.5 rounded-lg border border-ink-600 text-[12px] text-zinc-400 hover:text-white hover:border-ink-400", className)}
-      aria-label={target === "en" ? "Switch to English" : "Türkçeye geç"}
+      aria-label={target === "en" ? "EN – Switch to English" : "TR – Türkçeye geç"}
     >
       <Languages className="w-3.5 h-3.5 hidden sm:block" aria-hidden />
       {target === "en" ? "EN" : "TR"}

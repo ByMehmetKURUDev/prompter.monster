@@ -68,7 +68,7 @@ export function SettingsForm({ defs, values }: { defs: Def[]; values: SettingsMa
                     <span className="text-[13px] font-semibold">{d.label}</span>
                     <code className="text-[10px] text-zinc-600">{d.key}</code>
                     {d.isNew && <span className="text-[9px] font-bold tracking-wider px-1.5 py-0.5 rounded bg-lime/15 text-lime border border-lime/30">YENİ</span>}
-                    {d.overridden && <span className="text-[9px] font-bold tracking-wider px-1.5 py-0.5 rounded bg-violet/15 text-violet border border-violet/30">DEĞİŞTİRİLDİ</span>}
+                    {d.overridden && <span className="text-[9px] font-bold tracking-wider px-1.5 py-0.5 rounded bg-violet/15 text-violet-400 border border-violet/30">DEĞİŞTİRİLDİ</span>}
                   </div>
                   <p className="mt-1 text-[12px] text-zinc-500 leading-relaxed">{d.description}</p>
                   <p className="mt-1 text-[10px] text-zinc-600">

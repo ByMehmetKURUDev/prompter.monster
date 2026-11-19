@@ -17,7 +17,7 @@ export function Stat({ label, value, hint, tone = "default" }: { label: string; 
   return (
     <div className="rounded-2xl bg-ink-800 border border-ink-600 p-4">
       <div className="text-[11px] font-semibold tracking-widest text-zinc-500 uppercase">{label}</div>
-      <div className={cx("mt-2 text-2xl font-black tabular-nums", tone === "lime" && "text-lime", tone === "violet" && "text-violet", tone === "red" && "text-red-400")}>{value}</div>
+      <div className={cx("mt-2 text-2xl font-black tabular-nums", tone === "lime" && "text-lime", tone === "violet" && "text-violet-400", tone === "red" && "text-red-400")}>{value}</div>
       {hint && <div className="mt-1 text-[11px] text-zinc-500">{hint}</div>}
     </div>
   );
@@ -60,7 +60,7 @@ export function Badge({ children, tone = "zinc" }: { children: ReactNode; tone?:
   const map = {
     zinc: "bg-ink-800 border-ink-600 text-zinc-300",
     lime: "bg-lime/10 border-lime/30 text-lime",
-    violet: "bg-violet/10 border-violet/30 text-violet",
+    violet: "bg-violet/10 border-violet/30 text-violet-400",
     red: "bg-red-500/10 border-red-500/30 text-red-400",
     amber: "bg-amber-500/10 border-amber-500/30 text-amber-400",
   } as const;

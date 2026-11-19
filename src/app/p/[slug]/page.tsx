@@ -9,7 +9,7 @@ import { EXPERTS, PROJECT_CATEGORIES } from "@/lib/data";
 import { loadCatalog } from "@/lib/catalog-server";
 import { bumpViews, getShared, ownerInfo } from "@/lib/share";
 import { LegalLinks } from "@/components/site/LegalLinks";
-import type { Locale } from "@/lib/i18n";
+import { ogImages, twitterImages, type Locale } from "@/lib/i18n";
 
 export const dynamic = "force-dynamic";
 
@@ -71,8 +71,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     title,
     description,
     alternates: { canonical: `${SITE}/p/${shared.slug}` },
-    openGraph: { type: "article", title, description, url: `${SITE}/p/${shared.slug}`, siteName: "Prompt.Monster" },
-    twitter: { card: "summary_large_image", title, description },
+    openGraph: { type: "article", title, description, url: `${SITE}/p/${shared.slug}`, siteName: "Prompt.Monster", images: ogImages(locale) },
+    twitter: { card: "summary_large_image", title, description, images: twitterImages(locale) },
     robots: { index: true, follow: true },
   };
 }
@@ -152,7 +152,7 @@ export default async function SharedPromptPage({ params }: Props) {
             <Sparkles className="w-3.5 h-3.5 text-lime" aria-hidden /> {c.masterPrompt}
             <span className="ml-auto font-normal tracking-normal text-zinc-600">{c.words(words.toLocaleString(locale === "en" ? "en-US" : "tr-TR"))}</span>
           </div>
-          <pre className="mono text-[12px] leading-relaxed text-zinc-300 whitespace-pre-wrap break-words p-4 md:p-6 max-h-[70vh] overflow-y-auto scrollbar-thin">
+          <pre tabIndex={0} className="mono text-[12px] leading-relaxed text-zinc-300 whitespace-pre-wrap break-words p-4 md:p-6 max-h-[70vh] overflow-y-auto scrollbar-thin">
             {shared.output}
           </pre>
         </section>

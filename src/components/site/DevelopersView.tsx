@@ -317,7 +317,7 @@ export async function DevelopersView({ locale }: { locale: Locale }) {
             </table>
           </div>
           <p className="mt-3 text-[12.5px] text-zinc-500">
-            <a href={OPENAPI_URL} className="text-lime hover:underline">
+            <a href={OPENAPI_URL} className="text-lime underline decoration-lime/40 underline-offset-2 hover:decoration-lime">
               {t.openapi}
             </a>{" "}
             · Authorization: Bearer pm_live_…
@@ -372,7 +372,7 @@ export async function DevelopersView({ locale }: { locale: Locale }) {
             <h2 className="text-[18px] font-bold">{t.cta}</h2>
             <p className="mt-1 text-[12.5px] text-zinc-400">
               {t.llms}:{" "}
-              <a href="/llms.txt" className="text-lime hover:underline">
+              <a href="/llms.txt" className="text-lime underline decoration-lime/40 underline-offset-2 hover:decoration-lime">
                 /llms.txt
               </a>
             </p>

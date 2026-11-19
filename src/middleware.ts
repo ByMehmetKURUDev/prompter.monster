@@ -74,6 +74,9 @@ function applyAttribution(request: NextRequest, response: NextResponse) {
 }
 
 export const config = {
-  // Skip static assets; run on pages and API routes.
-  matcher: ["/((?!_next/static|_next/image|favicon\\.svg|robots\\.txt|sitemap\\.xml).*)"],
+  // Skip static assets (incl. icons, manifest and the /og/ link-preview images — no session refresh needed);
+  // run on pages and API routes.
+  matcher: [
+    "/((?!_next/static|_next/image|favicon\\.svg|favicon\\.ico|icon-[\\w-]+\\.png|apple-touch-icon\\.png|og/|manifest\\.webmanifest|robots\\.txt|sitemap\\.xml).*)",
+  ],
 };

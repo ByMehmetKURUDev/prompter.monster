@@ -14,6 +14,10 @@ const config: Config = {
           500: "#25252F",
           400: "#2A2A32",
         },
+        // WCAG AA: zinc-500/600 carry secondary and muted text on the ink backgrounds. The stock shades
+        // (#71717a ≈ 4.1:1 and #52525b ≈ 2.6:1 on ink-950) fail 4.5:1, so both are lightened while keeping
+        // the 400 > 500 > 600 hierarchy (#8A8A94 ≥ 4.8:1 up to ink-600, #80808A ≥ 4.4:1 up to ink-700).
+        zinc: { 500: "#8A8A94", 600: "#80808A" },
         lime: { DEFAULT: "#A3FF12" },
         violet: { DEFAULT: "#8B5CF6" },
       },

@@ -184,7 +184,7 @@ export function OutputPanel({
             <div className="text-[11px] font-semibold flex items-center gap-1">
               <Crown className="w-3 h-3 text-lime" aria-hidden /> {s.format}
             </div>
-            <div className="text-[10px] text-violet mt-1">{s.lang === "TR" ? t.langTR : t.langEN}</div>
+            <div className="text-[10px] text-violet-400 mt-1">{s.lang === "TR" ? t.langTR : t.langEN}</div>
           </div>
         </div>
         {s.lang === "EN" && /[çğıöşüÇĞİÖŞÜ]/.test([s.name, s.pitch, s.description, s.usp, s.audience.role, s.audience.pain, s.audience.budget].join(" ")) && (
@@ -490,7 +490,7 @@ export function OutputPanel({
                   disabled={refining}
                   className="w-full h-10 rounded-xl bg-ink-600 border border-ink-400 text-[12px] font-medium flex items-center justify-center gap-2 hover:bg-ink-500 disabled:opacity-60"
                 >
-                  {refining ? <Spinner className="w-4 h-4" /> : <Sparkles className="w-4 h-4 text-violet" aria-hidden />}
+                  {refining ? <Spinner className="w-4 h-4" /> : <Sparkles className="w-4 h-4 text-violet-400" aria-hidden />}
                   {refining ? t.refining : t.refine(refineCost)}
                 </button>
               </div>

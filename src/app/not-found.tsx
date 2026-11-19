@@ -3,7 +3,7 @@ import Link from "next/link";
 /** Global 404 — bilingual because it serves both the Turkish and the /en routes. */
 export default function NotFound() {
   return (
-    <div className="min-h-screen bg-ink-950 text-zinc-100 grid place-items-center px-4">
+    <main className="min-h-screen bg-ink-950 text-zinc-100 grid place-items-center px-4">
       <div className="text-center max-w-[520px]">
         <div className="text-6xl" aria-hidden>
           👹
@@ -25,6 +25,6 @@ export default function NotFound() {
           </Link>
         </div>
       </div>
-    </div>
+    </main>
   );
 }

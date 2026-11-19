@@ -34,7 +34,7 @@ export function DocsView({ locale }: { locale: Locale }) {
         <h1 className="mt-5 text-3xl md:text-5xl font-black tracking-tight leading-[1.05]">{ui.title}</h1>
         <p className="mt-4 text-[15px] text-zinc-400 leading-relaxed max-w-[720px]">
           {ui.introBeforeLink}{" "}
-          <a href="/llms.txt" className="text-lime hover:underline">
+          <a href="/llms.txt" className="text-lime underline decoration-lime/40 underline-offset-2 hover:decoration-lime">
             /llms.txt
           </a>{" "}
           {ui.introAfterLink}
@@ -107,7 +107,7 @@ export function DocsView({ locale }: { locale: Locale }) {
 
         <section className="mt-12">
           <h2 className="text-xl md:text-2xl font-bold tracking-tight flex items-center gap-2">
-            <Bot className="w-5 h-5 text-violet" aria-hidden /> {ui.agentsTitle}
+            <Bot className="w-5 h-5 text-violet-400" aria-hidden /> {ui.agentsTitle}
           </h2>
           <p className="mt-2 text-[13px] text-zinc-400 leading-relaxed max-w-[720px]">{ui.agentsIntro}</p>
           <div className="mt-4 rounded-2xl bg-ink-900 border border-ink-600 p-5 text-[12.5px] font-mono text-zinc-300 space-y-2 overflow-x-auto">

@@ -348,7 +348,7 @@ export function TypePageView({ slug, locale }: { slug: string; locale: Locale })
 
         <section className="mt-14">
           <h2 className="text-xl md:text-2xl font-bold tracking-tight flex items-center gap-2">
-            <Users className="w-5 h-5 text-violet" aria-hidden /> {t.expertsTitle}
+            <Users className="w-5 h-5 text-violet-400" aria-hidden /> {t.expertsTitle}
           </h2>
           <p className="mt-2 text-[13px] text-zinc-500">{t.expertsText(page.name)}</p>
           <div className="mt-5 grid md:grid-cols-2 gap-3">
@@ -386,11 +386,11 @@ export function TypePageView({ slug, locale }: { slug: string; locale: Locale })
             {(payments.length > 0 || page.monetization.length > 0) && (
               <>
                 <h3 className="mt-6 text-[13px] font-bold flex items-center gap-2">
-                  <Wallet className="w-4 h-4 text-violet" aria-hidden /> {t.payTitle}
+                  <Wallet className="w-4 h-4 text-violet-400" aria-hidden /> {t.payTitle}
                 </h3>
                 <ul className="mt-3 flex flex-wrap gap-2">
                   {page.monetization.map((m) => (
-                    <li key={m} className="px-2.5 h-7 rounded-full bg-violet/10 border border-violet/30 text-violet text-[11px] flex items-center">
+                    <li key={m} className="px-2.5 h-7 rounded-full bg-violet/10 border border-violet/30 text-violet-400 text-[11px] flex items-center">
                       {m}
                     </li>
                   ))}
@@ -451,7 +451,7 @@ export function TypePageView({ slug, locale }: { slug: string; locale: Locale })
               <Sparkles className="w-3.5 h-3.5 text-lime" aria-hidden /> {page.name.toUpperCase()} — MASTER BUILD PROMPT
               <span className="ml-auto font-normal tracking-normal text-zinc-600">Claude XML • {t.lang}</span>
             </div>
-            <pre className="mono text-[12px] leading-relaxed text-zinc-300 whitespace-pre-wrap break-words p-4 md:p-6 max-h-[60vh] overflow-y-auto scrollbar-thin">{excerpt.text}</pre>
+            <pre tabIndex={0} className="mono text-[12px] leading-relaxed text-zinc-300 whitespace-pre-wrap break-words p-4 md:p-6 max-h-[60vh] overflow-y-auto scrollbar-thin">{excerpt.text}</pre>
             <div className="border-t border-ink-600 px-4 py-3 flex flex-wrap items-center gap-3 text-[12px] text-zinc-500">
               <span>{excerpt.truncated ? t.truncated : t.full}</span>
               <Link href={studioHref} className="ml-auto text-lime font-semibold flex items-center gap-1">
@@ -462,7 +462,7 @@ export function TypePageView({ slug, locale }: { slug: string; locale: Locale })
 
           <div className="mt-6 rounded-2xl bg-ink-800 border border-ink-600 p-5">
             <h3 className="text-[13px] font-bold tracking-tight flex items-center gap-2">
-              <Zap className="w-4 h-4 text-violet" aria-hidden /> {t.chainTitle(MEGA_CHAIN_STEPS.length, page.name)}
+              <Zap className="w-4 h-4 text-violet-400" aria-hidden /> {t.chainTitle(MEGA_CHAIN_STEPS.length, page.name)}
             </h3>
             <ol className="mt-3 grid sm:grid-cols-2 gap-x-6 gap-y-1.5 text-[12px] text-zinc-400">
               {MEGA_CHAIN_STEPS.map((st, i) => (

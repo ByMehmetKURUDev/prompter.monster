@@ -64,6 +64,46 @@ export function alternatesFor(path: string, locale: Locale) {
   return { canonical: locale === "en" ? en : tr, languages: { tr, en, "x-default": tr } };
 }
 
+const OG_ALT: Record<Locale, string> = {
+  tr: "Prompt.Monster — Fikrini anlat, canavar build prompt'unu yazsın. Claude Code, Cursor, v0, Lovable ve Bolt için master build prompt.",
+  en: "Prompt.Monster — Describe your idea, the monster writes your build prompt. Master build prompts for Claude Code, Cursor, v0, Lovable and Bolt.",
+};
+
+/**
+ * The 1200×630 link-preview image for a locale (public/og/). A page that sets its own `openGraph`/`twitter`
+ * replaces the layout's, images included — so every such object must list these again.
+ */
+export function ogImages(locale: Locale) {
+  return [{ url: `/og/og-${locale}.png`, width: 1200, height: 630, alt: OG_ALT[locale], type: "image/png" }];
+}
+
+/** `twitter.images` twin of ogImages(). */
+export function twitterImages(locale: Locale) {
+  return [{ url: `/og/og-${locale}.png`, alt: OG_ALT[locale] }];
+}
+
+/**
+ * Page-specific Open Graph + Twitter tags with og:url = canonical and the locale's preview image, plus
+ * `alternates`. Spread it into a page's metadata next to `title`/`description` so link previews show the
+ * page itself instead of the site defaults.
+ */
+export function socialFor(path: string, locale: Locale, title: string, description: string) {
+  const alternates = alternatesFor(path, locale);
+  return {
+    alternates,
+    openGraph: {
+      type: "website" as const,
+      siteName: "Prompt.Monster",
+      locale: locale === "en" ? "en_US" : "tr_TR",
+      title,
+      description,
+      url: alternates.canonical,
+      images: ogImages(locale),
+    },
+    twitter: { card: "summary_large_image" as const, title, description, images: twitterImages(locale) },
+  };
+}
+
 /** Pick the right string for a locale from a { tr, en } pair. */
 export function t<T>(locale: Locale, pair: { tr: T; en: T }): T {
   return pair[locale];

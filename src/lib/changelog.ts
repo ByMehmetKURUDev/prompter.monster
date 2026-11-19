@@ -13,6 +13,17 @@ export interface ChangelogEntry {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: "4.12",
+    date: "2026-11-19",
+    title: "Lansman kalite turu: bağlantı önizlemeleri, erişilebilirlik, SEO, güvenlik başlıkları",
+    items: [
+      "Bağlantı önizlemeleri: her sayfada 1200×630 önizleme görseli (TR ve EN ayrı, public/og/), og:url artık sayfanın kendi adresi (önceden birçok sayfa ana sayfayı gösteriyordu); Studio, Keşfet, lider tablosu, tip/uzman ve profil sayfalarına sayfaya özel başlık/açıklama.",
+      "SEO: başlık ve açıklama etiketleri her ziyaretçide <head> içinde (htmlLimitedBots); Keşfet başlıklarında çift 'Prompt.Monster' ve emoji kaldırıldı; ana sayfalara schema.org (Organization, WebSite, SoftwareApplication + Free/Pro fiyatları); /en sayfaları ilk HTML'den itibaren lang=\"en\".",
+      "Erişilebilirlik (WCAG AA): ikincil metin renkleri (zinc-500/600) ve mor etiketler 4.5:1 kontrasta çekildi; ana sayfa ve 404'te <main>; Studio'da h1 ve ikon düğmesine erişilebilir ad; Keşfet filtrelerine etiket; kaydırılabilir kod/ tablo alanları klavyeyle odaklanabilir; metin içi bağlantılar altı çizili; dil düğmesi ve menü işaretleri düzeltildi. Lighthouse erişilebilirlik puanı 90–96 → 100.",
+      "Mobil: Studio üst çubuğu 390 px telefonlarda yatay kaymaya yol açmıyor. Simgeler: favicon.ico, apple-touch-icon, 192/512 PNG ve /manifest.webmanifest (ana ekrana ekleme). Güvenlik: Strict-Transport-Security ve Permissions-Policy başlıkları; statik görseller middleware'den geçmiyor.",
+    ],
+  },
+  {
     version: "4.11",
     date: "2026-11-19",
     title: "Takım kütüphanesi: projeyi takımla paylaş, takımın paylaştıklarının kopyasını aç",

@@ -59,7 +59,7 @@ export function SetupSnippets({ locale, apiKey, only }: { locale: Locale; apiKey
             {copied ? (locale === "en" ? "Copied" : "Kopyalandı") : locale === "en" ? "Copy" : "Kopyala"}
           </button>
         </div>
-        <pre className="text-[12px] leading-relaxed text-zinc-200 bg-ink-950 border border-ink-600 rounded-xl p-3 overflow-x-auto whitespace-pre">
+        <pre tabIndex={0} className="text-[12px] leading-relaxed text-zinc-200 bg-ink-950 border border-ink-600 rounded-xl p-3 overflow-x-auto whitespace-pre">
           <code>{cur.code}</code>
         </pre>
         {cur.note && <p className="text-[12px] text-zinc-400 leading-relaxed">{cur.note[locale]}</p>}

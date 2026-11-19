@@ -12,6 +12,10 @@ if (process.env.OPENNEXT_DEV_BINDINGS === "1") {
 const nextConfig: NextConfig = {
   reactStrictMode: true,
   poweredByHeader: false,
+  // Render <title>/<meta> in <head> for every client instead of streaming them into <body> (Next 15.2+ only does
+  // that for known bots). Keeps Lighthouse/PageSpeed and smaller crawlers happy; the cost is that the head waits
+  // for generateMetadata, which reads the same data the page needs anyway.
+  htmlLimitedBots: /.*/,
   images: { formats: ["image/avif", "image/webp"] },
   async headers() {
     return [
@@ -21,6 +25,8 @@ const nextConfig: NextConfig = {
           { key: "X-Content-Type-Options", value: "nosniff" },
           { key: "X-Frame-Options", value: "DENY" },
           { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
+          { key: "Strict-Transport-Security", value: "max-age=31536000; includeSubDomains" },
+          { key: "Permissions-Policy", value: "camera=(), microphone=(), geolocation=(), browsing-topics=()" },
         ],
       },
     ];

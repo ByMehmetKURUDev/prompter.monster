@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { FileText } from "lucide-react";
-import { localePath, type Locale } from "@/lib/i18n";
+import { localePath, ogImages, type Locale } from "@/lib/i18n";
 import { getLegalDoc, isLegalSlug, legalInfo, LEGAL_LABELS, LEGAL_SLUGS, LEGAL_UPDATED, type Block, type LegalSlug } from "@/lib/legal";
 import { mergeSettings, publicSubset } from "@/lib/settings";
 import { readPublicSettings } from "@/lib/settings-server";
@@ -39,7 +39,7 @@ export function legalMetadata(slug: string, locale: Locale): Metadata {
     title: doc.title,
     description: doc.description,
     alternates: { canonical: locale === "en" ? en : tr, languages: { tr, en, "x-default": tr } },
-    openGraph: { title: `${doc.title} · Prompt.Monster`, description: doc.description, url: locale === "en" ? en : tr },
+    openGraph: { title: `${doc.title} · Prompt.Monster`, description: doc.description, url: locale === "en" ? en : tr, siteName: "Prompt.Monster", locale: locale === "en" ? "en_US" : "tr_TR", type: "article", images: ogImages(locale) },
   };
 }
 
@@ -55,7 +55,7 @@ export async function LegalPage({ slug, locale }: { slug: string; locale: Locale
       <main className="max-w-[1100px] mx-auto px-4 lg:px-8 py-10 lg:py-14 grid grid-cols-1 lg:grid-cols-[220px_minmax(0,1fr)] gap-8 lg:gap-12">
         <aside className="min-w-0 lg:sticky lg:top-[80px] self-start">
           <div className="text-[11px] font-semibold tracking-widest text-zinc-500 uppercase mb-3">{ui.docs}</div>
-          <nav className="flex flex-wrap lg:flex-col gap-1">
+          <nav aria-label={ui.docs} className="flex flex-wrap lg:flex-col gap-1">
             {LEGAL_SLUGS.map((s) => (
               <Link
                 key={s}
@@ -72,7 +72,7 @@ export async function LegalPage({ slug, locale }: { slug: string; locale: Locale
           </nav>
           <div className="hidden lg:block mt-6 rounded-xl bg-ink-900 border border-ink-600 p-3 text-[12px] text-zinc-500">
             {ui.questions}{" "}
-            <a href={`mailto:${info.email}`} className="text-lime hover:underline">
+            <a href={`mailto:${info.email}`} className="text-lime underline decoration-lime/40 underline-offset-2 hover:decoration-lime">
               {ui.write}
             </a>
             <div className="mt-1 break-all text-zinc-600">{info.email}</div>

@@ -29,7 +29,7 @@ export function Step2Stack({
   return (
     <div className="space-y-6 animate-fade-in">
       <div className="flex items-start justify-between gap-4 flex-wrap">
-        <StepHeader icon={<Cpu className="w-5 h-5 text-violet" aria-hidden />} title={t.title} subtitle={t.subtitle} />
+        <StepHeader icon={<Cpu className="w-5 h-5 text-violet-400" aria-hidden />} title={t.title} subtitle={t.subtitle} />
         <button
           type="button"
           onClick={onSuggest}

@@ -108,6 +108,7 @@ export function InputCoach({
           onClick={toggleCollapsed}
           aria-expanded={!collapsed}
           aria-controls={bodyId}
+          aria-label={collapsed ? t.show : t.hide}
           className="h-7 px-2 -mr-1 rounded-lg text-[11px] text-zinc-500 hover:text-zinc-200 hover:bg-ink-700 flex items-center gap-1 shrink-0"
         >
           {collapsed ? <ChevronDown className="w-3.5 h-3.5" aria-hidden /> : <ChevronUp className="w-3.5 h-3.5" aria-hidden />}

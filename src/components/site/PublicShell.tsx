@@ -6,8 +6,8 @@ import { LanguageSwitch } from "./LanguageSwitch";
 import { LegalLinks } from "./LegalLinks";
 
 const NAV = {
-  tr: { prompts: "Build prompt'lar", explore: "Keşfet", guide: "Rehber", pricing: "Fiyat", studio: "Studio'yu aç", footerPrompts: "Proje tipine göre build prompt'lar", api: "API ve MCP" },
-  en: { prompts: "Build prompts", explore: "Explore", guide: "Guide", pricing: "Pricing", studio: "Open Studio", footerPrompts: "Build prompts by project type", api: "API & MCP" },
+  tr: { menu: "Ana menü", prompts: "Build prompt'lar", explore: "Keşfet", guide: "Rehber", pricing: "Fiyat", studio: "Studio'yu aç", footerPrompts: "Proje tipine göre build prompt'lar", api: "API ve MCP" },
+  en: { menu: "Main menu", prompts: "Build prompts", explore: "Explore", guide: "Guide", pricing: "Pricing", studio: "Open Studio", footerPrompts: "Build prompts by project type", api: "API & MCP" },
 } as const;
 
 /** Header + footer used by the public marketing pages (/prompt, /docs, /legal …). */
@@ -21,7 +21,7 @@ export function PublicShell({ children, cta, locale = "tr", langSwitch = true }:
           <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-lime to-violet flex items-center justify-center text-black font-bold">👹</div>
           <span className={langSwitch ? "font-bold tracking-tight text-[15px] max-[400px]:hidden" : "font-bold tracking-tight text-[15px]"}>Prompt.Monster</span>
         </Link>
-        <nav className="ml-auto flex items-center gap-1 text-[13px]">
+        <nav aria-label={n.menu} className="ml-auto flex items-center gap-1 text-[13px]">
           <Link href={lhref("/prompt", locale)} className="hidden sm:block px-3 py-1.5 text-zinc-400 hover:text-white">
             {n.prompts}
           </Link>

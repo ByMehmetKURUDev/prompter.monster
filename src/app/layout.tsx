@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import { ConsentManager } from "@/components/site/ConsentManager";
 import { SiteNotice } from "@/components/site/SiteNotice";
+import { ogImages, twitterImages } from "@/lib/i18n";
 
 const SITE = process.env.NEXT_PUBLIC_SITE_URL || "https://prompter.monster";
 
@@ -14,16 +15,26 @@ export const metadata: Metadata = {
   description:
     "Proje fikrini 18 uzman canavar persona ile Claude Code, Cursor, v0, Lovable ve Bolt için kopyala-yapıştır çalışan master build prompt'lara dönüştür.",
   keywords: ["prompt generator", "vibe coding", "build prompt", "Claude Code", "Cursor", "v0", "Lovable", "Bolt", "SaaS spec"],
+  applicationName: "Prompt.Monster",
+  // No og:url here: a page without its own openGraph would otherwise advertise the home page URL in previews.
+  // Pages set it via socialFor().
   openGraph: {
     type: "website",
     siteName: "Prompt.Monster",
+    locale: "tr_TR",
     title: "Prompt.Monster — Fikirden master build prompt'a",
     description: "18 uzman canavar, 8 adımlı mega chain, 5 çıktı formatı. Fikrini AI kodlama araçlarına hazır prompt'a çevir.",
-    url: SITE,
+    images: ogImages("tr"),
   },
-  twitter: { card: "summary_large_image", title: "Prompt.Monster", description: "Fikirden master build prompt'a." },
+  twitter: { card: "summary_large_image", title: "Prompt.Monster", description: "Fikirden master build prompt'a.", images: twitterImages("tr") },
   robots: { index: true, follow: true },
-  icons: { icon: "/favicon.svg" },
+  icons: {
+    icon: [
+      { url: "/favicon.svg", type: "image/svg+xml" },
+      { url: "/favicon.ico", sizes: "48x48" },
+    ],
+    apple: { url: "/apple-touch-icon.png", sizes: "180x180" },
+  },
 };
 
 export const viewport: Viewport = {

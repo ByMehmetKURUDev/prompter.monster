@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { Calendar, Eye, GitFork, Heart, Share2 } from "lucide-react";
 import { publicProfile, publicProfileShares } from "@/lib/profile";
-import { alternatesFor, type Locale } from "@/lib/i18n";
+import { socialFor, type Locale } from "@/lib/i18n";
 import { PublicShell } from "./PublicShell";
 import { ProfileShareGrid } from "./ProfileShareGrid";
 
@@ -32,13 +32,13 @@ function fmtDate(iso: string, locale: Locale) {
 /** page.tsx'in generateMetadata'sından çağrılır. */
 export async function generateProfileMetadata(username: string, locale: Locale): Promise<Metadata> {
   const profile = await publicProfile(username);
-  if (!profile) return { title: locale === "en" ? "Monster not found | Prompt.Monster" : "Canavar bulunamadı | Prompt.Monster" };
-  const title = `${profile.display_name} (@${profile.username}) — Prompt.Monster`;
+  if (!profile) return { title: locale === "en" ? "Monster not found" : "Canavar bulunamadı", robots: { index: false } };
+  const title = `${profile.display_name} (@${profile.username})`;
   const description =
     locale === "en"
       ? `${profile.display_name}'s shared build prompts on Prompt.Monster: ${profile.share_count} shares, ${profile.total_likes} likes.`
-      : `${profile.display_name}'ın Prompt.Monster'da paylaştığı build prompt'lar: ${profile.share_count} paylaşım, ${profile.total_likes} beğeni.`;
-  return { title, description, alternates: alternatesFor(`/u/${profile.username}`, locale) };
+      : `@${profile.username} kullanıcısının Prompt.Monster'da paylaştığı build prompt'lar: ${profile.share_count} paylaşım, ${profile.total_likes} beğeni.`;
+  return { title, description, ...socialFor(`/u/${profile.username}`, locale, title, description) };
 }
 
 /** /u/[username] (+ /en twin) — herkese açık canavar profili: başlık, istatistikler, galerideki paylaşımları. */

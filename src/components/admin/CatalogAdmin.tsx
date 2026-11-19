@@ -361,7 +361,7 @@ export function CatalogAdmin({ rows, builtinExperts, builtinTypes, options }: { 
                   <span className="font-semibold text-[13.5px]">{title}</span>
                   <code className="text-[11px] text-zinc-500">{item.id}</code>
                   <span className={cx("text-[10.5px] px-1.5 py-0.5 rounded border", item.builtin ? "border-ink-500 text-zinc-400" : "border-lime/40 text-lime")}>{item.builtin ? "yerleşik" : "özel"}</span>
-                  {edited && <span className="text-[10.5px] px-1.5 py-0.5 rounded border border-violet/40 text-violet">düzenlendi</span>}
+                  {edited && <span className="text-[10.5px] px-1.5 py-0.5 rounded border border-violet/40 text-violet-400">düzenlendi</span>}
                   {!item.enabled && <span className="text-[10.5px] px-1.5 py-0.5 rounded border border-red-500/40 text-red-300">gizli</span>}
                 </div>
                 <p className="mt-0.5 text-[12px] text-zinc-500 truncate">{sub}</p>

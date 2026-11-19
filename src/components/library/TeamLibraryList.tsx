@@ -39,7 +39,7 @@ export function TeamLibraryList({ teamName, items }: { teamName: string; items: 
   return (
     <section id="team-library" aria-labelledby="team-library-title" className="mt-10 scroll-mt-20">
       <div className="flex items-center gap-2 mb-1">
-        <Users className="w-4 h-4 text-violet" aria-hidden />
+        <Users className="w-4 h-4 text-violet-400" aria-hidden />
         <h2 id="team-library-title" className="text-lg font-bold tracking-tight">
           {c.title}
         </h2>
