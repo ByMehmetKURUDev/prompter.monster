@@ -45,6 +45,19 @@ export interface TeamInvite {
   expires_at: string;
 }
 
+/** Row of team_library() (0020): a project a member shared with the active team. */
+export interface TeamLibraryItem {
+  project_id: string;
+  name: string;
+  project_type: string;
+  owner_username: string | null;
+  is_mine: boolean;
+  shared_at: string;
+  updated_at: string;
+  versions: number;
+  latest_version: number | null;
+}
+
 export interface InvitePreview {
   team_name: string;
   inviter_username: string | null;
@@ -83,6 +96,11 @@ const ERRORS: Record<string, { tr: string; en: string }> = {
   },
   use_leave: { tr: "Kendini çıkarmak için 'Takımdan ayrıl'ı kullan.", en: "Use 'Leave team' to remove yourself." },
   not_member: { tr: "Bu kişi takımda değil.", en: "That person isn't in the team." },
+  team_inactive: {
+    tr: "Takım kütüphanesi takım aktifleşince açılır.",
+    en: "The team library opens once your team is active.",
+  },
+  project_not_found: { tr: "Proje bulunamadı ya da senin değil.", en: "Project not found, or it isn't yours." },
   not_ready: {
     tr: "Takım özelliği henüz etkin değil (veritabanı güncellemesi bekleniyor).",
     en: "Teams aren't enabled yet (a database update is pending).",

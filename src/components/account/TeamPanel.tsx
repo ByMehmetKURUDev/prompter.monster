@@ -22,6 +22,8 @@ const COPY = {
     pending: "Takımın aktivasyon bekliyor. Üyelerini şimdiden davet edebilirsin; takım aktifleşince herkes Monster Pro özelliklerini alır.",
     pendingCta: "Aktivasyon için yaz",
     active: "Takım aktif — tüm üyeler Monster Pro.",
+    library: "Takım kütüphanesi →",
+    libraryHint: "Projelerini takımla paylaş, üyelerin paylaştıklarının kopyasını aç.",
     canceled: "Bu takım iptal edildi; üyeler kendi planlarına döndü.",
     you: "sen",
     monthCredits: (n: number) => `bu ay ${n} kredi`,
@@ -71,6 +73,8 @@ const COPY = {
     pending: "Your team is awaiting activation. You can invite members now; everyone gets Monster Pro features once the team is active.",
     pendingCta: "Email us to activate",
     active: "Team active — every member is on Monster Pro.",
+    library: "Team library →",
+    libraryHint: "Share your projects with the team and open copies of what teammates shared.",
     canceled: "This team was canceled; members are back on their own plans.",
     you: "you",
     monthCredits: (n: number) => `${n} credits this month`,
@@ -272,7 +276,14 @@ export function TeamPanel({
             )}
           </div>
         )}
-        {team.status === "active" && <p className="text-[12.5px] text-lime">{c.active}</p>}
+        {team.status === "active" && (
+          <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
+            <p className="text-[12.5px] text-lime">{c.active}</p>
+            <a href={`${locale === "en" ? "/en" : ""}/library#team-library`} className="text-[12.5px] font-semibold text-zinc-200 hover:text-white underline underline-offset-2" title={c.libraryHint}>
+              {c.library}
+            </a>
+          </div>
+        )}
         {team.status === "canceled" && <p className="text-[12.5px] text-red-300">{c.canceled}</p>}
 
         <ul className="divide-y divide-ink-600 rounded-xl border border-ink-600 bg-ink-950">

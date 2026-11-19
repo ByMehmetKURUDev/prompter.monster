@@ -249,6 +249,9 @@ const tr = {
     shareNotFound: "Paylaşım bulunamadı ya da kaldırılmış.",
     forked: (name: string) => `"${name}" çatallandı — artık senin kopyan, istediğin gibi değiştir.`,
     shareLoadFailed: "Paylaşım yüklenemedi.",
+    teamCopied: (name: string, owner: string | null) =>
+      `Takım kütüphanesinden "${name}"${owner ? ` (@${owner})` : ""} açıldı — bu senin kopyan; kaydedince kendi projelerine eklenir.`,
+    teamProjectNotFound: "Bu proje artık takım kütüphanesinde değil ya da erişimin yok.",
     quickStart: (typeName: string) => `${typeName} şablonu yüklendi: uzmanlar, stack ve özellikler hazır — adını ve fikrini yaz.`,
     paymentReceived: "Ödeme alındı 🎉 Pro birkaç saniye içinde aktif olur…",
     proActive: (monthCredits: number) => `Monster Pro aktif — 18 uzman ve ayda ${monthCredits} AI kredisi senin 👹`,
@@ -527,6 +530,9 @@ const en: StudioText = {
     shareNotFound: "This share doesn't exist or was removed.",
     forked: (name) => `Forked "${name}" — it's your copy now, change anything you like.`,
     shareLoadFailed: "Couldn't load the share.",
+    teamCopied: (name, owner) =>
+      `Opened "${name}"${owner ? ` (@${owner})` : ""} from the team library — this is your copy; saving adds it to your own projects.`,
+    teamProjectNotFound: "This project is no longer in the team library, or you don't have access.",
     quickStart: (typeName) => `${typeName} template loaded: experts, stack and features are ready — now add your name and idea.`,
     paymentReceived: "Payment received 🎉 Pro will be active in a few seconds…",
     proActive: (monthCredits) => `Monster Pro is active — 18 experts and ${monthCredits.toLocaleString("en-US")} AI credits a month are yours 👹`,

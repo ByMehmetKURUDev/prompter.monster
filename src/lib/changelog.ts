@@ -13,6 +13,17 @@ export interface ChangelogEntry {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: "4.11",
+    date: "2026-11-19",
+    title: "Takım kütüphanesi: projeyi takımla paylaş, takımın paylaştıklarının kopyasını aç",
+    items: [
+      "Projelerim: aktif bir takımdaysan her projede 'Takımla paylaş' düğmesi; altta 'Takım kütüphanesi' bölümü — üyelerin paylaştığı projeler (kim paylaştı, tip, versiyon sayısı).",
+      "'Kopyasını aç' projeyi Studio'da senin kaydedilmemiş kopyan olarak açar (?teamProject=<id>); kaydedince kendi projelerine eklenir, orijinal değişmez. Kendi paylaştığın proje normal şekilde açılır.",
+      "Migration 0020: team_projects tablosu (RLS açık, erişim yalnız RPC'lerle), set_project_team_share / my_team_shared_projects / team_library / team_project; yalnız proje sahibi ve yalnız kendi aktif takımına paylaşır; üye takımdan çıkınca paylaştıkları otomatik kalkar; projects tablosuna ve updated_at'e dokunulmaz.",
+      "Hesabım → Takım: aktif takımda 'Takım kütüphanesi →' bağlantısı. 0020 uygulanmadan önce bu özellikler görünmez.",
+    ],
+  },
+  {
     version: "4.10",
     date: "2026-11-19",
     title: "Girdi Koçu: Studio'nun ilk adımında içerik kontrol listesi ve örnek fikirler",

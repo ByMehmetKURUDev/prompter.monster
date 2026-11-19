@@ -18,6 +18,7 @@ const Body = z.discriminatedUnion("action", [
   z.object({ action: z.literal("remove"), userId: Uuid }),
   z.object({ action: z.literal("role"), userId: Uuid, role: z.enum(["admin", "member"]) }),
   z.object({ action: z.literal("transfer"), userId: Uuid }),
+  z.object({ action: z.literal("share"), projectId: Uuid, share: z.boolean() }),
 ]);
 
 const STATUS: Record<string, number> = {
@@ -37,6 +38,8 @@ const STATUS: Record<string, number> = {
   invite_used: 410,
   invite_expired: 410,
   owner_cannot_leave: 409,
+  team_inactive: 409,
+  project_not_found: 404,
   not_ready: 503,
 };
 
@@ -99,6 +102,9 @@ export async function POST(req: Request) {
     case "transfer":
       ({ error } = await supabase.rpc("transfer_team_ownership", { p_user: b.userId }));
       break;
+    case "share":
+      ({ data, error } = await supabase.rpc("set_project_team_share", { p_project: b.projectId, p_share: b.share }));
+      break;
   }
 
   if (error) {
@@ -112,5 +118,6 @@ export async function POST(req: Request) {
     if (!inv) return fail("failed", 500);
     return NextResponse.json({ ok: true, invite: { id: inv.invite_id, token: inv.invite_token, expiresAt: inv.invite_expires_at } });
   }
+  if (b.action === "share") return NextResponse.json({ ok: true, shared: data === true });
   return NextResponse.json({ ok: true, ...(b.action === "create" || b.action === "join" ? { teamId: data } : {}) });
 }

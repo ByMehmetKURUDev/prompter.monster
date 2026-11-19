@@ -204,17 +204,48 @@ export function Studio({ dailyLimit }: { dailyLimit: number }) {
     [load, say, t],
   );
 
-  // ?project=<id>&version=<n>  |  ?new=1  |  ?fork=<slug>  |  ?type=<projectType> (from /prompt/[slug])
+  // Team library (0020): open a teammate's shared project as my own unsaved copy.
+  const copyTeamProject = useCallback(
+    async (id: string) => {
+      try {
+        const r = await fetch(`/api/team/library/${encodeURIComponent(id)}`, { cache: "no-store" });
+        if (!r.ok) {
+          say(r.status === 401 ? t.signInToOpen : t.teamProjectNotFound, 4000);
+          return;
+        }
+        const data = (await r.json()) as { name: string; state: StudioState; owner: string | null };
+        load({ ...data.state, step: 1 });
+        setProjectId(null);
+        setVersions([]);
+        setActiveVersion(null);
+        setReleased(false);
+        setRefined({});
+        lastSaved.current = "";
+        say(t.teamCopied(data.name || t.untitled, data.owner), 5000);
+      } catch {
+        say(t.loadFailed, 3000);
+      } finally {
+        const url = new URL(window.location.href);
+        url.searchParams.delete("teamProject");
+        window.history.replaceState(null, "", url.toString());
+      }
+    },
+    [load, say, t],
+  );
+
+  // ?project=<id>&version=<n>  |  ?new=1  |  ?fork=<slug>  |  ?teamProject=<id>  |  ?type=<projectType> (from /prompt/[slug])
   useEffect(() => {
     if (!hydrated || !catalog.ready) return;
     const sp = new URLSearchParams(window.location.search);
     const id = sp.get("project");
     const v = Number(sp.get("version"));
     const fork = sp.get("fork");
+    const teamProject = sp.get("teamProject");
     const type = sp.get("type");
     const preset = type ? quickStartState(type, locale === "en" ? "EN" : "TR") : null;
     if (id) loadProject(id, Number.isFinite(v) && v > 0 ? v : null);
     else if (fork) forkShared(fork);
+    else if (teamProject) copyTeamProject(teamProject);
     else if (preset) {
       load(locale === "en" ? { ...preset, lang: "EN" } : preset);
       setProjectId(null);

@@ -1,7 +1,8 @@
 "use client";
 
-import { FolderOpen, History, Trash2 } from "lucide-react";
+import { Check, FolderOpen, History, Trash2, Users } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import type { ProjectSummary } from "@/lib/db";
 import { ALL_PROJECT_TYPES } from "@/lib/data";
@@ -19,6 +20,11 @@ const COPY = {
     confirm: "Evet, sil",
     cancel: "Vazgeç",
     del: "Sil",
+    share: "Takımla paylaş",
+    shared: "Takımda",
+    shareTitle: (team: string) => `"${team}" takımının kütüphanesine ekle — üyeler görür ve kendi kopyasını açabilir`,
+    unshareTitle: (team: string) => `"${team}" takım kütüphanesinden kaldır`,
+    shareFailed: "Takım paylaşımı değiştirilemedi.",
   },
   en: {
     emptyTitle: "No saved monsters yet",
@@ -29,21 +35,67 @@ const COPY = {
     confirm: "Yes, delete",
     cancel: "Cancel",
     del: "Delete",
+    share: "Share with team",
+    shared: "In team",
+    shareTitle: (team: string) => `Add to the "${team}" team library — members can see it and open their own copy`,
+    unshareTitle: (team: string) => `Remove from the "${team}" team library`,
+    shareFailed: "Couldn't change team sharing.",
   },
 } as const;
 
-export function LibraryList({ initial }: { initial: ProjectSummary[] }) {
+export interface LibraryTeam {
+  name: string;
+  active: boolean;
+  /** The team library RPCs exist (migration 0020 applied). */
+  ready: boolean;
+}
+
+export function LibraryList({ initial, team = null, sharedIds = [] }: { initial: ProjectSummary[]; team?: LibraryTeam | null; sharedIds?: string[] }) {
   const locale = useLocale();
   const c = COPY[locale];
+  const router = useRouter();
   const [items, setItems] = useState(initial);
   const [busy, setBusy] = useState<string | null>(null);
   const [confirmId, setConfirmId] = useState<string | null>(null);
+  const [shared, setShared] = useState<Set<string>>(() => new Set(sharedIds));
+  const [shareBusy, setShareBusy] = useState<string | null>(null);
+  const [shareError, setShareError] = useState<string | null>(null);
+  const canShare = Boolean(team?.active && team.ready);
+
+  const toggleShare = async (id: string) => {
+    const next = !shared.has(id);
+    setShareBusy(id);
+    setShareError(null);
+    try {
+      const res = await fetch("/api/team", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "x-pm-locale": locale },
+        body: JSON.stringify({ action: "share", projectId: id, share: next }),
+      });
+      const j = (await res.json().catch(() => ({}))) as { shared?: boolean; error?: string };
+      if (!res.ok) throw new Error(j.error || c.shareFailed);
+      setShared((prev) => {
+        const s = new Set(prev);
+        if (j.shared) s.add(id);
+        else s.delete(id);
+        return s;
+      });
+      router.refresh(); // re-renders the server-side team library section below
+    } catch (e) {
+      setShareError(e instanceof Error ? e.message : c.shareFailed);
+    } finally {
+      setShareBusy(null);
+    }
+  };
 
   const remove = async (id: string) => {
     setBusy(id);
     try {
       const res = await fetch(`/api/projects/${id}`, { method: "DELETE" });
-      if (res.ok) setItems((prev) => prev.filter((p) => p.id !== id));
+      if (res.ok) {
+        setItems((prev) => prev.filter((p) => p.id !== id));
+        if (shared.has(id)) router.refresh(); // a shared project also leaves the team library (FK cascade)
+      }
     } finally {
       setBusy(null);
       setConfirmId(null);
@@ -64,9 +116,16 @@ export function LibraryList({ initial }: { initial: ProjectSummary[] }) {
   }
 
   return (
+    <>
+    {shareError && (
+      <div role="alert" className="mb-3 rounded-xl border border-red-500/30 bg-red-500/10 px-3 py-2 text-[12px] text-red-300">
+        {shareError}
+      </div>
+    )}
     <div className="grid md:grid-cols-2 gap-3">
       {items.map((p) => {
         const type = ALL_PROJECT_TYPES.find((t) => t.id === p.project_type);
+        const isShared = shared.has(p.id);
         return (
           <div key={p.id} className="rounded-2xl bg-ink-800 border border-ink-600 p-4 flex flex-col gap-3">
             <div className="flex items-start gap-3">
@@ -88,6 +147,22 @@ export function LibraryList({ initial }: { initial: ProjectSummary[] }) {
               >
                 <FolderOpen className="w-3.5 h-3.5" aria-hidden /> {c.open}
               </Link>
+              {canShare && team && (
+                <button
+                  type="button"
+                  onClick={() => toggleShare(p.id)}
+                  disabled={shareBusy === p.id}
+                  aria-pressed={isShared}
+                  title={isShared ? c.unshareTitle(team.name) : c.shareTitle(team.name)}
+                  className={cx(
+                    "h-9 px-3 rounded-lg border text-[12px] font-semibold flex items-center gap-1.5 disabled:opacity-60",
+                    isShared ? "bg-violet/15 border-violet/50 text-white" : "bg-ink-950 border-ink-600 text-zinc-300 hover:border-ink-400",
+                  )}
+                >
+                  {isShared ? <Check className="w-3.5 h-3.5" aria-hidden /> : <Users className="w-3.5 h-3.5" aria-hidden />}
+                  {isShared ? c.shared : c.share}
+                </button>
+              )}
               {confirmId === p.id ? (
                 <>
                   <button
@@ -116,5 +191,6 @@ export function LibraryList({ initial }: { initial: ProjectSummary[] }) {
         );
       })}
     </div>
+    </>
   );
 }

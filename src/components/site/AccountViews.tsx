@@ -9,13 +9,14 @@ import { UsernameEditor } from "@/components/account/UsernameEditor";
 import { LoginForm } from "@/components/auth/LoginForm";
 import { PasswordForm } from "@/components/auth/PasswordForm";
 import { LibraryList } from "@/components/library/LibraryList";
+import { TeamLibraryList } from "@/components/library/TeamLibraryList";
 import { MAX_ACTIVE_KEYS } from "@/lib/api-keys";
 import { KEY_COLUMNS } from "@/lib/api-keys-server";
 import type { ProjectSummary } from "@/lib/db";
 import { limitsFor } from "@/lib/plans";
 import { readServerSettings } from "@/lib/settings-server";
 import { lhref, type Locale } from "@/lib/i18n";
-import type { MyTeam, TeamInvite, TeamMember } from "@/lib/team";
+import type { MyTeam, TeamInvite, TeamLibraryItem, TeamMember } from "@/lib/team";
 import { createClient, supabaseConfigured } from "@/lib/supabase/server";
 import { LanguageSwitch } from "./LanguageSwitch";
 
@@ -189,6 +190,17 @@ export async function LibraryPageView({ locale }: { locale: Locale }) {
     return { ...p, versions: v.length, latest_version: v.length ? Math.max(...v) : null };
   });
 
+  // Team library (0020). Every RPC degrades to "no team" if the migrations aren't applied yet.
+  const { data: teamRow } = await supabase.rpc("my_team").maybeSingle<MyTeam>();
+  const teamActive = teamRow?.status === "active";
+  const [sharedRes, libraryRes] = teamActive
+    ? await Promise.all([supabase.rpc("my_team_shared_projects"), supabase.rpc("team_library", { p_limit: 200 })])
+    : [null, null];
+  const libraryReady = teamActive && !libraryRes?.error;
+  const sharedIds = ((sharedRes?.data ?? []) as { project_id: string }[]).map((r) => r.project_id);
+  const teamItems = (libraryRes?.data ?? []) as TeamLibraryItem[];
+  const team = teamRow ? { name: teamRow.name, active: teamActive, ready: libraryReady } : null;
+
   return (
     <div className="min-h-screen bg-ink-950 text-zinc-100">
       <header className="h-[56px] border-b border-ink-600 bg-ink-950/80 backdrop-blur-xl sticky top-0 z-50 flex items-center px-4 lg:px-8 gap-4">
@@ -216,7 +228,8 @@ export async function LibraryPageView({ locale }: { locale: Locale }) {
             {c.newMonster}
           </Link>
         </div>
-        <LibraryList initial={items} />
+        <LibraryList initial={items} team={team} sharedIds={sharedIds} />
+        {team?.active && team.ready && <TeamLibraryList teamName={team.name} items={teamItems} />}
       </main>
     </div>
   );
