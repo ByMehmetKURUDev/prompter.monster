@@ -13,6 +13,17 @@ export interface ChangelogEntry {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: "4.9.1",
+    date: "2026-11-19",
+    title: "Otomatik deploy açıldı, admin rolü düzeltmesi, RPC sertleştirmesi",
+    items: [
+      "GitHub Actions artık main'e her push'ta Cloudflare'e otomatik deploy ediyor (CLOUDFLARE_API_TOKEN eklendi).",
+      "Admin paneli: veritabanı sahibi admin olarak tanımıyorsa (profiles.role ≠ 'admin') her admin sayfasının üstünde uyarı ve tek satırlık düzeltme SQL'i çıkar. Migration 0018 sahip hesabının rolünü düzeltir; önceden istatistikler boş görünüyor, takım aktivasyonu 'forbidden' veriyordu.",
+      "Migration 0018: giriş gerektiren SECURITY DEFINER RPC'lerden (takım, admin, kredi, beğeni, kullanıcı adı) anon yetkisi kaldırıldı; touch_updated_at ve _slugify için search_path sabitlendi (Supabase güvenlik uyarıları).",
+      "Takım planı, bonus kredi cüzdanı ve arkadaşını getir ödülü canlı veritabanında uçtan uca test edildi (60+ senaryo, test verisi geri alındı).",
+    ],
+  },
+  {
     version: "4.9",
     date: "2026-11-17",
     title: "Takım planı, Arkadaşını getir, Keşfet büyümesi (beğeni, profiller, filtreler) ve canlı sayaçlar",

@@ -12,6 +12,11 @@ export default async function AdminLayout({ children }: { children: React.ReactN
   const admin = await getAdmin();
   if (!admin) notFound(); // non-admins get the same 404 as a missing page
 
+  // The app lets ADMIN_EMAILS in, but admin_* RPCs and RLS trust only profiles.role = 'admin' (is_admin()).
+  // Without that row the panel looks empty and writes fail with 'forbidden' — say so instead of failing quietly.
+  const { data: dbAdmin, error: dbAdminError } = await admin.supabase.rpc("is_admin");
+  const dbRoleMissing = !dbAdminError && dbAdmin === false;
+
   return (
     <div className="min-h-screen bg-ink-950 text-zinc-100">
       <header className="h-[52px] border-b border-ink-600 bg-ink-950/90 backdrop-blur-xl sticky top-0 z-50 flex items-center px-4 gap-3">
@@ -38,6 +43,18 @@ export default async function AdminLayout({ children }: { children: React.ReactN
           <div className="md:hidden mb-4 overflow-x-auto scrollbar-none">
             <AdminNav horizontal />
           </div>
+          {dbRoleMissing && (
+            <div role="alert" className="mb-4 rounded-xl border border-red-500/30 bg-red-500/10 p-3 text-[13px] text-red-200 space-y-1.5">
+              <p className="font-semibold">Veritabanı seni henüz admin olarak tanımıyor.</p>
+              <p className="text-red-200/80">
+                Panele ADMIN_EMAILS ile girdin, ama veritabanında <code>profiles.role</code> hâlâ &apos;user&apos;. Bu yüzden istatistikler boş görünür;
+                takım aktivasyonu ve ayar kaydı &apos;forbidden&apos; verir. Supabase SQL Editor&apos;da şunu çalıştır:
+              </p>
+              <pre className="rounded-lg bg-black/40 border border-red-500/20 px-2.5 py-1.5 text-[12px] text-red-100 overflow-x-auto">
+                {`update public.profiles set role = 'admin' where id = '${admin.user.id}';`}
+              </pre>
+            </div>
+          )}
           {children}
         </main>
       </div>
