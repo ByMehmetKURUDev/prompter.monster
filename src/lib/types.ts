@@ -79,6 +79,21 @@ export interface StudioState {
   experts: string[];
   lang: OutputLang;
   format: OutputFormat;
+  /** false = leave the team conventions out of this project's prompts (default: include them). Saved with the project. */
+  useTeamRules?: boolean;
+  /**
+   * Render-time only: the active team's conventions (0021) to append to the prompts. Set by the Studio / API right
+   * before building; never saved, never sent to the share pages.
+   */
+  team?: TeamRules | null;
+}
+
+/** A team's shared conventions (migration 0021): appended to every master prompt of the team's members. */
+export interface TeamRules {
+  name: string;
+  stack: string;
+  code: string;
+  voice: string;
 }
 
 export type OutputTab = string; // expert id | "mega" | "export"

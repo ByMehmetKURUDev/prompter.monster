@@ -12,7 +12,7 @@ import { buildExpertPrompt, estimateTokens, projectTypeName, qualityScore } from
 import type { StudioText } from "@/lib/studio-i18n";
 import { track } from "@/lib/track";
 import { quickStartState } from "@/lib/type-presets";
-import type { StudioState } from "@/lib/types";
+import type { StudioState, TeamRules } from "@/lib/types";
 import { Footer } from "./Footer";
 import { Nav } from "./Nav";
 import { OutputPanel } from "./OutputPanel";
@@ -87,6 +87,29 @@ export function Studio({ dailyLimit }: { dailyLimit: number }) {
   useEffect(() => {
     refreshMe();
   }, [refreshMe]);
+
+  // Team conventions (0021): fetched once per signed-in user; appended to the prompts at render time only.
+  const [teamRules, setTeamRules] = useState<TeamRules | null>(null);
+  const meId = me?.user?.id ?? null;
+  useEffect(() => {
+    if (!meId) {
+      setTeamRules(null);
+      return;
+    }
+    let alive = true;
+    fetch("/api/team/rules", { cache: "no-store" })
+      .then((r) => (r.ok ? r.json() : null))
+      .then((j: { rules?: TeamRules | null } | null) => {
+        if (alive) setTeamRules(j?.rules ?? null);
+      })
+      .catch(() => {});
+    return () => {
+      alive = false;
+    };
+  }, [meId]);
+  /** What the outputs, exports and refine see: the project + the team conventions unless this project switched them off. */
+  const outState = useMemo<StudioState>(() => (teamRules && s.useTeamRules !== false ? { ...s, team: teamRules } : s), [s, teamRules]);
+  const toggleTeamRules = useCallback(() => patch({ useTeamRules: s.useTeamRules === false }), [patch, s.useTeamRules]);
 
   // Track unsaved changes once a project is loaded/saved.
   useEffect(() => {
@@ -439,7 +462,7 @@ export function Studio({ dailyLimit }: { dailyLimit: number }) {
     abortRef.current = ac;
     try {
       await refinePrompt(
-        { prompt: buildExpertPrompt(s, expertId), expertRole: e.role, lang: s.lang, format: s.format },
+        { prompt: buildExpertPrompt(outState, expertId), expertRole: e.role, lang: s.lang, format: s.format },
         (acc) => setRefined((prev) => ({ ...prev, [expertId]: acc })),
         ac.signal,
         (c) => applyCredits(c),
@@ -608,7 +631,9 @@ export function Studio({ dailyLimit }: { dailyLimit: number }) {
           <div className="xl:hidden border-t border-ink-600 bg-ink-900">
             <div className="flex flex-col max-h-[80vh]">
               <OutputPanel
-                s={s}
+                s={outState}
+                team={teamRules}
+                onToggleTeam={toggleTeamRules}
                 released={released}
                 tab={outTab}
                 onTab={setOutTab}
@@ -635,7 +660,9 @@ export function Studio({ dailyLimit }: { dailyLimit: number }) {
 
         <aside className="hidden xl:flex w-[400px] shrink-0 flex-col border-l border-ink-600 bg-ink-900 h-[calc(100vh-56px)] sticky top-[56px]">
           <OutputPanel
-            s={s}
+            s={outState}
+            team={teamRules}
+            onToggleTeam={toggleTeamRules}
             released={released}
             tab={outTab}
             onTab={setOutTab}

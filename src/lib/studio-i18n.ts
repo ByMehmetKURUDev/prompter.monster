@@ -190,6 +190,11 @@ const tr = {
     cost: (usd: string) => `~$${usd} maliyet`,
     langTR: "Türkçe çıktı",
     langEN: "English output",
+    teamOn: (team: string) => `"${team}" takım kuralları prompt'lara ekleniyor`,
+    teamOff: (team: string) => `"${team}" takım kuralları bu projede kapalı`,
+    teamOnShort: "Açık",
+    teamOffShort: "Kapalı",
+    teamHint: "Takımın ortak stack, kod kuralları ve marka sesi. Sahip/yönetici Hesabım → Takım'dan düzenler; paylaşım sayfalarına eklenmez.",
     langMismatch:
       "Çıktı dili İngilizce ama girdiğin metinler (fikir, açıklama, hedef kitle) Türkçe; prompt'ta Türkçe olarak kalır. İngilizce yaz ya da 'Bu promptu iyileştir' ile Claude'a İngilizceye çevirt.",
     asleepTitle: "Canavar uyuyor...",
@@ -228,6 +233,7 @@ const tr = {
     sections: {
       role: "ROL",
       context: "BAĞLAM",
+      team: "TAKIM KURALLARI",
       task: "GÖREV",
       arch: "TEKNİK MİMARİ",
       features: "ÖZELLİK MATRİSİ",
@@ -472,6 +478,11 @@ const en: StudioText = {
     cost: (usd) => `~$${usd} cost`,
     langTR: "Turkish output",
     langEN: "English output",
+    teamOn: (team) => `"${team}" team conventions are added to the prompts`,
+    teamOff: (team) => `"${team}" team conventions are off for this project`,
+    teamOnShort: "On",
+    teamOffShort: "Off",
+    teamHint: "Your team's shared stack, coding conventions and brand voice. The owner/admins edit them in My account → Team; they are never added to share pages.",
     langMismatch:
       "The output language is English but some of your inputs (idea, description, audience) are in Turkish, so they'll stay Turkish in the prompt. Write them in English or use 'Refine this prompt' to have Claude translate.",
     asleepTitle: "The monster is asleep...",
@@ -509,6 +520,7 @@ const en: StudioText = {
     sections: {
       role: "ROLE",
       context: "CONTEXT",
+      team: "TEAM CONVENTIONS",
       task: "TASK",
       arch: "TECHNICAL ARCHITECTURE",
       features: "FEATURE MATRIX",

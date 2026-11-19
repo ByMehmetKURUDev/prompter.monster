@@ -5,6 +5,7 @@ import { AccountDanger } from "@/components/account/AccountDanger";
 import { ApiKeysPanel, type KeyItem } from "@/components/account/ApiKeysPanel";
 import { ReferralPanel } from "@/components/account/ReferralPanel";
 import { TeamPanel } from "@/components/account/TeamPanel";
+import { TeamRulesPanel } from "@/components/account/TeamRulesPanel";
 import { UsernameEditor } from "@/components/account/UsernameEditor";
 import { LoginForm } from "@/components/auth/LoginForm";
 import { PasswordForm } from "@/components/auth/PasswordForm";
@@ -16,7 +17,7 @@ import type { ProjectSummary } from "@/lib/db";
 import { limitsFor } from "@/lib/plans";
 import { readServerSettings } from "@/lib/settings-server";
 import { lhref, type Locale } from "@/lib/i18n";
-import type { MyTeam, TeamInvite, TeamLibraryItem, TeamMember } from "@/lib/team";
+import type { MyTeam, MyTeamRules, TeamInvite, TeamLibraryItem, TeamMember } from "@/lib/team";
 import { createClient, supabaseConfigured } from "@/lib/supabase/server";
 import { LanguageSwitch } from "./LanguageSwitch";
 
@@ -322,13 +323,18 @@ export async function AccountPageView({ locale }: { locale: Locale }) {
 
   const count = async (table: string) => (await supabase.from(table).select("*", { count: "exact", head: true }).eq("owner_id", user.id)).count ?? 0;
   // Team RPCs return no rows for users outside a team (and fail softly until migration 0017 is applied).
-  const [team, members, invites, s] = await Promise.all([
+  const [team, members, invites, teamRules, s] = await Promise.all([
     supabase
       .rpc("my_team")
       .maybeSingle<MyTeam>()
       .then((r) => r.data ?? null),
     supabase.rpc("my_team_members").then((r) => (r.data ?? []) as TeamMember[]),
     supabase.rpc("my_team_invites").then((r) => (r.data ?? []) as TeamInvite[]),
+    // 0021: null outside a team or before the migration is applied (the panel just stays hidden).
+    supabase
+      .rpc("my_team_rules")
+      .maybeSingle<MyTeamRules>()
+      .then((r) => r.data ?? null),
     readServerSettings(),
   ]);
   const [{ data: prof }, usage, referral, { data: sub }, projects, versions, shares, keys] = await Promise.all([
@@ -450,6 +456,8 @@ export async function AccountPageView({ locale }: { locale: Locale }) {
         </section>
 
         <TeamPanel locale={locale} team={team} members={members} invites={invites} contactEmail={String(s.legal_email || "hello@prompter.monster")} />
+
+        {team && teamRules && team.status !== "canceled" && <TeamRulesPanel locale={locale} rules={teamRules} />}
 
         {referral?.username && (
           <ReferralPanel

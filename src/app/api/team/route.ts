@@ -19,6 +19,13 @@ const Body = z.discriminatedUnion("action", [
   z.object({ action: z.literal("role"), userId: Uuid, role: z.enum(["admin", "member"]) }),
   z.object({ action: z.literal("transfer"), userId: Uuid }),
   z.object({ action: z.literal("share"), projectId: Uuid, share: z.boolean() }),
+  z.object({
+    action: z.literal("rules"),
+    stack: z.string().max(1500),
+    code: z.string().max(3000),
+    voice: z.string().max(1500),
+    enabled: z.boolean(),
+  }),
 ]);
 
 const STATUS: Record<string, number> = {
@@ -40,6 +47,7 @@ const STATUS: Record<string, number> = {
   owner_cannot_leave: 409,
   team_inactive: 409,
   project_not_found: 404,
+  too_long: 400,
   not_ready: 503,
 };
 
@@ -57,7 +65,8 @@ export async function POST(req: Request) {
   const parsed = Body.safeParse(await req.json().catch(() => null));
   if (!parsed.success) {
     const field = (parsed.error.issues[0]?.path ?? [])[0];
-    return fail(field === "name" ? "invalid_name" : field === "email" ? "invalid_email" : "bad_request", 400);
+    const tooLong = field === "stack" || field === "code" || field === "voice";
+    return fail(field === "name" ? "invalid_name" : field === "email" ? "invalid_email" : tooLong ? "too_long" : "bad_request", 400);
   }
 
   const supabase = await createClient();
@@ -104,6 +113,9 @@ export async function POST(req: Request) {
       break;
     case "share":
       ({ data, error } = await supabase.rpc("set_project_team_share", { p_project: b.projectId, p_share: b.share }));
+      break;
+    case "rules":
+      ({ error } = await supabase.rpc("set_team_rules", { p_stack: b.stack, p_code: b.code, p_voice: b.voice, p_enabled: b.enabled }));
       break;
   }
 

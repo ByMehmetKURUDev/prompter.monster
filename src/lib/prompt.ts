@@ -1,5 +1,5 @@
 import { ALL_PROJECT_TYPES, EXPERTS, MEGA_CHAIN_STEPS, PAYMENTS } from "./data";
-import type { Expert, OutputFormat, StudioState } from "./types";
+import type { Expert, OutputFormat, StudioState, TeamRules } from "./types";
 
 /* ------------------------------------------------------------------ */
 /*  Section labels (TR / EN)                                           */
@@ -24,6 +24,12 @@ const L = {
     success: "BAŞARI KRİTERLERİ",
     never: "ASLA YAPMA (RED)",
     check: "KENDİNİ DOĞRULA",
+    team: "TAKIM KURALLARI",
+    teamIntro: (name: string) =>
+      `"${name}" takımının ortak kuralları. Bu prompt'taki varsayılan tercihlerle çelişen her noktada bu kurallar geçerlidir.`,
+    teamStack: "Stack ve altyapı",
+    teamCode: "Kod kuralları",
+    teamVoice: "Marka sesi ve ürün kuralları",
     project: "Proje",
     type: "Tip",
     vision: "Vizyon",
@@ -76,6 +82,12 @@ const L = {
     success: "SUCCESS CRITERIA",
     never: "NEVER DO (RED LINES)",
     check: "SELF-CHECK",
+    team: "TEAM CONVENTIONS",
+    teamIntro: (name: string) =>
+      `Shared conventions of the "${name}" team. Wherever they conflict with a default in this prompt, these conventions win.`,
+    teamStack: "Stack & infrastructure",
+    teamCode: "Coding conventions",
+    teamVoice: "Brand voice & product rules",
     project: "Project",
     type: "Type",
     vision: "Vision",
@@ -152,10 +164,10 @@ export function estimateTokens(s: StudioState): number {
   return 2400 + s.features.length * 180 + s.experts.length * 650;
 }
 
-type Section = { key: "role" | "context" | "task" | "arch" | "features" | "constraints" | "output" | "success" | "never" | "check"; tag: string; body: string };
+type Section = { key: "role" | "context" | "team" | "task" | "arch" | "features" | "constraints" | "output" | "success" | "never" | "check"; tag: string; body: string };
 
 /** Keys of the prompt sections that carry a heading in L. */
-export type PromptSection = "role" | "context" | "task" | "arch" | "features" | "constraints" | "output" | "success" | "never" | "check";
+export type PromptSection = "role" | "context" | "team" | "task" | "arch" | "features" | "constraints" | "output" | "success" | "never" | "check";
 
 /** A section's Markdown heading in both output languages, TR first (the Studio splits generated prompts with these). */
 export function sectionHeadings(key: PromptSection): [string, string] {
@@ -168,6 +180,40 @@ function wrap(format: OutputFormat, sec: Section, lang: "TR" | "EN", attrs = "")
     return `<${sec.tag}${attrs}>\n${sec.body}\n</${sec.tag}>`;
   }
   return `### ${title}\n${sec.body}`;
+}
+
+/* ------------------------------------------------------------------ */
+/*  Team conventions (0021)                                            */
+/* ------------------------------------------------------------------ */
+
+/** The team conventions that apply to a state: `team` is set (render-time) and the project hasn't switched them off. */
+export function activeTeamRules(s: StudioState): TeamRules | null {
+  const tm = s.useTeamRules === false ? null : s.team;
+  if (!tm || !(tm.stack.trim() || tm.code.trim() || tm.voice.trim())) return null;
+  return tm;
+}
+
+/** Labelled blocks of the team conventions (shared by the prompts and the Markdown project files). */
+export function teamRuleBlocks(s: StudioState): { title: string; intro: string; items: [string, string][] } | null {
+  const tm = activeTeamRules(s);
+  if (!tm) return null;
+  const t = L[s.lang];
+  const items: [string, string][] = [];
+  if (tm.stack.trim()) items.push([t.teamStack, tm.stack.trim()]);
+  if (tm.code.trim()) items.push([t.teamCode, tm.code.trim()]);
+  if (tm.voice.trim()) items.push([t.teamVoice, tm.voice.trim()]);
+  return { title: t.team, intro: t.teamIntro(tm.name), items };
+}
+
+const xmlAttr = (v: string) => v.replace(/&/g, "&amp;").replace(/"/g, "&quot;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+
+/** The TEAM CONVENTIONS section in the state's format ("" when no team conventions apply). */
+export function buildTeamSection(s: StudioState): string {
+  const blocks = teamRuleBlocks(s);
+  if (!blocks) return "";
+  const body = [blocks.intro, ...blocks.items.map(([label, text]) => `${label}:\n${text}`)].join("\n\n");
+  const attrs = s.format === "Claude XML" ? ` team="${xmlAttr(s.team?.name ?? "")}"` : "";
+  return wrap(s.format, { key: "team", tag: "team_conventions", body }, s.lang, attrs);
 }
 
 /* ------------------------------------------------------------------ */
@@ -237,9 +283,11 @@ export function buildExpertPrompt(s: StudioState, expertId: string, opts: { self
   const never: Section = { key: "never", tag: "never_do", body: `- ${t.never_}` };
   const check: Section = { key: "check", tag: "self_check", body: t.check_.join("\n") };
 
+  const team = buildTeamSection(s);
   const parts = [
     roleHeader + wrap(f, role, s.lang, roleAttrs),
     wrap(f, context, s.lang),
+    ...(team ? [team] : []),
     wrap(f, task, s.lang),
     wrap(f, arch, s.lang),
     wrap(f, features, s.lang),
@@ -295,7 +343,15 @@ export function buildMegaHeader(s: StudioState): string {
 export function buildMegaPrompt(s: StudioState): string {
   const known = s.experts.filter((id) => EXPERTS.some((e) => e.id === id));
   const experts = known.length ? known : EXPERTS.slice(0, 3).map((e) => e.id);
-  return [buildMegaHeader(s), ...experts.map((id) => buildExpertPrompt(s, id, { selfCheck: false })), buildFinalCheck(s)].join("\n\n---\n\n");
+  // Team conventions once, right after the header — not repeated inside every expert section.
+  const team = buildTeamSection(s);
+  const inner: StudioState = { ...s, team: null };
+  return [
+    buildMegaHeader(s),
+    ...(team ? [team] : []),
+    ...experts.map((id) => buildExpertPrompt(inner, id, { selfCheck: false })),
+    buildFinalCheck(s),
+  ].join("\n\n---\n\n");
 }
 
 /** The closing "test your own output and fix it" step of every master prompt. */
@@ -307,8 +363,10 @@ export function buildFinalCheck(s: StudioState): string {
 
 /** Short preview used in the Mega Chain panel. */
 export function buildMegaPreview(s: StudioState): string {
+  const team = buildTeamSection(s);
   return (
     buildMegaHeader(s) +
+    (team ? `\n\n---\n\n${team}` : "") +
     "\n\n---\n\n" +
     s.experts
       .map((id) => `${EXPERTS.find((e) => e.id === id)?.role}: ${buildExpertPrompt(s, id).slice(0, 180)}...`)

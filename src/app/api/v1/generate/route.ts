@@ -1,5 +1,6 @@
 import { ApiInputError, GenerateInput, generate } from "@/lib/api-core";
 import { apiError, apiJson, gate, preflight } from "@/lib/api-http";
+import { teamRulesFor } from "@/lib/team-server";
 
 export const runtime = "nodejs";
 
@@ -16,7 +17,8 @@ export async function POST(req: Request) {
     return apiError("bad_request", parsed.error.issues.map((i) => `${i.path.join(".") || "body"}: ${i.message}`).join("; "), 400, g.headers);
   }
   try {
-    const result = generate(parsed.data, g.identity?.plan ?? "free");
+    const team = await teamRulesFor(g.identity?.userId);
+    const result = generate(parsed.data, g.identity?.plan ?? "free", team);
     return apiJson({ data: result }, 200, g.headers);
   } catch (e) {
     if (e instanceof ApiInputError) return apiError(e.code, e.message, e.status, g.headers);

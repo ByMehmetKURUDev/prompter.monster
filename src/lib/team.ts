@@ -58,6 +58,23 @@ export interface TeamLibraryItem {
   latest_version: number | null;
 }
 
+/** Row of my_team_rules() (0021): the team conventions appended to the members' master prompts. */
+export interface MyTeamRules {
+  team_id: string;
+  team_name: string;
+  team_status: TeamStatus;
+  stack: string;
+  code: string;
+  voice: string;
+  enabled: boolean;
+  can_edit: boolean;
+  updated_at: string | null;
+  updated_by_username: string | null;
+}
+
+/** Field limits of the team conventions (mirrors the teams_rules_length check in 0021). */
+export const TEAM_RULES_MAX = { stack: 1500, code: 3000, voice: 1500 } as const;
+
 export interface InvitePreview {
   team_name: string;
   inviter_username: string | null;
@@ -101,6 +118,10 @@ const ERRORS: Record<string, { tr: string; en: string }> = {
     en: "The team library opens once your team is active.",
   },
   project_not_found: { tr: "Proje bulunamadı ya da senin değil.", en: "Project not found, or it isn't yours." },
+  too_long: {
+    tr: "Takım kuralları çok uzun: stack ve marka sesi en fazla 1.500, kod kuralları en fazla 3.000 karakter.",
+    en: "The team conventions are too long: stack and brand voice up to 1,500 characters, coding conventions up to 3,000.",
+  },
   not_ready: {
     tr: "Takım özelliği henüz etkin değil (veritabanı güncellemesi bekleniyor).",
     en: "Teams aren't enabled yet (a database update is pending).",

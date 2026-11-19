@@ -9,6 +9,7 @@ import { ApiInputError, GenerateInput, SITE, expertList, exportFiles, generate, 
 import type { ApiIdentity } from "./api-keys";
 import { COMPLIANCE, EXPERTS, FORMATS, MONETIZATION, PAYMENTS, PROJECT_CATEGORIES } from "./data";
 import { getShared } from "./share";
+import { teamRulesFor } from "./team-server";
 
 export const MCP_PROTOCOL_VERSIONS = ["2025-11-25", "2025-06-18", "2025-03-26", "2024-11-05"] as const;
 export const MCP_SERVER_INFO = { name: "prompt-monster", title: "Prompt.Monster", version: "4.4.0", websiteUrl: `${SITE}/developers` };
@@ -196,7 +197,7 @@ const TOOLS: ToolDef[] = [
     async run(args, ctx) {
       const input = parseGenerate(args, args.output === "experts" ? "experts" : "mega");
       if (typeof input === "string") return fail(input);
-      const r = generate(input, ctx.identity?.plan ?? "free");
+      const r = generate(input, ctx.identity?.plan ?? "free", await teamRulesFor(ctx.identity?.userId));
       const meta = [
         `Plan: ${r.plan} · Type: ${r.projectTypeName} · Format: ${r.format} · Language: ${r.lang} · Experts: ${r.experts.join(", ")}`,
         ...r.notes.map((n) => `Note: ${n}`),
@@ -218,7 +219,7 @@ const TOOLS: ToolDef[] = [
       if (ctx.identity.plan !== "pro") return fail(`export_files is a Monster Pro feature. Upgrade at ${SITE}/pricing — generate_build_prompt stays free.`);
       const input = parseGenerate(args, "files");
       if (typeof input === "string") return fail(input);
-      const files = exportFiles(input, ctx.identity.plan);
+      const files = exportFiles(input, ctx.identity.plan, undefined, await teamRulesFor(ctx.identity.userId));
       return ok(
         `${Object.keys(files).length} files — save each at the path shown (relative to the repository root):`,
         ...Object.entries(files).map(([path, body]) => `=== FILE: ${path} ===\n${body}`),

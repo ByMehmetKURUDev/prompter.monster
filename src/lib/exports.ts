@@ -3,7 +3,7 @@
  * .github/copilot-instructions.md, Task Master PRD and the structured JSON. Shared by the Studio, /api/v1 and MCP.
  */
 import { EXPERTS, MEGA_CHAIN_STEPS } from "./data";
-import { buildExpertPrompt, exportClaudeMd, exportCursorRules, exportJSON, paymentNames, projectTypeName } from "./prompt";
+import { buildExpertPrompt, exportClaudeMd, exportCursorRules, exportJSON, paymentNames, projectTypeName, teamRuleBlocks } from "./prompt";
 import type { Expert, StudioState } from "./types";
 
 type Lang = "TR" | "EN";
@@ -119,6 +119,13 @@ function stackLines(s: StudioState): string[] {
   return rows.filter(([, v]) => v.length).map(([k, v]) => `- ${k}: ${v.join(", ")}`);
 }
 
+/** "## TAKIM KURALLARI — <team>" block of the Markdown project files ([] when no team conventions apply). */
+function teamMdLines(s: StudioState, level = "##"): string[] {
+  const b = teamRuleBlocks(s);
+  if (!b) return [];
+  return [`${level} ${b.title} — ${s.team?.name ?? ""}`, b.intro, "", ...b.items.flatMap(([label, text]) => [`${level}# ${label}`, text, ""])];
+}
+
 function projectLines(s: StudioState, lang: Lang): string[] {
   const w = W[lang];
   const comp = s.competitors.filter(Boolean);
@@ -152,6 +159,7 @@ export function exportAgentsMd(s: StudioState, title = `AGENTS.md — ${s.name}`
     `## ${w.rules}`,
     ...w.rulesList.map((r) => `- ${r}`),
     "",
+    ...teamMdLines(s),
     `## ${w.done}`,
     ...w.doneList.map((r) => `- ${r}`),
     "",
@@ -182,6 +190,7 @@ export function exportCopilotInstructions(s: StudioState): string {
     `## ${w.copilotCode}`,
     ...w.rulesList.map((r) => `- ${r}`),
     "",
+    ...teamMdLines(s),
     `## ${w.verify}`,
     ...w.verifyList.map((r) => `- ${r}`),
     "",
@@ -268,6 +277,7 @@ export function exportTaskMasterPrd(s: StudioState): string {
     pay ? `- ${w.payments}: ${pay} → webhook → background job → entitlement → audit log` : null,
     s.compliance.length ? `- ${w.compliance}: ${s.compliance.join(", ")}` : null,
     "",
+    ...teamMdLines(s, "#"),
     "# Development Roadmap",
     "## MVP",
     tr ? "- Temel: kimlik doğrulama, veritabanı şeması + migration'lar, uygulama iskeleti ve düzen" : "- Foundation: authentication, database schema + migrations, app shell and layout",

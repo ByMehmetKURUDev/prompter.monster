@@ -11,7 +11,7 @@ import { copyText, downloadBytes, downloadText } from "@/lib/client";
 import { PROJECT_FILES, buildProjectFiles } from "@/lib/exports";
 import { zipFiles } from "@/lib/zip";
 import { PRO_EXPORTS, type PlanId, type PlanLimits } from "@/lib/plans";
-import type { StudioState } from "@/lib/types";
+import type { StudioState, TeamRules } from "@/lib/types";
 import { Spinner, cx } from "./ui";
 import { useT } from "./useT";
 
@@ -19,6 +19,7 @@ import { useT } from "./useT";
 const SECTIONS = [
   { id: "role", tone: "bg-violet-500/10", icon: "🎭", lines: 8 },
   { id: "context", tone: "bg-blue-500/10", icon: "🗺️", lines: 12 },
+  { id: "team", tone: "bg-violet-500/10", icon: "👥", lines: 10 },
   { id: "task", tone: "bg-lime/10", icon: "🎯", lines: 12 },
   { id: "arch", tone: "bg-orange-500/10", icon: "🏗️", lines: 12 },
   { id: "features", tone: "bg-ink-600/50", icon: "✅", lines: 12 },
@@ -34,6 +35,7 @@ function sectionOf(prompt: string, id: SectionId): string {
   const xmlTag: Record<SectionId, string> = {
     role: "role",
     context: "context",
+    team: "team_conventions",
     task: "task",
     arch: "technical_architecture",
     features: "feature_matrix",
@@ -73,6 +75,8 @@ export function OutputPanel({
   toast,
   plan,
   limits,
+  team = null,
+  onToggleTeam,
 }: {
   s: StudioState;
   released: boolean;
@@ -90,6 +94,9 @@ export function OutputPanel({
   toast: (m: string) => void;
   plan: PlanId;
   limits: PlanLimits;
+  /** The signed-in user's active team conventions (0021), whether or not this project uses them. */
+  team?: TeamRules | null;
+  onToggleTeam?: () => void;
 }) {
   const [copied, setCopied] = useState<string | null>(null);
   const locale = useLocale();
@@ -187,6 +194,29 @@ export function OutputPanel({
             <div className="text-[10px] text-violet-400 mt-1">{s.lang === "TR" ? t.langTR : t.langEN}</div>
           </div>
         </div>
+        {team && (
+          <button
+            type="button"
+            onClick={onToggleTeam}
+            aria-pressed={s.useTeamRules !== false}
+            title={t.teamHint}
+            className={cx(
+              "w-full rounded-lg border px-3 py-2 text-[11px] flex items-center gap-2 text-left transition",
+              s.useTeamRules !== false ? "border-violet/40 bg-violet/10 text-zinc-200" : "border-ink-600 bg-ink-800 text-zinc-400",
+            )}
+          >
+            <Users className="w-3.5 h-3.5 shrink-0 text-violet-400" aria-hidden />
+            <span className="min-w-0 flex-1 truncate">{s.useTeamRules !== false ? t.teamOn(team.name) : t.teamOff(team.name)}</span>
+            <span
+              className={cx(
+                "shrink-0 px-1.5 py-0.5 rounded text-[10px] font-bold",
+                s.useTeamRules !== false ? "bg-violet-400 text-black" : "bg-ink-600 text-zinc-400",
+              )}
+            >
+              {s.useTeamRules !== false ? t.teamOnShort : t.teamOffShort}
+            </span>
+          </button>
+        )}
         {s.lang === "EN" && /[çğıöşüÇĞİÖŞÜ]/.test([s.name, s.pitch, s.description, s.usp, s.audience.role, s.audience.pain, s.audience.budget].join(" ")) && (
           <p className="mt-3 rounded-lg border border-amber-500/30 bg-amber-500/10 px-3 py-2 text-[11px] text-amber-200 leading-relaxed">{t.langMismatch}</p>
         )}
@@ -450,6 +480,7 @@ export function OutputPanel({
                 <div className="space-y-3">
                   {SECTIONS.map((sec) => {
                     const text = sectionOf(shownPrompt, sec.id);
+                    if (sec.id === "team" && !text) return null; // only when team conventions apply
                     const title = t.sections[sec.id];
                     return (
                       <div key={sec.id} className="rounded-xl bg-ink-800 border border-ink-600 overflow-hidden">

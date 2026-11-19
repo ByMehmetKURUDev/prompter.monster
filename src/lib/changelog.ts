@@ -13,6 +13,17 @@ export interface ChangelogEntry {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: "4.13",
+    date: "2026-11-19",
+    title: "Takım kuralları: takımın ortak stack'i, kod kuralları ve marka sesi her master prompt'a eklenir",
+    items: [
+      "Hesabım → Takım kuralları: sahip/yönetici takımın stack ve altyapısını, kod kurallarını ve marka sesini yazar (1.500 / 3.000 / 1.500 karakter); 'Üyelerin prompt'larına ekle' ile açıp kapatır. Üyeler salt okunur görür. Takım beklemedeyken hazırlanabilir, aktifken geçerli olur.",
+      "Studio: aktif takım üyelerinin master prompt'larına 'TAKIM KURALLARI / TEAM CONVENTIONS' bölümü eklenir — Mega Chain'de başlıktan hemen sonra bir kez, tek uzman prompt'larında bağlamdan sonra; CLAUDE.md, AGENTS.md, .cursor/rules, Copilot ve Task Master dosyalarında da. Çıktı panelindeki düğmeyle proje bazında kapatılabilir (projeyle kaydedilir).",
+      "API ve MCP: anahtar sahibinin aktif takım kuralları generate_build_prompt / export_files / POST /api/v1/generate çıktısına eklenir ve yanıtta not olarak belirtilir.",
+      "Gizlilik: takım kuralları kayıtlı versiyonlara ve paylaşım sayfalarına eklenmez (kayıtta state'ten ayıklanır). Migration 0021: teams.rules_* sütunları, my_team_rules / set_team_rules (yetki kontrollü) ve yalnız servis rolüne açık team_rules_for. 0021 uygulanmadan önce özellik görünmez.",
+    ],
+  },
+  {
     version: "4.12",
     date: "2026-11-19",
     title: "Lansman kalite turu: bağlantı önizlemeleri, erişilebilirlik, SEO, güvenlik başlıkları",

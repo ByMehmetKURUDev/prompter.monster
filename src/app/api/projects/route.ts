@@ -31,6 +31,9 @@ const StateSchema = z
     experts: z.array(z.string().max(40)).max(24),
     lang: z.enum(["TR", "EN"]),
     format: z.enum(["ChatGPT Markdown", "Claude XML", "Cursor Rules", "v0", "Lovable/Bolt"]),
+    useTeamRules: z.boolean().optional(),
+    /** Render-time team conventions (0021) — accepted so an old client never fails the save, then dropped below. */
+    team: z.unknown().optional(),
   })
   .strict();
 
@@ -86,7 +89,10 @@ export async function POST(req: Request) {
   const parsed = SaveBody.safeParse(await req.json().catch(() => null));
   if (!parsed.success) return NextResponse.json({ error: "Geçersiz proje verisi.", code: "bad_request" }, { status: 400 });
   const { id, state, snapshot, refined } = parsed.data;
-  const s = state as StudioState;
+  // Team conventions are never stored with a project (nor in its versions / share pages).
+  const { team: _team, ...stored } = state;
+  void _team;
+  const s = stored as StudioState;
   const name = s.name.trim() || "Adsız canavar";
 
   let projectId = id;

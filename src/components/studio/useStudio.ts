@@ -8,7 +8,8 @@ import type { StudioState } from "@/lib/types";
 const STORAGE_KEY = "prompt-monster:studio:v1";
 
 type ArrayKey = {
-  [K in keyof StudioState]: StudioState[K] extends string[] ? K : never;
+  // -? : optional keys (useTeamRules, team) would otherwise add `undefined` to the union
+  [K in keyof StudioState]-?: StudioState[K] extends string[] ? K : never;
 }[keyof StudioState];
 
 type Action =

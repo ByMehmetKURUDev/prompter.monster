@@ -10,7 +10,7 @@ import { buildProjectFiles } from "./exports";
 import { buildExpertPrompt, buildMegaHeader, buildMegaPrompt, projectTypeName } from "./prompt";
 import { typePages } from "./seo-types";
 import { TYPE_PRESETS, localizePreset, quickStartState, stackFor } from "./type-presets";
-import type { OutputFormat, StudioState } from "./types";
+import type { OutputFormat, StudioState, TeamRules } from "./types";
 
 export const SITE = (process.env.NEXT_PUBLIC_SITE_URL || "https://prompter.monster").replace(/\/$/, "");
 
@@ -121,8 +121,14 @@ export interface GenerateResult {
   studioUrl: string;
 }
 
-export function generate(input: GenerateInputT, plan: PlanId): GenerateResult {
-  const { state, notes } = stateFromInput(input, plan);
+/**
+ * `team`: the key owner's active team conventions (0021, from teamRulesFor) — appended to the prompts and the
+ * project files, with a note in the response.
+ */
+export function generate(input: GenerateInputT, plan: PlanId, team: TeamRules | null = null): GenerateResult {
+  const { state: base, notes } = stateFromInput(input, plan);
+  const state: StudioState = team ? { ...base, team } : base;
+  if (team) notes.push(`Team conventions of "${team.name}" are included (switch them off in the team settings).`);
   const res: GenerateResult = {
     plan,
     name: state.name,
@@ -142,11 +148,12 @@ export function generate(input: GenerateInputT, plan: PlanId): GenerateResult {
 }
 
 /** Pro: every project file for coding agents (AGENTS.md, CLAUDE.md, .claude/agents, Cursor rules, Copilot, Task Master, JSON). */
-export function exportFiles(input: GenerateInputT, plan: PlanId, state?: StudioState): Record<string, string> {
+export function exportFiles(input: GenerateInputT, plan: PlanId, state?: StudioState, team: TeamRules | null = null): Record<string, string> {
   if (!limitsFor(plan).builders) {
     throw new ApiInputError("pro_files", "Project file exports (AGENTS.md, CLAUDE.md, .claude/agents, Cursor rules…) need Monster Pro. Use output \"mega\" on the Free plan.", 403);
   }
-  return buildProjectFiles(state ?? stateFromInput(input, plan).state);
+  const s = state ?? stateFromInput(input, plan).state;
+  return buildProjectFiles(team && !s.team ? { ...s, team } : s);
 }
 
 /** Project types for list_project_types / GET /api/v1/types. */
