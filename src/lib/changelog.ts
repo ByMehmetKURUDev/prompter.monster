@@ -13,6 +13,16 @@ export interface ChangelogEntry {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: "4.14",
+    date: "2026-11-19",
+    title: "Admin → Huni: kayıttan ödemeye kullanıcı yolculuğu, kanal ve gün bazında",
+    items: [
+      "Yeni Admin → Huni sayfası: seçilen dönemde (7/30/90/365 gün) kaydolanların proje kaydetme, prompt üretme, AI kullanma, paylaşma, Pro ilgisi ve ödeme adımlarına ulaşma oranı; aktivasyon oranı ve kayıttan ilk üretime medyan süre.",
+      "Kanal bazında huni (etiketler Kanallar sayfasıyla aynı; yalnız davet linkiyle gelenler 'davet' satırında) ve günlük grafikler: kayıt / prompt üreten kişi, AI çağrısı / paylaşım (Türkiye saatiyle gün).",
+      "Migration 0022: admin_funnel ve admin_activity_daily — yalnız okuma, is_admin() ile süzülür, anonim erişim kapalı. 0022 uygulanmadan önce sayfa bir uyarı gösterir.",
+    ],
+  },
+  {
     version: "4.13",
     date: "2026-11-19",
     title: "Takım kuralları: takımın ortak stack'i, kod kuralları ve marka sesi her master prompt'a eklenir",

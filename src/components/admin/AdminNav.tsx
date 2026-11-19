@@ -1,6 +1,6 @@
 "use client";
 
-import { Activity, BarChart3, BookOpenCheck, Building2, CreditCard, LayoutDashboard, Link2, Megaphone, Plug, Settings, Users } from "lucide-react";
+import { Activity, BarChart3, BookOpenCheck, Building2, CreditCard, Filter, LayoutDashboard, Link2, Megaphone, Plug, Settings, Users } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cx } from "@/lib/cx";
@@ -12,6 +12,7 @@ const ITEMS = [
   { href: "/admin/teams", label: "Takımlar", Icon: Building2 },
   { href: "/admin/usage", label: "Kullanım", Icon: BarChart3 },
   { href: "/admin/channels", label: "Kanallar", Icon: Megaphone },
+  { href: "/admin/funnel", label: "Huni", Icon: Filter },
   { href: "/admin/api", label: "API ve MCP", Icon: Plug },
   { href: "/admin/catalog", label: "Katalog", Icon: BookOpenCheck },
   { href: "/admin/shares", label: "Paylaşımlar", Icon: Link2 },
