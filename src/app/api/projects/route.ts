@@ -97,12 +97,15 @@ export async function POST(req: Request) {
 
   let projectId = id;
   if (projectId) {
-    const { error } = await supabase
+    const { data: updated, error } = await supabase
       .from("projects")
       .update({ name, project_type: s.projectType, state: s })
       .eq("id", projectId)
-      .eq("owner_id", user.id);
+      .eq("owner_id", user.id)
+      .select("id");
     if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+    // Deleted (or not mine): say so instead of reporting a save that wrote nothing; Studio then saves a new project.
+    if (!updated?.length) return NextResponse.json({ error: "Proje bulunamadı.", code: "not_found" }, { status: 404 });
   } else {
     const { data, error } = await supabase
       .from("projects")

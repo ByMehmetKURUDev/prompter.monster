@@ -13,6 +13,17 @@ export interface ChangelogEntry {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: "4.17",
+    date: "2026-11-19",
+    title: "Studio otomatik kaydetme: giriş yaptıysan işin kendiliğinden kütüphanene kaydedilir",
+    items: [
+      "Değişikliklerin yazmayı bıraktıktan 2 saniye sonra (sürekli yazarken en geç 10 saniyede bir) kütüphanene kaydedilir; ilk değişiklikte proje kendiliğinden oluşur. Sağ üstte durum görünür: Kaydediliyor… / Kaydedildi / Kaydedilemedi (birkaç saniye sonra yeniden denenir).",
+      "Yalnız senin değişikliklerin kaydedilir: adımlar arasında gezinmek, hazır proje tipiyle başlamak, paylaşılan ya da takımdan bir projeyi açmak ve Free plan kısıtlaması tek başına proje oluşturmaz.",
+      "Sekmeyi kapatınca ya da başka sekmeye geçince bekleyen değişiklik hemen yazılır. Studio'yu yeniden açınca kaldığın kütüphane projesine devam edersin, kopya oluşmaz; başka yerde silinmiş bir projede çalışıyorsan işin yeni proje olarak saklanır.",
+      "Kaydet düğmesi ve her üretimin versiyon olarak saklanması aynen duruyor; tüm kayıtlar tek sırayla yapılır, birbirini ezmez.",
+    ],
+  },
+  {
     version: "4.16",
     date: "2026-11-19",
     title: "Giriş e-postaları Türkçe ve İngilizce: kayıt doğrulama, sihirli bağlantı, şifre sıfırlama",

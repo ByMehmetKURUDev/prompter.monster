@@ -19,7 +19,7 @@ Mimari, özellik matrisi, ödeme akışı (Stripe, Iyzico, PayTR…), kısıtlar
 - **Mega Chain:** 8 adımlı zincir + tek parça master prompt
 - **Gerçek AI (Claude):** açıklamayı güçlendir (*Enhance*), stack öner, üretilen promptu iyileştir (*streaming*)
 - **Export:** `.md`, `.json`, `.cursorrules`, `CLAUDE.md`, `.txt` indir; "Export to Builders" ile araç formatında kopyala
-- **Hesap ve kütüphane (Faz 2):** e-posta/şifre veya sihirli bağlantı ile giriş (Supabase Auth), "Kaydet" ile proje kütüphanesi, her üretim bir versiyon olarak saklanır, versiyonlar arasında geçiş, hesaba bağlı günlük AI hakkı (free 3, pro 200)
+- **Hesap ve kütüphane (Faz 2):** e-posta/şifre veya sihirli bağlantı ile giriş (Supabase Auth), proje kütüphanesi (giriş yapınca Studio'daki değişiklikler kendiliğinden kaydedilir), her üretim bir versiyon olarak saklanır, versiyonlar arasında geçiş, hesaba bağlı günlük AI hakkı (free 3, pro 200)
 - **Paylaşılabilir prompt sayfası (Faz 3.1):** her versiyon "Paylaş" ile herkese açık `/p/<slug>` sayfası olur (kopyala / indir / "Studio'da çatalla"), Open Graph etiketleri ve sitemap ile arama motorlarına açık
 - **Monster Pro (Faz 3.2):** Lemon Squeezy (Merchant of Record) ile $29/ay veya $290/yıl abonelik; `/pricing`, hosted checkout, webhook ile `profiles.plan` güncellemesi, müşteri portalı. Free: 3 uzman, 2 format, günde 3 AI çağrısı; Pro: 12 uzman, Mega Chain, 5 format, Export to Builders, günde 200 AI çağrısı (`src/lib/plans.ts`)
 - **Programmatic SEO (Faz 3.2):** 22 proje tipi için statik landing sayfası `/prompt/<slug>` (önerilen uzmanlar, stack, özellikler, kısaltılmış örnek prompt, SSS + FAQPage/Breadcrumb JSON-LD) ve `/prompt` hub'ı; her sayfa Studio'yu `?type=<id>` ile o tipin ön ayarlarıyla açar

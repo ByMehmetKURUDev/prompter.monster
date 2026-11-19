@@ -1,11 +1,12 @@
 "use client";
 
-import { Bell, Compass, Crown, FolderOpen, KeyRound, LogIn, LogOut, Plug, Save, Search, UserRound } from "lucide-react";
+import { Bell, Check, CloudOff, Compass, Crown, FolderOpen, KeyRound, LogIn, LogOut, Plug, Save, Search, UserRound } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 import { useLocale } from "@/components/site/LocaleProvider";
 import type { MeResponse } from "@/lib/db";
 import { lhref } from "@/lib/i18n";
+import type { AutosaveStatus } from "./Studio";
 import { Spinner, cx } from "./ui";
 import { useT } from "./useT";
 
@@ -18,6 +19,7 @@ export function Nav({
   onSave,
   saving,
   dirty,
+  autosave,
 }: {
   active: string;
   onTab: (tab: string) => void;
@@ -25,6 +27,8 @@ export function Nav({
   onSave: () => void;
   saving: boolean;
   dirty: boolean;
+  /** Signed-in users: edits are saved automatically; the chip shows where that stands. */
+  autosave: { status: AutosaveStatus; at: number | null };
 }) {
   const [menu, setMenu] = useState(false);
   const locale = useLocale();
@@ -64,6 +68,29 @@ export function Nav({
           <span className="ml-2 px-1 py-0.5 rounded bg-ink-600 text-[10px]">⌘K</span>
         </div>
 
+        {user && (autosave.status === "pending" || autosave.status === "saving" || autosave.status === "saved" || autosave.status === "error") && (
+          <span
+            role="status"
+            title={
+              autosave.status === "error"
+                ? t.autosaveFailedTitle
+                : autosave.status === "saved" && autosave.at
+                  ? t.autosavedAt(new Date(autosave.at).toLocaleTimeString(locale === "en" ? "en-US" : "tr-TR", { hour: "2-digit", minute: "2-digit" }))
+                  : t.autosaveTitle
+            }
+            className={cx("hidden sm:flex items-center justify-end gap-1 min-w-[6.75rem] text-[11.5px] whitespace-nowrap", autosave.status === "error" ? "text-amber-300" : "text-zinc-500")}
+          >
+            {autosave.status === "error" ? (
+              <CloudOff className="w-3.5 h-3.5" aria-hidden />
+            ) : autosave.status === "saved" ? (
+              <Check className="w-3.5 h-3.5 text-lime" aria-hidden />
+            ) : (
+              <Spinner className="w-3 h-3" />
+            )}
+            {autosave.status === "error" ? t.autosaveFailed : autosave.status === "saved" ? t.autosaved : t.autosaving}
+          </span>
+        )}
+
         <button
           type="button"
           onClick={onSave}
@@ -71,7 +98,8 @@ export function Nav({
           title={user ? t.saveTitle : t.saveTitleSignedOut}
           className={cx(
             "h-8 px-3 rounded-full border text-[12px] font-semibold flex items-center gap-1.5 transition disabled:opacity-60",
-            dirty && user ? "bg-lime text-black border-lime" : "bg-ink-800 border-ink-600 text-zinc-300 hover:text-white",
+            // With autosave on, the button only asks for attention when something is not being saved by itself.
+            dirty && user && (autosave.status === "idle" || autosave.status === "error") ? "bg-lime text-black border-lime" : "bg-ink-800 border-ink-600 text-zinc-300 hover:text-white",
           )}
         >
           {saving ? <Spinner className="w-3.5 h-3.5" /> : <Save className="w-3.5 h-3.5" aria-hidden />}
